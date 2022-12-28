@@ -1,0 +1,93 @@
+connect:
+  host: 10.0.11.29
+  port: <%= ENV.fetch('RABBITMQ_PORT', '5672') %>
+  username: <%= ENV.fetch('RABBITMQ_USER', 'guest') %>
+  password: <%= ENV.fetch('RABBITMQ_PASSWORD', 'guest') %>
+
+exchange:
+  trade:
+    name: peatio.trade
+    type: headers
+  notification:
+    name: peatio.notification
+    type: direct
+  orderbook:
+    name: peatio.orderbook
+    type: fanout
+  events:
+    name: peatio.events
+    type: direct
+  matching:
+    name: peatio.matching
+    type: direct
+  finex-spot:
+    name: finex.orderapi
+    type: direct
+  finex-api:
+    name: finex.orderapi
+    type: direct
+
+queue:
+  matching:
+    name: peatio.matching
+    durable: true
+  new_trade:
+    name: peatio.trade.new
+    durable: true
+  order_processor:
+    name: peatio.order.processor
+    durable: true
+  market_ticker:
+    name: peatio.trade.market_ticker
+  pusher_market:
+    name: peatio.pusher.market
+  pusher_member:
+    name: peatio.pusher.member
+  withdraw_coin:
+    name: peatio.withdraw.coin
+  deposit_collection_fees:
+    name: peatio.deposit.collection_fees
+  deposit_collection:
+    name: peatio.deposit.collection
+  deposit_coin_address:
+    name: peatio.deposit.coin.address
+    durable: true
+  influx_writer:
+    name: peatio.trade.writer
+  trade_error:
+    name: peatio.trades.errors
+  # Queue which used by third-party trading engine for updating balances and
+  # order submit consuming.
+  events_processor:
+    name: peatio.events.processor
+
+binding:
+  matching:
+    queue: matching
+    clean_start: true
+    exchange: matching
+  trade_executor:
+    queue: new_trade
+    exchange: matching
+  order_processor:
+    queue: order_processor
+    exchange: matching
+  withdraw_coin:
+    queue: withdraw_coin
+  deposit_coin_address:
+    queue: deposit_coin_address
+  influx_writer:
+    queue: influx_writer
+    exchange: trade
+  trade_error:
+    queue: trade_error
+    exchange: matching
+  events_processor:
+    queue: events_processor
+    exchange: events
+
+channel:
+  trade_executor:
+    prefetch: 5
+  order_processor:
+    prefetch: 5
