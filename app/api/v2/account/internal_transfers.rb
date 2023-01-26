@@ -86,6 +86,13 @@ module API
             report_exception(e)
             error!({ errors: ['account.internal_transfer.create_error'] }, 422)
           end
+
+          get '/:code' do
+            admin_authorize! :read, ::InternalTransfer
+            tranfer = InternalTransfer.find_by(inter_id: params[:code])
+
+            present tranfer, with: API::V2::Entities::InternalTransfer
+          end
         end
       end
     end

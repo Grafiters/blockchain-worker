@@ -45,6 +45,14 @@ module API
 
           present paginate(search.result), with: API::V2::Admin::Entities::InternalTransfer
         end
+        
+        desc 'Get Internal Tranfers by Code'
+        get '/internal_transfers/:code' do
+          admin_authorize! :read, ::InternalTransfer
+          tranfer = InternalTransfer.find_by(inter_id: params[:code])
+
+          present tranfer, with: API::V2::Entities::InternalTransfer
+        end
       end
     end
   end

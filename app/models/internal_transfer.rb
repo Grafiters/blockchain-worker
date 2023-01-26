@@ -14,7 +14,7 @@ class InternalTransfer < ApplicationRecord
   # == Validations ==========================================================
 
   validates :currency, :amount, :sender, :receiver, :state, presence: true
-
+  before_validation :assign_interid
   # == Scopes ===============================================================
   # == Callbacks ============================================================
 
@@ -37,6 +37,23 @@ class InternalTransfer < ApplicationRecord
     user == sender ? 'out' : 'in'
   end
 
+  def assign_interid
+    return unless inter_id.blank?
+
+    self.inter_id = InterIDGenerate('INTR')
+  end
+
+  def mis_id
+    assign_interid
+  end
+
+  private
+  def InterIDGenerate(prefix = 'INTR')
+    loop do
+      uid = "%s%s" % [prefix.upcase, SecureRandom.hex(5).upcase]
+      return uid if InternalTransfer.where(inter_id: inter_id).empty?
+    end
+  end
 end
 
 # == Schema Information

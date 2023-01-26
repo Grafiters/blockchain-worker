@@ -7,6 +7,15 @@ module API
       class InternalTransfer < Base
 
         expose(
+          :inter_id,
+          as: :inter_id,
+          documentation: {
+            type: String,
+            desc: 'The internal code'
+          }
+        )
+
+        expose(
           :currency_id,
           as: :currency,
           documentation: {
