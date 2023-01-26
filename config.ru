@@ -7,7 +7,7 @@ require 'rack/cors'
 map Rails.application.config.relative_url_root do
   use Rack::Cors do
     allow do
-      origins CORS::Validations.validate_origins(ENV['API_CORS_ORIGINS'])
+      origins CORS::Validations.validate_origins(ENV.fetch('API_CORS_ORIGINS', '*'))
       resource '/api/*',
         methods: %i[get post delete put patch options head],
         headers: :any,

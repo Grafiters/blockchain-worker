@@ -6,7 +6,7 @@ require_relative 'jwt'
 require 'jwt/rack'
 
 on_error = lambda do |_error|
-  message = 'jwt.decode_and_verify'
+  message = _error
   body    = { errors: [message] }.to_json
   headers = { 'Content-Type' => 'application/json', 'Content-Length' => body.bytesize.to_s }
 

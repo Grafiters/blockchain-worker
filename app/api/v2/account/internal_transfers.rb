@@ -42,10 +42,10 @@ module API
                      type: { value: BigDecimal, message: 'account.internal_transfer.non_decimal_amount' },
                      values: { value: ->(v) { v.try(:positive?) }, message: 'account.internal_transfer.non_positive_amount' },
                      desc: 'The amount to transfer.'
-            requires :otp,
-                     type: { value: Integer, message: 'account.internal_transfer.non_integer_otp' },
-                     allow_blank: false,
-                     desc: 'OTP to perform action'
+            # requires :otp,
+            #          type: { value: Integer, message: 'account.internal_transfer.non_integer_otp' },
+            #          allow_blank: false,
+            #          desc: 'OTP to perform action'
             requires :username_or_uid,
                      type: String,
                      allow_blank: false,
@@ -57,9 +57,9 @@ module API
             error!({ errors: ['account.internal_transfer.receiver_not_found'] }, 422) if receiver.nil?
             currency = Currency.find(params[:currency])
 
-            unless Vault::TOTP.validate?(current_user.uid, params[:otp])
-              error!({ errors: ['account.internal_transfer.invalid_otp'] }, 422)
-            end
+            # unless Vault::TOTP.validate?(current_user.uid, params[:otp])
+            #   error!({ errors: ['account.internal_transfer.invalid_otp'] }, 422)
+            # end
 
             if current_user == receiver
               error!({ errors: ['account.internal_transfer.can_not_tranfer_to_yourself'] }, 422)

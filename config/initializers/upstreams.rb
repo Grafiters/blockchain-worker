@@ -1,3 +1,3 @@
-require 'peatio/upstream/nusadax'
+require 'peatio/upstream/opendax'
 
 Peatio::Upstream.registry[:nusadax] = Peatio::Upstream::Nusadax
