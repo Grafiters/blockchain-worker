@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_25_082208) do
+ActiveRecord::Schema.define(version: 2023_01_27_071733) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -43,8 +43,8 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
   create_table "assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
-    t.string "reference_type"
     t.bigint "reference_id"
+    t.string "reference_type"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -178,8 +178,8 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
   create_table "expenses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
-    t.string "reference_type"
     t.bigint "reference_id"
+    t.string "reference_type"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -188,10 +188,12 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
     t.index ["reference_type", "reference_id"], name: "index_expenses_on_reference_type_and_reference_id"
   end
 
-  create_table "fiat", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "fiats", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", limit: 50, null: false
     t.string "symbol", limit: 25, null: false
-    t.string "icon_url", limit: 75, null: false
+    t.integer "scale", null: false
+    t.string "code", limit: 15, null: false
+    t.string "icon_url", null: false
     t.decimal "taker_fee", precision: 32, scale: 16
     t.decimal "maker_fee", precision: 32, scale: 16
     t.datetime "created_at"
@@ -219,12 +221,35 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
     t.datetime "finished_at"
   end
 
+  create_table "legacy_markets_back", id: :string, limit: 20, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "base_unit", limit: 10, null: false
+    t.string "quote_unit", limit: 10, null: false
+    t.bigint "engine_id", null: false
+    t.integer "amount_precision", limit: 1, default: 4, null: false
+    t.integer "price_precision", limit: 1, default: 4, null: false
+    t.decimal "min_price", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "max_price", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "min_amount", precision: 32, scale: 16, default: "0.0", null: false
+    t.integer "position", null: false
+    t.json "data"
+    t.string "state", limit: 32, default: "enabled", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["base_unit", "quote_unit"], name: "index_legacy_markets_on_base_unit_and_quote_unit", unique: true
+    t.index ["base_unit"], name: "index_legacy_markets_on_base_unit"
+    t.index ["enabled"], name: "index_legacy_markets_on_enabled"
+    t.index ["engine_id"], name: "index_legacy_markets_on_engine_id"
+    t.index ["position"], name: "index_legacy_markets_on_position"
+    t.index ["quote_unit"], name: "index_legacy_markets_on_quote_unit"
+  end
+
   create_table "liabilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
     t.bigint "member_id"
-    t.string "reference_type"
     t.bigint "reference_id"
+    t.string "reference_type"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -334,6 +359,7 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
   end
 
   create_table "p2p_offers", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "offer_number", limit: 75, null: false
     t.integer "p2p_user_id"
     t.integer "p2p_pair_id"
     t.decimal "origin_amount", precision: 32, scale: 16
@@ -349,7 +375,7 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
     t.index ["p2p_user_id"], name: "index_p2p_offers_on_p2p_user_id"
   end
 
-  create_table "p2p_order_feedback", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "p2p_order_feedbacks", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "p2p_user_id"
     t.text "comment", null: false
     t.string "assessment", limit: 25, null: false
@@ -386,14 +412,14 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
   end
 
   create_table "p2p_pairs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "fiat_id", null: false
-    t.integer "currency_id", null: false
+    t.string "fiat", limit: 50, null: false
+    t.string "currency", limit: 50, null: false
     t.decimal "taker_fee", precision: 32, scale: 16
     t.decimal "maker_fee", precision: 32, scale: 16
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["currency_id"], name: "index_p2p_pairs_on_currency_id"
-    t.index ["fiat_id"], name: "index_p2p_pairs_on_fiat_id"
+    t.index ["currency"], name: "index_p2p_pairs_on_currency"
+    t.index ["fiat"], name: "index_p2p_pairs_on_fiat"
   end
 
   create_table "p2p_payment_users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -409,9 +435,9 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
     t.integer "fiat_id", null: false
     t.string "name", limit: 50, null: false
     t.string "symbol", limit: 50, null: false
-    t.string "logo_url", limit: 50, null: false
+    t.string "logo_url", null: false
     t.string "state", limit: 10, null: false
-    t.string "type", limit: 50, null: false
+    t.string "tipe", limit: 50, null: false
     t.datetime "deleted_at"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -443,12 +469,15 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
     t.bigint "member_id"
     t.bigint "wallet_id"
     t.string "blockchain_key"
+    t.string "currency_id", limit: 10, null: false
+    t.integer "account_id", null: false
     t.string "address", limit: 95
     t.boolean "remote", default: false, null: false
     t.string "secret_encrypted"
     t.string "details_encrypted", limit: 1024
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["currency_id", "address"], name: "index_payment_addresses_on_currency_id_and_address", unique: true
     t.index ["member_id"], name: "index_payment_addresses_on_member_id"
     t.index ["wallet_id"], name: "index_payment_addresses_on_wallet_id"
   end
@@ -467,8 +496,8 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
     t.integer "code", null: false
     t.string "currency_id", null: false
     t.bigint "member_id"
-    t.string "reference_type"
     t.bigint "reference_id"
+    t.string "reference_type"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -587,6 +616,7 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
 
   create_table "wallets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "blockchain_key", limit: 32
+    t.string "currency_id", limit: 10
     t.string "name", limit: 64
     t.string "address", null: false
     t.integer "kind", null: false
@@ -598,7 +628,8 @@ ActiveRecord::Schema.define(version: 2023_01_25_082208) do
     t.string "status", limit: 32
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["kind", "status"], name: "index_wallets_on_kind_and_currency_id_and_status"
+    t.index ["currency_id"], name: "index_wallets_on_currency_id"
+    t.index ["kind", "currency_id", "status"], name: "index_wallets_on_kind_and_currency_id_and_status"
     t.index ["kind"], name: "index_wallets_on_kind"
     t.index ["status"], name: "index_wallets_on_status"
   end

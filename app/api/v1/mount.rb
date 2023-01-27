@@ -33,8 +33,8 @@ module API
       include Constraints
       include ExceptionHandlers
 
-      # mount Public::Mount        => :public
-      # mount Account::Mount       => :account
+      mount API::V1::Public::Mount        => :public
+      mount API::V1::Admin::Mount        => :Admin
       # mount Market::Mount        => :market
       # mount CoinMarketCap::Mount => :coinmarketcap
       # mount CoinGecko::Mount => :coingecko

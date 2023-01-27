@@ -20,9 +20,9 @@ class MultiNetworkSupport < ActiveRecord::Migration[5.2]
     end
 
     # Add blockchain key to deposits/withdraws/payment_addresses/beneficiaries tables
-    %i[deposits withdraws beneficiaries].each do |t|
-      add_column t, :blockchain_key, :string, null: true, after: :currency_id
-    end
+    # %i[deposits withdraws beneficiaries].each do |t|
+    #   add_column t, :blockchain_key, :string, null: true, after: :currency_id
+    # end
 
     # Update all coin beneficiaries with blockchain_key
     Beneficiary.find_each(batch_size: 100) do |beneficiary|
@@ -39,11 +39,11 @@ class MultiNetworkSupport < ActiveRecord::Migration[5.2]
       withdraw.update_columns(blockchain_key: withdraw.currency.blockchain_key)
     end
 
-    add_column :payment_addresses, :blockchain_key, :string, after: :wallet_id
+    # add_column :payment_addresses, :blockchain_key, :string, after: :wallet_id
     # Update all payment address with blockchain_key by wallet
-    PaymentAddress.find_each(batch_size: 100) do |payment_address|
-      payment_address.update_columns(blockchain_key: payment_address.wallet.blockchain_key)
-    end
+    # PaymentAddress.find_each(batch_size: 100) do |payment_address|
+    #   payment_address.update_columns(blockchain_key: payment_address.wallet.blockchain_key)
+    # end
 
     # Add new fields to blockchain table
     add_column :blockchains, :min_deposit_amount, :decimal, precision: 32, scale: 16, default: 0, null: false, after: :min_confirmations

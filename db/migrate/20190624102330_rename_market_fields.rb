@@ -21,13 +21,13 @@ class RenameMarketFields < ActiveRecord::Migration[5.2]
         rename_column :markets, :min_ask_amount, :min_amount if column_exists?(:markets, :min_ask_amount)
         remove_column :markets, :min_bid_amount if column_exists?(:markets, :min_bid_amount)
 
-        if column_exists?(:markets, :enabled)
-          add_column :markets, :state, :string, limit: 32, default: :enabled, null: false, after: :position
-          Market.find_each do |m|
-            m.update_attribute(:state, m.enabled ? :enabled : :disabled)
-          end
-          remove_column :markets, :enabled
-        end
+        # if column_exists?(:markets, :enabled)
+        #   add_column :markets, :state, :string, limit: 32, default: :enabled, null: false, after: :position
+        #   Market.find_each do |m|
+        #     m.update_attribute(:state, m.enabled ? :enabled : :disabled)
+        #   end
+        #   remove_column :markets, :enabled
+        # end
       end
 
       dir.down do

@@ -129,4 +129,22 @@ namespace :seed do
       end
     end
   end
+
+  desc 'Adds missing user to database defined at config/seed/p2p_user.yml.'
+  task p2p_user: :environment do
+    P2pUser.transaction do
+      YAML.load_file(Rails.root.join('config/seed/p2p_user.yml')).each do |hash|
+        P2pUser.create!(hash)
+      end
+    end
+  end
+
+  desc 'Adds missing user to database defined at config/seed/p2p_offers.yml.'
+  task p2p_offer: :environment do
+    P2pOffer.transaction do
+      YAML.load_file(Rails.root.join('config/seed/p2p_offers.yml')).each do |hash|
+        P2pOffer.create!(hash)
+      end
+    end
+  end
 end

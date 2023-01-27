@@ -4,7 +4,7 @@ class CreateP2PTable < ActiveRecord::Migration[4.2]
       t.string    "name",      limit: 50,  null: false
       t.string    "symbol",    limit: 50,  null: false
       t.string    "symbol",    limit: 25,  null: false
-      t.string    "icon_url",  limit: 75,  null: false
+      t.string    "icon_url",              null: false
       t.decimal   "taker_fee",             precision: 32, scale: 16
       t.decimal   "maker_fee",             precision: 32, scale: 16
       t.datetime  "created_at"

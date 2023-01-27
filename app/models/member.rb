@@ -12,6 +12,8 @@ class Member < ApplicationRecord
   has_many :deposits, -> { order(id: :desc) }
   has_many :beneficiaries, -> { order(id: :desc) }
 
+  has_many :p2p_user
+
   scope :enabled, -> { where(state: 'active') }
 
   before_validation :downcase_email
