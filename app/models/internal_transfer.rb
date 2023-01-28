@@ -35,12 +35,6 @@ class InternalTransfer < ApplicationRecord
 
   enum state: { completed: 1 }
 
-  def assign_iid
-    return unless iid.blank?
-
-    # self.iid  = 
-  end
-
   def direction(user)
     user == sender ? 'out' : 'in'
   end

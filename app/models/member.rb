@@ -12,7 +12,7 @@ class Member < ApplicationRecord
   has_many :deposits, -> { order(id: :desc) }
   has_many :beneficiaries, -> { order(id: :desc) }
 
-  has_many :p2p_user
+  has_many :p2p_users
 
   scope :enabled, -> { where(state: 'active') }
 
