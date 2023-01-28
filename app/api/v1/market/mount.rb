@@ -8,7 +8,6 @@ module API
           before { authenticate! }
           before { set_ets_context! }
 
-          mount API::V1::Market::Trade
           mount API::V1::Market::Offer
         end
       end

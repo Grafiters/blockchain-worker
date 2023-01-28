@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_27_071733) do
+ActiveRecord::Schema.define(version: 2023_01_28_014518) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -346,6 +346,9 @@ ActiveRecord::Schema.define(version: 2023_01_27_071733) do
     t.string "side", limit: 10, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string "paymen_limit_time", null: false
+    t.text "term_of_condition"
+    t.string "auto_replay", limit: 150
     t.index ["p2p_pair_id"], name: "index_p2p_offers_on_p2p_pair_id"
     t.index ["p2p_user_id"], name: "index_p2p_offers_on_p2p_user_id"
   end
