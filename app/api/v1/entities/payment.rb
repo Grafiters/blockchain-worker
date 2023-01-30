@@ -42,6 +42,15 @@ module API
             )
 
             expose(
+                :base_color,
+                as: :base_color,
+                documentation: {
+                    desc: 'Filter Fiat.',
+                    type: String
+                }
+            )
+
+            expose(
                 :state,
                 as: :state,
                 documentation: {

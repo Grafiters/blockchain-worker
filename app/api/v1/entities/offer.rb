@@ -33,6 +33,24 @@ module API
             )
 
             expose(
+                :currency,
+                as: :currency,
+                documentation: {
+                    desc: 'Filter Fiat.',
+                    type: String
+                }
+            )
+
+            expose(
+                :side,
+                as: :side,
+                documentation: {
+                    desc: 'Filter Fiat.',
+                    type: String
+                }
+            )
+
+            expose(
                 :min_order_amount,
                 as: :min_order,
                 documentation: {

@@ -51,6 +51,11 @@ module API
             keys.each { |k| @build.merge!("#{k}_eq" => @params[k]) }
             self
           end
+
+          def lt_any
+            @build.merge!("min_order_amount_lt_any" => @params[:amount])
+            self
+          end
         end
 
         class WalletOverviewBuilder

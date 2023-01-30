@@ -16,7 +16,7 @@ module API
                         min_order_amount: params[:min_order],
                         max_order_amount: params[:max_order],
                         side: params[:side],
-                        paymen_limit_time: params[:paymen_limit],
+                        paymen_limit_time: params[:paymen_limit_time],
                         term_of_condition: params[:term_of_condition],
                         auto_replay: params[:auto_replay]
                     }
@@ -33,6 +33,7 @@ module API
                 def p2p_sell_params(offer, side)
                     params_mapping = {
                         p2p_offer_id: offer[:id],
+                        p2p_user_id: p2p_user_id[:id],
                         maker_uid: current_user[:uid],
                         taker_uid: receiver_p2p[:uid],
                         amount: params[:amount],
@@ -43,6 +44,7 @@ module API
                 def p2p_buy_params(offer, side)
                     params_mapping = {
                         p2p_offer_id: offer[:id],
+                        p2p_user_id: p2p_user_id[:id],
                         maker_uid: current_user[:uid],
                         taker_uid: receiver_p2p[:uid],
                         amount: params[:amount],

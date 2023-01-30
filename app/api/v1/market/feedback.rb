@@ -4,6 +4,9 @@ module API
             class Feedback < Grape::API
                 helpers ::API::V1::Admin::Helpers
                 helpers ::API::V1::Market::RequestParams
+                helpers ::API::V1::Market::OfferHelpers
+
+                # after_save :update_assesment
 
                 namespace :feedback do
                     desc 'desc all Feedback on Order'
@@ -15,7 +18,10 @@ module API
 
                     post '/:order_number' do
                         feedback = ::P2pOrderFeedback.create(feedback_params)
-
+                        
+                        if feedback.save
+                            update_assesment
+                        end
                         present feedback
                     end
                 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_29_214552) do
+ActiveRecord::Schema.define(version: 2023_01_30_041442) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -487,6 +487,7 @@ ActiveRecord::Schema.define(version: 2023_01_29_214552) do
     t.datetime "updated_at"
     t.index ["p2p_offer_id"], name: "index_p2p_order_payments_on_p2p_offer_id"
     t.index ["p2p_payment_user_id"], name: "index_p2p_order_payments_on_p2p_payment_user_id"
+    t.index ["p2p_payment_user_id"], name: "p2p_order_payments_user_id", unique: true
   end
 
   create_table "p2p_orders", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -505,8 +506,10 @@ ActiveRecord::Schema.define(version: 2023_01_29_214552) do
     t.datetime "updated_at"
     t.decimal "maker_fee", precision: 17, scale: 16
     t.decimal "taker_fee", precision: 17, scale: 16
+    t.integer "p2p_user_id", null: false
     t.index ["p2p_offer_id"], name: "index_p2p_orders_on_p2p_offer_id"
     t.index ["p2p_order_payment_id"], name: "index_p2p_orders_on_p2p_order_payment_id"
+    t.index ["p2p_user_id"], name: "index_p2p_orders_on_p2p_user_id"
   end
 
   create_table "p2p_pairs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -534,6 +537,7 @@ ActiveRecord::Schema.define(version: 2023_01_29_214552) do
     t.string "name", limit: 50, null: false
     t.string "symbol", limit: 50, null: false
     t.string "logo_url", null: false
+    t.string "base_color", limit: 50
     t.string "state", limit: 10, null: false
     t.string "tipe", limit: 50, null: false
     t.datetime "deleted_at"
@@ -776,6 +780,23 @@ ActiveRecord::Schema.define(version: 2023_01_29_214552) do
     t.datetime "created_at", precision: 3, null: false
     t.datetime "updated_at", precision: 3, null: false
     t.index ["key"], name: "index_transfers_on_key", unique: true
+  end
+
+  create_table "users", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "id"
+    t.string "uid"
+    t.string "username"
+    t.string "email"
+    t.string "password_digest"
+    t.string "role"
+    t.text "data"
+    t.integer "level"
+    t.boolean "otp"
+    t.string "state"
+    t.string "confirmation_code"
+    t.bigint "referral_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "virtual_accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

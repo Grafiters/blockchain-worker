@@ -12,6 +12,7 @@ module API
   
           mount API::V1::Admin::Fiat
           mount API::V1::Admin::Trade
+          mount API::V1::Admin::Payment
   
           add_swagger_documentation base_path: File.join(API::Mount::PREFIX, API::V1::Mount::API_VERSION, PREFIX, 'exchange'),
                                     add_base_path: true,

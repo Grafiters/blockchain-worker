@@ -51,6 +51,10 @@ module API
             keys.each { |k| @build.merge!("#{k}_eq" => @params[k]) }
             self
           end
+
+          def lt_any(*key)
+            key.each { |k| @build.merge!("#{k}_lt_any" => @params[k]) }
+          end
         end
 
         class WalletOverviewBuilder

@@ -2,11 +2,9 @@ module API
     module V1
         module Public
             class Filter < Grape::API
-                helpers ::API::V1::Admin::Helpers
                 namespace :fiats do
                     desc 'Filter available fiat'
                     params do
-                        use :pagination
                         optional :fiat,
                                 type: String,
                                 desc: -> { V2::Entities::Market.documentation[:symbol] }

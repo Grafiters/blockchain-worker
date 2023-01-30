@@ -2,6 +2,12 @@ module API
     module V1
         module Public
             module Helpers
+                def params_offer_filter
+                    params_map = {
+                        min_order_amount: params[:amount]
+                    }
+                end
+
                 def verified_user(p2p_user)
                     member = P2pUser.joins(:member).find_by(member_id: p2p_user)
                 end
@@ -18,6 +24,10 @@ module API
 
                 def trader(uid)
                     ::Member.joins(:p2p_user).select("members.*","p2p_users.*").find_by(p2p_users: {id: uid})
+                end
+
+                def currency(fiat_id)
+                    ::P2pPair.find_by(id: fiat_id)
                 end
             end
         end

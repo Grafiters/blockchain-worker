@@ -15,24 +15,21 @@ module API
                                 desc: -> { V2::Entities::Market.documentation[:symbol] }
                     end
                     get "/" do
-                        search_params = params[:search]
+                        search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
+                                                .lt_any
+                                                .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
                         search = ::P2pOffer.joins(:p2p_pair)
-                                            .select("p2p_offers.*", "p2p_offers.p2p_user_id as trader", "p2p_pairs.created_at as payment")
+                                            .select("p2p_offers.*", "p2p_offers.p2p_user_id as trader", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
                                             .ransack(search_params)
-
-                        # search = ::P2pUser.joins(:member, :p2p_offer)
-                        #                     .select("p2p_users.*","members.*","p2p_offers.*","p2p_offers.id as payment")
-                        #                     .where(p2p_offers: {p2p_pair_id: pairs[:id]})
-                        #                     .where(p2p_offers: {side: side})
-                        #                     .ransack(search_params)
                         
                         result = search.result.load
                         data = result.each do |offer|
+                            offer[:currency] = currency(offer[:currency])[:currency].upcase
                             offer[:trader] = trader(offer[:p2p_user_id])
                             offer[:payment] = payment(offer[:id])
                         end

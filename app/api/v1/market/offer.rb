@@ -2,6 +2,7 @@ module API
     module V1
         module Market
             class Offer < Grape::API
+                helpers ::API::V1::Public::Helpers
                 helpers ::API::V1::Admin::Helpers
                 helpers ::API::V1::Market::NamedParams
                 helpers ::API::V1::Market::RequestParams
@@ -20,11 +21,13 @@ module API
                     end
                     get "/" do
                         user_authorize! :read, ::P2pOffer
-                        search_params = params[:search]
+                        search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
+                                                .lt_any
+                                                .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
                         search = ::P2pOffer.joins(:p2p_pair)
-                                            .select("p2p_offers.*", "p2p_offers.p2p_user_id as trader", "p2p_pairs.created_at as payment")
+                                            .select("p2p_offers.*", "p2p_offers.p2p_user_id as trader", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
@@ -32,6 +35,7 @@ module API
                         
                         result = search.result.load
                         data = result.each do |offer|
+                            offer[:currency] = currency(offer[:currency])[:currency].upcase
                             offer[:trader] = trader(offer[:p2p_user_id])
                             offer[:payment] = payment(offer[:id])
                         end

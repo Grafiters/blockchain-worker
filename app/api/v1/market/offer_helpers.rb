@@ -13,6 +13,14 @@ module API
           def order_param
             params[:order_by].downcase == 'asc' ? 'id asc' : 'id desc'
           end
+
+          def update_assesment
+            if params[:assesment] == 'positif'
+                assesment = ::P2pUser.find_by(id: p2p_user_id[:id])
+
+                assesment.increment!(:success_rate)
+            end
+        end
         end
       end
     end

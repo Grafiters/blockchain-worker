@@ -2,6 +2,7 @@ module API
     module V1
         module Market
             class Order < Grape::API
+                helpers ::API::V1::Public::Helpers
                 helpers ::API::V1::Admin::Helpers
                 helpers ::API::V1::Market::RequestParams
                 namespace :orders do
@@ -16,8 +17,14 @@ module API
                         
                         if otype == 'buy'
                             orders = ::P2pOrder.create(p2p_sell_params(offer, otype))
+                            
+                            # offer.update(available_amount: params[:amount])
                         else
                             orders = ::P2pOrder.create(p2p_buy_params(offer, otype))
+                        end
+
+                        if orders.save
+                            
                         end
 
                         present orders
@@ -32,7 +39,7 @@ module API
                             order[:payment] = order_payment
                         end
 
-                        offer = ::P2pOffer.select("p2p_offers.*", "p2p_offers.created_at as payment","p2p_offers.updated_at as trader").find_by(id: order[:p2p_offer_id])
+                        offer = ::P2pOffer.select("p2p_offers.*", "p2p_offers.created_at as payment","p2p_offers.updated_at as trader", "p2p_offers.p2p_pair_id as currency").find_by(id: order[:p2p_offer_id])
                         payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
                                                     .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
                                                     .where(p2p_order_payments: {p2p_offer_id: offer[:id]})
@@ -40,6 +47,7 @@ module API
                         
                         offer[:payment] = payment
                         offer[:trader]  = ::Member.find_by(uid: order[:uid])
+                        offer[:currency] = currency(offer[:currency])[:currency].upcase
 
                         present :order, order, with: API::V1::Entities::Order
                         present :offer, offer, with: API::V1::Entities::Offer
@@ -48,7 +56,7 @@ module API
                     desc 'Confirmation Target Payment step 1'
                     put '/confirm/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
-                        if order.state != "waiting"
+                        if order[:p2p_order_payment_id].blank?
                             error!({ errors: ['p2p_order.order.payment_confirm_not_exists'] }, 422)
                         end
 
@@ -61,6 +69,9 @@ module API
 
                     put '/payment_confirm/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
+                        if order.present?
+                            error!({ errors: ['p2p_order.order.can_not_update_data_not_exists'] }, 422)
+                        end
                         order.update({state: "completed", p2p_order_payment_id: params[:payment_method], first_approve_expire_at: Time.now})
                         present order
                     end

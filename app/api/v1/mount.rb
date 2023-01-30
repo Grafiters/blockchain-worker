@@ -36,8 +36,7 @@ module API
       mount API::V1::Public::Mount       => :public
       mount API::V1::Admin::Mount        => :Admin
       mount API::V1::Market::Mount       => :market
-      # mount CoinMarketCap::Mount => :coinmarketcap
-      # mount CoinGecko::Mount => :coingecko
+      mount API::V1::Account::Mount      => :account
 
       add_swagger_documentation base_path:   File.join(API::Mount::PREFIX, API_VERSION, 'exchange'),
                                 add_base_path: true,

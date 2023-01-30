@@ -2,7 +2,6 @@ module API
     module V1
         module Public
             class Fiat < Grape::API
-                helpers ::API::V1::Admin::Helpers
                 namespace :fiats do
                     desc 'Get available fiat'
                     get "/" do
