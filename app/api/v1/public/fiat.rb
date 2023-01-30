@@ -14,7 +14,7 @@ module API
 
                         search.sorts = ["name asc"]
 
-                        present paginate(Rails.cache.fetch("trading_fees_#{params}", expires_in: 600) { search.result.load.to_a }), with: API::V1::Entities::Fiat
+                        present search.result.load.to_a, with: API::V1::Entities::Fiat
                     end
                 end
             end

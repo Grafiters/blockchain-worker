@@ -12,7 +12,7 @@ module API
       content_type   :json, 'application/json'
       default_format :json
 
-      helpers V1::Helpers
+      helpers API::V1::Helpers
 
       do_not_route_options!
 
@@ -65,7 +65,7 @@ module API
       # Mount Management API after swagger. To separate swagger Management API doc.
       # TODO: Find better solution for separating swagger Management API.
       # mount Management::Mount => :management
-      mount API::V1::Admin::Mount      => :admin
+      # mount API::V1::Admin::Mount      => :admin
     end
   end
 end

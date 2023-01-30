@@ -1,11 +1,11 @@
 class P2pOffer < ApplicationRecord
     serialize :data, JSON unless Rails.configuration.database_support_json
 
-    belongs_to :p2p_pair
-    belongs_to :p2p_user
+    belongs_to :p2p_pair, dependent: :destroy
+    belongs_to :p2p_user, dependent: :destroy
 
 
-    before_validation :assign_uuid, 
+    before_validation :assign_uuid
 
     # def submit_offer
     #     return unless new_record?

@@ -2,11 +2,11 @@ module API
     module V1
         module Public
             class Offer < Grape::API
-                helpers ::API::V1::Admin::Helpers
+                helpers ::API::V1::Public::Helpers
                 namespace :trades do
                     desc 'Filter available fiat'
                     params do
-                        use :pagination
+                        # use :pagination
                         requires :fiat,
                                 type: String,
                                 desc: -> { V2::Entities::Market.documentation[:symbol] }
@@ -17,12 +17,27 @@ module API
                     get "/" do
                         search_params = params[:search]
 
+                        side = params[:side] == 'buy' ? 'sell' : 'buy'
                         search = ::P2pOffer.joins(:p2p_pair)
+                                            .select("p2p_offers.*", "p2p_offers.p2p_user_id as trader", "p2p_pairs.created_at as payment")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
+                                            .where(p2p_offers: {side: side})
                                             .ransack(search_params)
+
+                        # search = ::P2pUser.joins(:member, :p2p_offer)
+                        #                     .select("p2p_users.*","members.*","p2p_offers.*","p2p_offers.id as payment")
+                        #                     .where(p2p_offers: {p2p_pair_id: pairs[:id]})
+                        #                     .where(p2p_offers: {side: side})
+                        #                     .ransack(search_params)
                         
-                        present paginate(Rails.cache.fetch("markets_#{params}", expires_in: 600) { search.result.load.to_a })
+                        result = search.result.load
+                        data = result.each do |offer|
+                            offer[:trader] = trader(offer[:p2p_user_id])
+                            offer[:payment] = payment(offer[:id])
+                        end
+
+                        present paginate(Rails.cache.fetch("offers_#{params}", expires_in: 600) { data }), with: API::V1::Entities::Offer
                     end
 
                     desc 'Get Detail of Offer Trade Number'

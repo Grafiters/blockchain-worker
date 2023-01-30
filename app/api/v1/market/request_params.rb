@@ -26,9 +26,49 @@ module API
                     paymen = {
                         p2p_offer_id: ofid,
                         p2p_payment_user_id: data,
-                        state: 'default'
+                        state: 'active'
                     }
                 end
+
+                def p2p_sell_params(offer, side)
+                    params_mapping = {
+                        p2p_offer_id: offer[:id],
+                        maker_uid: current_user[:uid],
+                        taker_uid: receiver_p2p[:uid],
+                        amount: params[:amount],
+                        side: side
+                    }
+                end
+
+                def p2p_buy_params(offer, side)
+                    params_mapping = {
+                        p2p_offer_id: offer[:id],
+                        maker_uid: current_user[:uid],
+                        taker_uid: receiver_p2p[:uid],
+                        amount: params[:amount],
+                        state: 'waiting',
+                        first_approve_expire_at: Time.now,
+                        side: side,
+                        p2p_order_payment_id: params[:payment_order]
+                    }
+                end
+
+                def receiver_p2p
+                    offer = P2pOffer.find_by(offer_number: params[:offer_number])
+                    ::Member.joins(:p2p_user)
+                            .select("members.*")
+                            .find_by(p2p_users: {id: offer[:p2p_user_id]})
+                end
+
+                def feedback_params
+                    params_mapping = {
+                        p2p_user_id: p2p_user_id[:id],
+                        order_number: params[:order_number],
+                        comment: params[:comment],
+                        assessment: params[:assesment]
+                    }
+                end
+
                 private
 
                 def p2p_user_id

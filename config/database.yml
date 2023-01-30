@@ -11,7 +11,7 @@ default: &default
 
 development:
   <<: *default
-  database: testexchange_development
+  database: exchange
 
 test:
   <<: *default

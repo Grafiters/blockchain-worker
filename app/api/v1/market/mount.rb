@@ -9,8 +9,10 @@ module API
           before { set_ets_context! }
 
           mount API::V1::Market::Offer
+          mount API::V1::Market::Order
+          mount API::V1::Market::Feedback
         end
       end
     end
-  end
+end
   

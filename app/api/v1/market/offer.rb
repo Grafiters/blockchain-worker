@@ -19,14 +19,24 @@ module API
                                 desc: -> { V2::Entities::Market.documentation[:symbol] }
                     end
                     get "/" do
+                        user_authorize! :read, ::P2pOffer
                         search_params = params[:search]
 
+                        side = params[:side] == 'buy' ? 'sell' : 'buy'
                         search = ::P2pOffer.joins(:p2p_pair)
+                                            .select("p2p_offers.*", "p2p_offers.p2p_user_id as trader", "p2p_pairs.created_at as payment")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
+                                            .where(p2p_offers: {side: side})
                                             .ransack(search_params)
                         
-                        present paginate(Rails.cache.fetch("markets_#{params}", expires_in: 600) { search.result.load.to_a })
+                        result = search.result.load
+                        data = result.each do |offer|
+                            offer[:trader] = trader(offer[:p2p_user_id])
+                            offer[:payment] = payment(offer[:id])
+                        end
+
+                        present paginate(Rails.cache.fetch("offers_#{params}", expires_in: 600) { data }), with: API::V1::Entities::Offer
                     end
 
                     desc 'Create offer trade'
@@ -37,18 +47,20 @@ module API
 
                         create_payment = create_payment_offer(create_offer[:id])
 
-                        present :offer. create_offer
-                        present :payment. create_payment
+                        present :offer, create_offer
+                        present :payment, create_payment
                     end
 
                     get "/:offer_id" do
                         user_authorize! :read, ::P2pOffer
                         offer = ::P2pOffer.find_by(offer_number: params[:offer_id])
-                        payment = ::P2pOrderPayment.joins(:p2p_payment_user).select("p2p_order_payments.*", "p2p_payment_users.*").where(p2p_offer_id: offer[:id])
+                        payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
+                                                    .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
+                                                    .where(p2p_order_payments: {p2p_offer_id: offer[:id]})
 
                         present :offer, offer
                         present :payment, payment
-                    end 
+                    end
                 end
             end
         end
