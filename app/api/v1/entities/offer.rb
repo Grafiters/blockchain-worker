@@ -9,7 +9,7 @@ module API
                 :offer_number,
                 as: :offer_number,
                 documentation: {
-                    desc: 'Filter Fiat.',
+                    desc: 'Offer Number Trade.',
                     type: String
                 }
             )
@@ -86,7 +86,25 @@ module API
                 }
             )
 
-            expose :trader, using: API::V1::Entities::Trader
+            expose(
+                :sum_order,
+                as: :sum_order,
+                documentation: {
+                    desc: 'All Order From Post Offer',
+                    type: Integer
+                }
+            )
+
+            expose(
+                :persentage,
+                as: :persentage,
+                documentation: {
+                    desc: 'All Order From Post Offer',
+                    type: String
+                }
+            )
+
+            expose :member, as: :trader, using: API::V1::Entities::Trader
             expose :payment, using: API::V1::Entities::Payment
         end
       end

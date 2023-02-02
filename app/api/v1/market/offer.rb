@@ -27,7 +27,7 @@ module API
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
                         search = ::P2pOffer.joins(:p2p_pair)
-                                            .select("p2p_offers.*", "p2p_offers.p2p_user_id as trader", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
+                                            .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
@@ -35,8 +35,10 @@ module API
                         
                         result = search.result.load
                         data = result.each do |offer|
+                            offer[:sum_order] = sum_order(offer[:id])
+                            offer[:persentage] = persentage(offer[:id])
                             offer[:currency] = currency(offer[:currency])[:currency].upcase
-                            offer[:trader] = trader(offer[:p2p_user_id])
+                            offer[:member] = trader(offer[:p2p_user_id])
                             offer[:payment] = payment(offer[:id])
                         end
 
@@ -44,9 +46,11 @@ module API
                     end
 
                     desc 'Create offer trade'
+                        params do
+                            use :offer
+                        end
                     post do
                         user_authorize! :create, ::P2pOffer
-
                         create_offer = P2pOffer.create(build_params)
 
                         create_payment = create_payment_offer(create_offer[:id])

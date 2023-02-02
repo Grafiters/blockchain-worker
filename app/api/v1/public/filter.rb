@@ -3,9 +3,9 @@ module API
         module Public
             class Filter < Grape::API
                 namespace :fiats do
-                    desc 'Filter available fiat'
+                    desc 'Filter available fiat Currency'
                     params do
-                        optional :fiat,
+                        requires :fiat,
                                 type: String,
                                 desc: -> { V2::Entities::Market.documentation[:symbol] }
                         optional :ordering,

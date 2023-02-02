@@ -9,19 +9,25 @@ module API
                         # use :pagination
                         requires :fiat,
                                 type: String,
-                                desc: -> { V2::Entities::Market.documentation[:symbol] }
+                                desc: -> { V1::Entities::Fiat.documentation[:code] }
                         requires :currency,
                                 type: String,
-                                desc: -> { V2::Entities::Market.documentation[:symbol] }
+                                desc: -> { V1::Entities::Fiat.documentation[:currency] }
+                        requires :side,
+                                type: String,
+                                desc: 'Side Offer by Sell Or Buy'
+                        optional :amount,
+                                type: { value: Integer, message: 'market.order.non_integer_limit' }
                     end
                     get "/" do
+                        # payment = 
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                 .lt_any
                                                 .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
                         search = ::P2pOffer.joins(:p2p_pair)
-                                            .select("p2p_offers.*", "p2p_offers.p2p_user_id as trader", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
+                                            .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
@@ -29,8 +35,10 @@ module API
                         
                         result = search.result.load
                         data = result.each do |offer|
+                            offer[:sum_order] = sum_order(offer[:id])
+                            offer[:persentage] = persentage(offer[:id])
                             offer[:currency] = currency(offer[:currency])[:currency].upcase
-                            offer[:trader] = trader(offer[:p2p_user_id])
+                            offer[:member] = trader(offer[:p2p_user_id])
                             offer[:payment] = payment(offer[:id])
                         end
 

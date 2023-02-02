@@ -34,7 +34,7 @@ module API
       include ExceptionHandlers
 
       mount API::V1::Public::Mount       => :public
-      mount API::V1::Admin::Mount        => :Admin
+      mount API::V1::Admin::Mount        => :admin
       mount API::V1::Market::Mount       => :market
       mount API::V1::Account::Mount      => :account
 

@@ -9,15 +9,15 @@ module API
 
                     desc 'Get available fiat'
                     get "/" do
-                        order = ::P2pOrder.joins(:p2p_offer).select("p2p_orders.*", "p2p_offers.*").where(p2p_offer_id: current_p2p_user[:id])
+                        order = ::P2pOrder.joins(:p2p_offer).select("p2p_orders.*", "p2p_offers.*").where(p2p_orders: {p2p_user_id: current_p2p_user[:id]})
 
-                        present current_p2p_user
+                        present order
                     end
 
-                    desc 'Create new payment method for user p2p'
-                    post do
+                    # desc 'Create new payment method for user p2p'
+                    # post do
                         
-                    end
+                    # end
                 end
             end
         end

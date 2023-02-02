@@ -7,6 +7,20 @@ module API
             module RequestParams
                 extend ::Grape::API::Helpers
                 
+                params :order do
+                    requires :offer_number,
+                            type: String,
+                            desc: -> { V2::Entities::Offer.documentation[:offer_number] }
+                    requires :price,
+                            type: { value: BigDecimal, message: 'offer.order.non_decimal_price' },
+                            values: { value: -> (p){ p.try(:positive?) }, message: 'offer.order.non_positive_price' }
+                    requires :amount,
+                            type: { value: BigDecimal, message: 'offer.order.non_decimal_price' },
+                            values: { value: -> (p){ p.try(:positive?) }, message: 'offer.order.non_positive_price' }
+                    optional :payment_order,
+                            type: {value: Integer, message: 'offer.market.payment_invalid_value'}
+                end
+
                 def build_params
                     params_mapping = {
                         p2p_user_id: p2p_user_id[:id],
@@ -16,7 +30,7 @@ module API
                         min_order_amount: params[:min_order],
                         max_order_amount: params[:max_order],
                         side: params[:side],
-                        paymen_limit_time: params[:paymen_limit_time],
+                        paymen_limit_time: params[:payment_limit],
                         term_of_condition: params[:term_of_condition],
                         auto_replay: params[:auto_replay]
                     }

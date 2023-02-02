@@ -4,29 +4,14 @@
 module API
     module V1
       module Entities
-        class Trader < Base
-            expose(
-                :uid,
-                as: :uid,
-                documentation: {
-                    desc: 'Trader Uid.',
-                    type: String
-                }
-            )
-
-            expose :email,
-                    documentation: {
-                        type: String,
-                        desc: 'Trader Name'
-                    } do |member|
-                        member.email_data_masking
-                    end
+        class UserP2p < Base
+            expose :member, with: API::V2::Entities::Member
 
             expose(
-                :group,
-                as: :group,
+                :username,
+                as: :username,
                 documentation: {
-                    desc: 'Trader Group.',
+                    desc: 'Trader Username',
                     type: String
                 }
             )
@@ -39,6 +24,7 @@ module API
                     type: String
                 }
             )
+            
             expose(
                 :offers_count,
                 as: :offer,

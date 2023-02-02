@@ -22,6 +22,17 @@ module API
                                                     .where(p2p_order_payments: {p2p_offer_id: uid})
                 end
 
+                def sum_order(uid)
+                    ::P2pOrder.where(p2p_offer_id: uid).count
+                end
+
+                def persentage(uid)
+                    completed = ::P2pOrder.where(p2p_offer_id: uid).where(state: 'completed').count
+
+                    completed > 0 ? (completed * 100) / sum_order(uid) : 0
+                    # (completed / sum_order(uid)) * 100
+                end
+
                 def trader(uid)
                     ::Member.joins(:p2p_user).select("members.*","p2p_users.*").find_by(p2p_users: {id: uid})
                 end

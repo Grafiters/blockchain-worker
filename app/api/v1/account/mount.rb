@@ -8,6 +8,7 @@ module API
 
           mount API::V1::Account::Payment
           mount API::V1::Account::Order
+          mount API::V1::Account::User
         end
       end
     end

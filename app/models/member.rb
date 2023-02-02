@@ -124,6 +124,14 @@ class Member < ApplicationRecord
     pa
   end
 
+  def email_data_masking
+    if email.present?
+      email.downcase.sub(/(?<=[\w\d])[\w\d]+(?=[\w\d])/, '*****')
+    else
+      email
+    end
+  end
+
   private
 
   def downcase_email

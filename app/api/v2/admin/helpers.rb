@@ -53,7 +53,7 @@ module API
           end
 
           def lt_any
-            @build.merge!("min_order_amount_lt_any" => @params[:amount])
+            @build.merge!("min_order_amount_lteq" => @params[:amount])
             self
           end
         end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_30_041442) do
+ActiveRecord::Schema.define(version: 2023_02_01_063737) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -487,7 +487,6 @@ ActiveRecord::Schema.define(version: 2023_01_30_041442) do
     t.datetime "updated_at"
     t.index ["p2p_offer_id"], name: "index_p2p_order_payments_on_p2p_offer_id"
     t.index ["p2p_payment_user_id"], name: "index_p2p_order_payments_on_p2p_payment_user_id"
-    t.index ["p2p_payment_user_id"], name: "p2p_order_payments_user_id", unique: true
   end
 
   create_table "p2p_orders", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -564,6 +563,7 @@ ActiveRecord::Schema.define(version: 2023_01_30_041442) do
     t.datetime "banned_time"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string "username", limit: 50
     t.index ["member_id"], name: "index_p2p_users_on_member_id"
   end
 
