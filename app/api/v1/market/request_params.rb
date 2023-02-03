@@ -21,7 +21,7 @@ module API
                             type: {value: Integer, message: 'offer.market.payment_invalid_value'}
                 end
 
-                params :chat do
+                params :chats do
                     requires :offer_number,
                             type: String,
                             desc: -> { V1::Entities::Offer.documentation[:offer_number] }

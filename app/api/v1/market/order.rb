@@ -30,9 +30,6 @@ module API
                     end
 
                     desc 'Chat Order'
-                    params do
-                        use :chat
-                    end
                     post '/information_chat/:offer_number' do
                         order = ::P2pOrder.find_by(offer_number: params[:offer_number])
 
