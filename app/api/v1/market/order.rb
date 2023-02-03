@@ -24,7 +24,7 @@ module API
                             orders = ::P2pOrder.create(p2p_buy_params(offer, otype))
                         end
 
-                        chat = ::P2pChat.create(orders)
+                        chat = ::P2pChat.create(chat_params(orders))
 
                         present orders
                     end
