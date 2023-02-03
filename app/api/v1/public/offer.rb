@@ -18,11 +18,18 @@ module API
                                 desc: 'Side Offer by Sell Or Buy'
                         optional :amount,
                                 type: { value: Integer, message: 'market.order.non_integer_limit' }
+                        optional :max_amount,
+                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                        optional :min_price,
+                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                        optional :max_price,
+                                type: { value: Integer, message: 'market.order.non_integer_limit' }
                     end
                     get "/" do
                         # payment = 
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                 .lt_any
+                                                .with_range_amount
                                                 .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'

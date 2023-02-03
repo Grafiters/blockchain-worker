@@ -56,6 +56,12 @@ module API
             @build.merge!("min_order_amount_lteq" => @params[:amount])
             self
           end
+
+          def with_range_amount
+            @build.merge!("price_gteq" => @params[:min_price])
+            @build.merge!("price_lteq" => @params[:max_price])
+            self
+          end
         end
 
         class WalletOverviewBuilder

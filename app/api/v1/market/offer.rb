@@ -11,13 +11,24 @@ module API
                 namespace :trades do
                     desc 'Filter available fiat'
                     params do
-                        use :pagination
+                        # use :pagination
                         requires :fiat,
                                 type: String,
-                                desc: -> { V2::Entities::Market.documentation[:symbol] }
+                                desc: -> { V1::Entities::Fiat.documentation[:code] }
                         requires :currency,
                                 type: String,
-                                desc: -> { V2::Entities::Market.documentation[:symbol] }
+                                desc: -> { V1::Entities::Fiat.documentation[:currency] }
+                        requires :side,
+                                type: String,
+                                desc: 'Side Offer by Sell Or Buy'
+                        optional :amount,
+                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                        optional :max_amount,
+                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                        optional :min_price,
+                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                        optional :max_price,
+                                type: { value: Integer, message: 'market.order.non_integer_limit' }
                     end
                     get "/" do
                         user_authorize! :read, ::P2pOffer
