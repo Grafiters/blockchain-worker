@@ -47,6 +47,8 @@ module API
                                 chat[:user_uid] = 'You'
                             end
                         end
+
+                        present room
                     end
 
                     desc 'Detail P2p Order By Order Number'
