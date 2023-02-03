@@ -147,4 +147,31 @@ namespace :seed do
       end
     end
   end
+
+  desc 'Adds Fiat data config/seed/fiat.yml.'
+  task fiats: :environment do
+    P2pPair.transaction do
+      YAML.load_file(Rails.root.join('config/seed/fiat_currencies.yml')).each do |hash|
+        P2pPair.create!(hash)
+      end
+    end
+  end
+
+  desc 'Adds missing user to database defined at config/seed/p2p_offers.yml.'
+  task p2p_payment: :environment do
+    P2pPayment.transaction do
+      YAML.load_file(Rails.root.join('config/seed/payment.yml')).each do |hash|
+        P2pPayment.create!(hash)
+      end
+    end
+  end
+
+  desc 'Adds missing user to database defined at config/seed/p2p_offers.yml.'
+  task p2p_pairs: :environment do
+    P2pOffer.transaction do
+      YAML.load_file(Rails.root.join('config/seed/p2p_pairs.yml')).each do |hash|
+        P2pPair.create!(hash)
+      end
+    end
+  end
 end
