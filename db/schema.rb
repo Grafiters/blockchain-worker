@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_01_063737) do
+ActiveRecord::Schema.define(version: 2023_02_03_022724) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -441,12 +441,11 @@ ActiveRecord::Schema.define(version: 2023_02_01_063737) do
 
   create_table "p2p_chats", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "p2p_order_id"
-    t.integer "p2p_user_id"
     t.text "chat", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string "user_uid", limit: 50, null: false
     t.index ["p2p_order_id"], name: "index_p2p_orders_on_p2p_order_id"
-    t.index ["p2p_user_id"], name: "index_p2p_orders_on_p2p_user_id"
   end
 
   create_table "p2p_offers", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

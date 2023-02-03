@@ -10,7 +10,7 @@ module API
                 params :order do
                     requires :offer_number,
                             type: String,
-                            desc: -> { V2::Entities::Offer.documentation[:offer_number] }
+                            desc: -> { V1::Entities::Offer.documentation[:offer_number] }
                     requires :price,
                             type: { value: BigDecimal, message: 'offer.order.non_decimal_price' },
                             values: { value: -> (p){ p.try(:positive?) }, message: 'offer.order.non_positive_price' }
@@ -19,6 +19,14 @@ module API
                             values: { value: -> (p){ p.try(:positive?) }, message: 'offer.order.non_positive_price' }
                     optional :payment_order,
                             type: {value: Integer, message: 'offer.market.payment_invalid_value'}
+                end
+
+                params :chat do
+                    requires :offer_number,
+                            type: String,
+                            desc: -> { V1::Entities::Offer.documentation[:offer_number] }
+                    requires :message,
+                            type: {value: String, message: 'order.market.chat_must_be_exists'}
                 end
 
                 def build_params
@@ -69,6 +77,14 @@ module API
                     }
                 end
 
+                def chat_params(order)
+                    params_mapping = {
+                        p2p_order_id: order[:id],
+                        p2p_user_id: p2p_user_id[:uid],
+                        chat: params[:message].present? ? params[:message] : 'Mohon Kirim Bukti tranfer'
+                    }
+                end
+
                 def receiver_p2p
                     offer = P2pOffer.find_by(offer_number: params[:offer_number])
                     ::Member.joins(:p2p_user)
@@ -85,11 +101,11 @@ module API
                     }
                 end
 
-                private
-
                 def p2p_user_id
-                    ::P2pUser.joins(:member).find_by(members: {uid: current_user.uid})
+                    ::P2pUser.joins(:member).select("p2p_users.*","members.uid as uid").find_by(members: {uid: current_user.uid})
                 end
+
+                private                
 
                 def p2p_pairs
                     ::P2pPair.find_by({fiat: params[:fiat], currency: params[:currency]})

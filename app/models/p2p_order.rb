@@ -1,6 +1,7 @@
 class P2pOrder < ApplicationRecord
     has_many :p2p_order_payment, dependent: :destroy
     has_many :p2p_order_feedback, class_name: 'P2pOrderFeedback', foreign_key: :order_number, primary_key: :order_number
+    has_many :p2p_chat, dependent: :destroy
 
     belongs_to :p2p_offer, required: true
 

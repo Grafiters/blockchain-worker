@@ -24,7 +24,29 @@ module API
                             orders = ::P2pOrder.create(p2p_buy_params(offer, otype))
                         end
 
+                        chat = ::P2pChat.create(orders)
+
                         present orders
+                    end
+
+                    desc 'Chat Order'
+                    params do
+                        use :chat
+                    end
+                    post '/information_chat/:offer_number' do
+                        order = ::P2pOrder.find_by(offer_number: params[:offer_number])
+
+                        chat = ::P2pChat.create(chat_params(order))
+                        present chat
+                    end
+
+                    get '/information_chat/:offer_number' do
+                        room = ::P2pChat.joins(:p2p_order).where(p2p_orders: { offer_number: params[:offer_number] })
+                        room.each do |chat|
+                            if chat[:user_uid] == user_uid
+                                chat[:user_uid] = 'You'
+                            end
+                        end
                     end
 
                     desc 'Detail P2p Order By Order Number'
