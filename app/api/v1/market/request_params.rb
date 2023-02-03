@@ -105,7 +105,7 @@ module API
                     ::P2pUser.joins(:member).select("p2p_users.*","members.uid as uid").find_by(members: {uid: current_user.uid})
                 end
 
-                private                
+                private
 
                 def p2p_pairs
                     ::P2pPair.find_by({fiat: params[:fiat], currency: params[:currency]})
