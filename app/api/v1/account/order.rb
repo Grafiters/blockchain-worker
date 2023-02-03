@@ -13,11 +13,6 @@ module API
 
                         present order
                     end
-
-                    # desc 'Create new payment method for user p2p'
-                    # post do
-                        
-                    # end
                 end
             end
         end
