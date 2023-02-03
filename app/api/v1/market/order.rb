@@ -11,6 +11,10 @@ module API
                         use :order
                     end
                     post '/' do
+                        if p2p_user_auth.blank?
+                            error!({ errors: ['p2p_user.user.accont_p2p_doesnt_exists'] }, 422)
+                        end
+
                         if current_user == receiver_p2p
                             error!({ errors: ['p2p_order.order.can_not_order_to_yourself'] }, 422)
                         end

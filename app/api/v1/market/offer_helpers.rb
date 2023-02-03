@@ -4,6 +4,10 @@ module API
     module V1
       module Market
         module OfferHelpers
+          def p2p_user_auth
+            ::P2pUser.find_by(id: current_user[:id])
+          end
+
           def create_payment_offer(ofid)
               params[:payment].each do |payment|
                   ::P2pOrderPayment.create(payment_params(ofid, payment))

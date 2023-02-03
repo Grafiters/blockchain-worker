@@ -62,6 +62,11 @@ module API
                         end
                     post do
                         user_authorize! :create, ::P2pOffer
+
+                        if p2p_user_auth.blank?
+                            error!({ errors: ['p2p_user.user.accont_p2p_doesnt_exists'] }, 422)
+                        end
+
                         create_offer = P2pOffer.create(build_params)
 
                         create_payment = create_payment_offer(create_offer[:id])
