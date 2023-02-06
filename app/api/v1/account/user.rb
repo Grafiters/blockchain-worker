@@ -12,6 +12,10 @@ module API
                         user_authorize! :read, ::P2pUser
                         member = ::P2pUser.joins(:member).find_by(members: {uid: current_user[:uid]})
 
+                        if member.blank?
+                            member = p2p_user
+                        end
+
                         present member, with: API::V1::Entities::UserWithMember, masking: true
                     end
 

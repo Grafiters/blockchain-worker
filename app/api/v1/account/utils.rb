@@ -43,6 +43,20 @@ module API
                       email
                     end
                 end
+
+                def p2p_user
+                    # jwt.payload provided by rack-jwt
+                    if request.env.key?('jwt.payload')
+                      begin
+                        ::P2pUser.from_payload(current_user)
+                      # Handle race conditions when creating member record.
+                      # We do not handle race condition for update operations.
+                      # http://api.rubyonrails.org/classes/ActiveRecord/Relation.html#method-i-find_or_create_by
+                      rescue ActiveRecord::RecordNotUnique
+                        retry
+                      end
+                    end
+                end
             end
         end
     end
