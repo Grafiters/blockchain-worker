@@ -1,6 +1,6 @@
 class CreateP2PTable < ActiveRecord::Migration[4.2]
   def up
-    create_table  "fiat", force: :cascade do |t|
+    create_table  "fiats", force: :cascade do |t|
       t.string    "name",      limit: 50,  null: false
       t.string    "symbol",    limit: 50,  null: false
       t.string    "symbol",    limit: 25,  null: false
@@ -38,7 +38,7 @@ class CreateP2PTable < ActiveRecord::Migration[4.2]
       t.string    "symbol",    limit: 50,   null: false
       t.string    "logo_url",  limit: 50,   null: false
       t.string    "state",     limit: 10,   null: false
-      t.string    "type",      limit: 50,   null: false
+      t.string    "tipe",      limit: 50,   null: false
       t.datetime  "deleted_at"
       t.datetime  "created_at"
       t.datetime  "updated_at"
@@ -118,14 +118,14 @@ class CreateP2PTable < ActiveRecord::Migration[4.2]
     add_index "p2p_chats", ["p2p_order_id"], name: "index_p2p_orders_on_p2p_order_id", using: :btree
     add_index "p2p_chats", ["p2p_user_id"], name: "index_p2p_orders_on_p2p_user_id", using: :btree
 
-    create_table  "p2p_order_feedback", force: :cascade do |t|
+    create_table  "p2p_order_feedbacks", force: :cascade do |t|
       t.integer   "p2p_user_id",      limit: 4
       t.text      "comment",          null: false
       t.string    "assessment",       limit: 25,  null: false
       t.datetime  "created_at"
       t.datetime  "updated_at"
     end
-    add_index "p2p_order_feedback", ["p2p_user_id"], name: "index_p2p_order_feedback_on_p2p_user_id", using: :btree
+    add_index "p2p_order_feedbacks", ["p2p_user_id"], name: "index_p2p_order_feedback_on_p2p_user_id", using: :btree
 
     def down
       raise ActiveRecord::IrreversibleMigration, "The initial migration is not revertable"
