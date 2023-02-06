@@ -31,7 +31,6 @@ module API
                                 type: { value: Integer, message: 'market.order.non_integer_limit' }
                     end
                     get "/" do
-                        user_authorize! :read, ::P2pOffer
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                 .lt_any
                                                 .build
@@ -61,8 +60,6 @@ module API
                             use :offer
                         end
                     post do
-                        user_authorize! :create, ::P2pOffer
-
                         if p2p_user_auth.blank?
                             error!({ errors: ['p2p_user.user.accont_p2p_doesnt_exists'] }, 422)
                         end

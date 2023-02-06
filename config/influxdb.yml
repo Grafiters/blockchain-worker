@@ -1,12 +1,12 @@
 default: &default
-  host: <%= ENV.fetch("INFLUXDB_HOST", "192.168.1.100").split(',') %>
+  host: <%= ENV.fetch("INFLUXDB_HOST", "127.0.0.1").split(',') %>
   port: <%= ENV.fetch("INFLUXDB_PORT", 8086) %>
   username: <%= ENV.fetch("INFLUXDB_USER", "root") %>
   password: <%= ENV.fetch("INFLUXDB_PASS", "root") %>
 
 development:
   <<: *default
-  database: nusaexchange_exchange_production
+  database: peatio_development
 
 test:
   <<: *default
