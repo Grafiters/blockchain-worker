@@ -89,7 +89,7 @@ module API
                    values: { value: -> (v) { Member.exists?(uid: v) }, message: 'admin.deposit.user_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:uid][:desc] }
           requires :currency,
-                   values: { value: -> { Currency.fiats.codes(bothcase: true) }, message: 'admin.deposit.currency_doesnt_exist' },
+                   values: { value: -> { Currency.coins.codes(bothcase: true) }, message: 'admin.deposit.currency_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:currency][:desc] }
           requires :amount,
                    type: { value: BigDecimal, message: 'admin.deposit.non_decimal_amount' },
@@ -98,13 +98,13 @@ module API
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:tid][:desc] }
         end
         post '/deposits/new' do
-          admin_authorize! :create, ::Deposits::Fiat
+          admin_authorize! :create, ::Deposits::Coin
 
           declared_params = declared(params, include_missing: false)
           member   = Member.find_by(uid: declared_params[:uid])
           currency = Currency.find(declared_params[:currency])
           data     = { member: member, currency: currency }.merge!(declared_params.slice(:amount, :tid))
-          deposit  = ::Deposits::Fiat.new(data)
+          deposit  = ::Deposits::Coin.new(data)
 
           if deposit.save
             present deposit, with: API::V2::Admin::Entities::Deposit
