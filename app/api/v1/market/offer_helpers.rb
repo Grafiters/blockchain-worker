@@ -5,7 +5,7 @@ module API
       module Market
         module OfferHelpers
           def p2p_user_auth
-            ::P2pUser.find_by(id: current_user[:id])
+            ::P2pUser.find_by(member_id: current_user[:id])
           end
 
           def create_payment_offer(ofid)

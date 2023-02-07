@@ -7,6 +7,10 @@ module API
             module Utils
                 extend ::Grape::API::Helpers
                 
+                def fiat(uid)
+                    ::P2pOffer.find_by(id: uid)
+                end
+
                 def current_p2p_user
                     ::P2pUser.joins(:member).find_by(members: {uid: current_user[:uid]})
                 end

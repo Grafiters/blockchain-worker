@@ -2,9 +2,12 @@ module API
     module V1
         module Market
             class Order < Grape::API
+                helpers ::API::V1::Helpers
                 helpers ::API::V1::Public::Helpers
                 helpers ::API::V1::Admin::Helpers
+                helpers ::API::V1::Market::NamedParams
                 helpers ::API::V1::Market::RequestParams
+                helpers ::API::V1::Market::OfferHelpers
                 namespace :orders do
                     desc 'Create Order by P2p Offer'
                     params do
@@ -12,7 +15,7 @@ module API
                     end
                     post '/' do
                         if p2p_user_auth.blank?
-                            error!({ errors: ['p2p_user.user.accont_p2p_doesnt_exists'] }, 422)
+                            error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
                         end
 
                         if current_user == receiver_p2p
@@ -72,14 +75,10 @@ module API
                         offer[:currency] = currency(offer[:currency])[:currency].upcase
 
                         present :order, order, with: API::V1::Entities::Order
-                        present :offer, offer, with: API::V1::Entities::Offer
+                        present :offer, offer, with: API::V1::Market::Entities::Offer
                     end
 
-                    desc 'Confirmation Target Payment step 1'
-                    params do
-                        requires :payment_method,
-                                type: {value: Integer, message: 'offer.market.payment_method_invalid_value'}
-                    end
+                    desc 'Confirmation Target Payment final step'
                     put '/confirm/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
                         if order[:p2p_order_payment_id].blank?
@@ -90,17 +89,21 @@ module API
                             error!({ errors: ['p2p_order.order.already_completed_process'] }, 422)
                         end
 
-                        state = order[:side] == 'sell' ? 'completed' : 'success'
+                        state = 'success'
 
                         order.update({state: state, aproved_by: order[:maker_uid], second_approve_expire_at: Time.now})
 
                         present order
                     end
 
-                    desc 'Confirmation Target Payment final step'
+                    desc 'Confirmation Target Payment step 1'
+                    params do
+                        requires :payment_method,
+                                type: {value: Integer, message: 'offer.market.payment_method_invalid_value'}
+                    end
                     put '/payment_confirm/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
-                        if order.present?
+                        if order.blank?
                             error!({ errors: ['p2p_order.order.can_not_update_data_not_exists'] }, 422)
                         end
 
@@ -108,14 +111,14 @@ module API
                             error!({ errors: ['p2p_order.order.already_completed_process'] }, 422)
                         end
 
-                        order.update({state: "completed", p2p_order_payment_id: params[:payment_method], first_approve_expire_at: Time.now})
+                        order.update({p2p_order_payment_id: params[:payment_method], first_approve_expire_at: Time.now})
                         present order
                     end
 
                     desc 'Cancel Order of Offer'
                     put '/cancel_order/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
-                        if order[:state] == "completed" || order[:state] == "success"
+                        if order[:state] == "success"
                             error!({ errors: ['p2p_order.order.success_can_not_canceled_order'] }, 422)
                         end
 

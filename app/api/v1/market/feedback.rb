@@ -10,9 +10,9 @@ module API
 
                 namespace :feedback do
                     desc 'desc all Feedback on Order'
-                    get do
+                    get '/:order_number' do
                         present paginate(Rails.cache.fetch("trading_fees_#{params}", expires_in: 600) { 
-                            ::P2pOrderFeedback.where(p2p_user_id: p2p_user_id[:id])
+                            ::P2pOrderFeedback.where(order_number: params[:order_number])
                          })
                     end
 

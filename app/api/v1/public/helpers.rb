@@ -30,7 +30,6 @@ module API
                     completed = ::P2pOrder.where(p2p_offer_id: uid).where(state: 'completed').count
 
                     completed > 0 ? (completed * 100) / sum_order(uid) : 0
-                    # (completed / sum_order(uid)) * 100
                 end
 
                 def trader(uid)
