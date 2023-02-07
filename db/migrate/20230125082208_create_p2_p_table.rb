@@ -36,7 +36,7 @@ class CreateP2PTable < ActiveRecord::Migration[4.2]
       t.integer   "fiat_id",   limit: 4,    null: false
       t.string    "name",      limit: 50,   null: false
       t.string    "symbol",    limit: 50,   null: false
-      t.string    "logo_url",  limit: 50,   null: false
+      t.string    "logo_url",  limit: 256,   null: false
       t.string    "state",     limit: 10,   null: false
       t.string    "tipe",      limit: 50,   null: false
       t.datetime  "deleted_at"
