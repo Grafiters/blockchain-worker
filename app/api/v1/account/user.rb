@@ -29,9 +29,9 @@ module API
                         user = ::P2pUser.find_by(member_id: current_user[:id])
                         date = (Time.now - user.updated_at) / 86400
 
-                        if date < 356 && user[:updated_at] != user[:created_at]
-                            error!({ errors: ['account.users.username_limit_change'] }, 422)
-                        end
+                        # if date < 356 && user[:updated_at] != user[:created_at]
+                        #     error!({ errors: ['account.users.username_limit_change'] }, 422)
+                        # end
 
                         user.update(username: params[:username])
 
