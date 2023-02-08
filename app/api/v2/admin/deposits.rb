@@ -89,7 +89,7 @@ module API
                    values: { value: -> (v) { Member.exists?(uid: v) }, message: 'admin.deposit.user_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:uid][:desc] }
           requires :currency,
-                   values: { value: -> { Currency.coins.codes(bothcase: true) }, message: 'admin.deposit.currency_doesnt_exist' },
+                   values: { value: -> { Currency.fiats.codes(bothcase: true) }, message: 'admin.deposit.currency_doesnt_exist' },
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:currency][:desc] }
           requires :amount,
                    type: { value: BigDecimal, message: 'admin.deposit.non_decimal_amount' },
