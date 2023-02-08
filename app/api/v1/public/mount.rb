@@ -9,8 +9,9 @@ module API
           mount API::V1::Public::Fiat
           mount API::V1::Public::Filter
           mount API::V1::Public::Offer
+          mount API::V1::Public::Payment
         end
       end
     end
-  end
+end
   
