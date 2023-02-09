@@ -52,6 +52,11 @@ module API
             self
           end
 
+          def cont_data(*keys)
+            keys.each { |k| @build.merge!("#{k}_cont" => @params[key]) }
+            self
+          end
+
           def lt_any
             @build.merge!("min_order_amount_lteq" => @params[:amount])
             self
