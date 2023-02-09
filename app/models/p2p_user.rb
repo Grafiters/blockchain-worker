@@ -21,4 +21,38 @@ class P2pUser < ApplicationRecord
             payload.slice(:id,)
         end
     end
+
+    def positif_feedback
+      feedback = ::P2pOrder.joins(:p2p_order_feedback).where(p2p_orders: {p2p_user_id: id})
+
+      stats(feedback)
+    end
+
+    def trade
+      trade = ::P2pOrder.joins(:p2p_offer)
+              .where('(p2p_orders.p2p_user_id = ? AND p2p_orders.side = "buy")
+                          OR
+                      (p2p_offers.p2p_user_id = ? AND p2p_orders.side = "sell")', id, id)
+      
+      trade_stats(trade)
+    end
+
+    def trade_stats(data)
+      state = 'completed'
+      {
+        total: data.count,
+        mount_trade: data.count,
+        completed_rate: "#{(data.where(state: state).count/data.count)*100}",
+        release_time: "00:45:00",
+        pay_time: "00:45:00"
+      }
+    end
+
+    def stats(data)
+      {
+        total: data.count,
+        positif: data.where(p2p_order_feedbacks: {assessment: 'positif'}).count,
+        negatif: data.where(p2p_order_feedbacks: {assessment: 'negatif'}).count
+      }
+    end
 end

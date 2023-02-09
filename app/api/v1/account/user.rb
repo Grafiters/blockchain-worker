@@ -16,7 +16,7 @@ module API
                             member = p2p_user
                         end
 
-                        present member, with: API::V1::Entities::UserWithMember, masking: true
+                        present member, with: API::V1::Account::Entities::Stats, masking: true
                     end
 
                     desc 'Create new payment method for user p2p'
@@ -45,12 +45,9 @@ module API
                                 values: { value: %w(positif negatif), message: 'feedback.users.invalid_assesment' }
                     end
                     get '/feedback' do
-                        user_authorize! :read, ::P2pOrderFeedback
-                        member = ::P2pUser.joins(:member).find_by(members: {uid: current_user[:uid]})
-
-                        feedback = ::P2pOrderFeedback.joins(p2p_order: :p2p_offer)
+                        feedback = ::P2pOrder.joins(:p2p_offer, :p2p_order_feedback)
                                                     .select("p2p_order_feedbacks.*","p2p_orders.created_at as p2p_start","p2p_orders.updated_at as p2p_end","p2p_order_feedbacks.p2p_user_id as member", "p2p_orders.p2p_order_payment_id as payment", "p2p_orders.first_approve_expire_at as payment_limit")
-                                                    .where(p2p_offers: {p2p_user_id: member[:id]})
+                                                    .where(p2p_offers: {p2p_user_id: p2p_user[:id]})
 
                         feedback.each do |feed |
                             feed[:payment] = payments(feed[:payment])

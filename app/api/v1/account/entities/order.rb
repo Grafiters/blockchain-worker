@@ -26,36 +26,34 @@ module API
                     }
                 )
 
-                expose(
-                    :fiat,
-                    as: :fiat,
+                expose :fiat,
                     documentation: {
                         desc: 'Order Number.',
                         type: String
-                    }
-                )
-    
-                expose(
-                    :maker_uid,
-                    as: :maker_uid,
+                    } do |p2p_order|
+                        p2p_order.fiat_logo
+                    end
+
+                expose :fiat_amount,
                     documentation: {
                         desc: 'Filter Fiat.',
                         type: String
-                    }
-                )
-    
-                expose(
-                    :taker_uid,
-                    as: :taker_uid,
-                    documentation: {
-                        desc: 'Filter Fiat.',
-                        type: String
-                    }
-                )
+                    } do |p2p_order|
+                        p2p_order.fiat_amounts
+                    end
     
                 expose(
                     :amount,
                     as: :amount,
+                    documentation: {
+                        desc: 'Filter Fiat.',
+                        type: String
+                    }
+                )
+
+                expose(
+                    :price,
+                    as: :price,
                     documentation: {
                         desc: 'Filter Fiat.',
                         type: String
@@ -79,25 +77,15 @@ module API
                         type: String
                     }
                 )
-
-                expose(
-                    :min_order_amount,
-                    as: :min_order_amount,
-                    documentation: {
-                        desc: 'Order Number.',
-                        type: String
-                    }
-                )
-
-                expose(
-                    :max_order_amount,
-                    as: :max_order_amount,
-                    documentation: {
-                        desc: 'Order Number.',
-                        type: String
-                    }
-                )
     
+                expose :trades,
+                        documentation: {
+                            type: String,
+                            desc: 'Trades Order.'
+                        } do |p2p_order|
+                            p2p_order.trades
+                        end
+
                 expose(
                     :state,
                     as: :state,
