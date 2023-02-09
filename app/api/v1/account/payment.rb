@@ -34,6 +34,18 @@ module API
 
                         present payment
                     end
+
+                    post "/update/:payment" do
+                        if payment_exists.blank?
+                            error!({ errors: ['p2p_user.payment_user.payment_user_does_not_exists'] }, 422)
+                        end
+
+                        payement = ::P2pPaymentUser.find_by(id: params[:payment])
+
+                        payment = payement.update(update_params(payement))
+
+                        present :succes, ['p2p_user.payment_user.updated']
+                    end
                 end
             end
         end
