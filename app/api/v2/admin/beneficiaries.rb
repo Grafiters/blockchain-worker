@@ -23,7 +23,7 @@ module API
                      type: { value: String, message: 'admin.beneficiary.invalid_blockchain_key' },
                      desc: 'Blockchain key of the requested beneficiary'
             optional :data,
-                     type: { value: JSON, message: 'account.beneficiary.non_json_data' },
+                     type: { value: JSON, message: 'admin.beneficiary.non_json_data' },
                      allow_blank: false,
                      desc: 'Beneficiary data in JSON format'
             optional :state,
