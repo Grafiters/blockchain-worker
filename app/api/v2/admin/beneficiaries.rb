@@ -39,11 +39,10 @@ module API
             admin_authorize! :read, ::Beneficiary
 
             ransack_params = Helpers::RansackBuilder.new(params)
-                                                    .eq(:id, :blockchain_key)
+                                                    .eq(:id, :blockchain_key, :data)
                                                     .in(:state)
                                                     .translate_in(currency: :currency_id)
                                                     .translate(uid: :member_uid)
-                                                    .cont_data(:data)
                                                     .build
 
             search = Beneficiary.ransack(ransack_params)

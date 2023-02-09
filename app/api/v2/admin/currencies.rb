@@ -58,12 +58,15 @@ module API
           optional :status,
                    values: { value: -> { ::Currency::STATES }, message: 'admin.currency.invalid_status'},
                    desc: -> { API::V2::Admin::Entities::Currency.documentation[:status][:desc] }
+          optional :name,
+                  type: String,
+                  desc: 'Name Of Currency'
         end
         get '/currencies' do
           admin_authorize! :read, ::Currency
 
           ransack_params = Helpers::RansackBuilder.new(params)
-            .eq(:type, :status)
+            .eq(:type, :status, :name)
             .with_daterange
             .build
 
