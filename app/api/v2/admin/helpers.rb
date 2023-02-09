@@ -53,7 +53,7 @@ module API
           end
 
           def cont_data(*keys)
-            keys.each { |k| @build.merge!("#{k}_cont" => @params[key]) }
+            keys.each { |k| @build.merge!("#{k}_cont" => @params[k]) }
             self
           end
         end
