@@ -109,6 +109,11 @@ class Market < ApplicationRecord
               less_than_or_equal_to: ->(_m) { FUNDS_PRECISION }
             }
 
+    validates :total_precision,
+            numericality: {
+              less_than_or_equal_to: 0
+            }
+
   validates :amount_precision,
             numericality: {
               less_than_or_equal_to: ->(m) { FUNDS_PRECISION - m.price_precision }

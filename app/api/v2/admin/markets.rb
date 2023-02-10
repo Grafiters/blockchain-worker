@@ -22,6 +22,12 @@ module API
               default: 4,
               desc: -> { API::V2::Admin::Entities::Market.documentation[:price_precision][:desc] }
             },
+            total_precision: {
+              type: { value: Integer, message: 'admin.market.non_integer_total_precision' },
+              values: { value: -> (p){ p && p >= 0 }, message: 'admin.market.invalid_total_precision' },
+              default: 4,
+              desc: -> { API::V2::Admin::Entities::Market.documentation[:total_precision][:desc] }
+            },
             max_price: {
               type: { value: BigDecimal, message: 'admin.market.non_decimal_max_price' },
               values: { value: -> (p){ p >= 0 }, message: 'admin.market.invalid_max_price' },
