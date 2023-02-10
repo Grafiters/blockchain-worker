@@ -45,9 +45,11 @@ module API
                                 values: { value: %w(positif negatif), message: 'feedback.users.invalid_assesment' }
                     end
                     get '/feedback' do
-                        feedback = ::P2pOrder.joins(:p2p_offer, :p2p_order_feedback)
-                                                    .select("p2p_order_feedbacks.*","p2p_orders.created_at as p2p_start","p2p_orders.updated_at as p2p_end","p2p_order_feedbacks.p2p_user_id as member", "p2p_orders.p2p_order_payment_id as payment", "p2p_orders.first_approve_expire_at as payment_limit")
-                                                    .where(p2p_offers: {p2p_user_id: p2p_user[:id]})
+                        feedback = ::P2pOrder.joins(:p2p_order_feedback)
+                                            .select("p2p_order_feedbacks.*", "p2p_orders.p2p_order_payment_id as payment", "p2p_orders.p2p_user_id as member",
+                                            "p2p_orders.created_at as p2p_start","p2p_orders.updated_at as p2p_end", "p2p_orders.first_approve_expire_at as payment_limit")
+                                            .where(p2p_orders: {p2p_user_id: p2p_user[:id]})
+                                            .where.not(p2p_orders: {state: 'prepare'})
 
                         feedback.each do |feed |
                             feed[:payment] = payments(feed[:payment])
@@ -56,7 +58,6 @@ module API
                         end
 
                         present feedback, with: API::V1::Entities::Feedback
-                        # present :result, paginate(Rails.cache.fetch("feedbacks_#{params}", expires_in: 600) { feedback }), with: API::V1::Entities::Feedback
                     end
                 end
             end
