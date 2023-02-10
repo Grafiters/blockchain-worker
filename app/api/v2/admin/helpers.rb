@@ -67,6 +67,11 @@ module API
             @build.merge!("price_lteq" => @params[:max_price])
             self
           end
+
+          def address_eq(*keys)
+            keys.each { |k| @build.merge!("#data_eq" => @params[k]) }
+            self
+          end
         end
 
         class WalletOverviewBuilder

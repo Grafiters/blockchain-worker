@@ -37,10 +37,10 @@ module API
                                     "p2p_offers.price", "p2p_offers.price as fiat_amount")
                             .where('(p2p_orders.p2p_user_id = ? AND p2p_orders.side = "buy")
                                         OR
-                                    (p2p_offers.p2p_user_id = ? AND p2p_orders.side = "sell")', p2p_user[:id], p2p_user[:id])
+                                    (p2p_offers.p2p_user_id = ? AND p2p_offers.side = "sell")', p2p_user[:id], p2p_user[:id])
                             .ransack(ransack_params)
 
-                        present order.result.load.to_a, with: API::V1::Account::Entities::Order
+                        present order.result.load.to_a, with: API::V1::Account::Entities::Order, current_user: p2p_user[:id]
                     end
                 end
             end
