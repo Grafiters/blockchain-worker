@@ -38,7 +38,6 @@ module API
                             .where('(p2p_orders.p2p_user_id = ? AND p2p_orders.side = "buy")
                                         OR
                                     (p2p_offers.p2p_user_id = ? AND p2p_orders.side = "sell")', p2p_user[:id], p2p_user[:id])
-                            .where('p2p_pairs.fiat = ?', params[:fiat])
                             .ransack(ransack_params)
 
                         present order.result.load.to_a, with: API::V1::Account::Entities::Order
