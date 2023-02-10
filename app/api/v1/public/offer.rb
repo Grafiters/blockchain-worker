@@ -26,7 +26,6 @@ module API
                                 type: { value: Integer, message: 'market.order.non_integer_limit' }
                     end
                     get "/" do
-                        # payment = 
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                 .lt_any
                                                 .with_range_amount
@@ -49,7 +48,7 @@ module API
                             offer[:payment] = payment(offer[:id])
                         end
 
-                        present paginate(Rails.cache.fetch("offers_#{params}", expires_in: 600) { data }), with: API::V1::Entities::Offer
+                        present data, with: API::V1::Entities::Offer
                     end
 
                     desc 'Get Detail of Offer Trade Number'
