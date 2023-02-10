@@ -51,6 +51,11 @@ module API
             keys.each { |k| @build.merge!("#{k}_eq" => @params[k]) }
             self
           end
+
+          def address_eq(*keys)
+            keys.each { |k| @build.merge!("#data_eq" => @params[k]) }
+            self
+          end
         end
 
         class WalletOverviewBuilder

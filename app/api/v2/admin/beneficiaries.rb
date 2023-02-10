@@ -38,8 +38,11 @@ module API
           get do
             admin_authorize! :read, ::Beneficiary
 
+            address = params[:data][:address]
+            
             ransack_params = Helpers::RansackBuilder.new(params)
-                                                    .eq(:id, :blockchain_key, :data)
+                                                    .eq(:id, :blockchain_key)
+                                                    .address_eq(address)
                                                     .in(:state)
                                                     .translate_in(currency: :currency_id)
                                                     .translate(uid: :member_uid)
