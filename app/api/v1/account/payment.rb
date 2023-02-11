@@ -34,7 +34,15 @@ module API
 
                         present payment
                     end
+                    get "/:symbol" do
+                        if params[:symbol].blank?
+                            errors!({errors: ["2pp_user.payment_user.payment_method_invalid_data"]}, 422)
+                        end
 
+                        # name = params[:bank].split("-")
+                        bank_name = ::P2pPayment.find_by(symbol: params[:symbol])
+                        present bank_name
+                    end
                     post "/update/:payment" do
                         if payment_exists.blank?
                             error!({ errors: ['p2p_user.payment_user.payment_user_does_not_exists'] }, 422)

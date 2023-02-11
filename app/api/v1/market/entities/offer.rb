@@ -32,6 +32,15 @@ module API
                             type: String
                         }
                     )
+
+                    expose(
+                        :currency,
+                        as: :fiat,
+                        documentation: {
+                            desc: 'Filter Fiat.',
+                            type: String
+                        }
+                    )
         
                     expose(
                         :side,
