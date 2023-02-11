@@ -74,12 +74,20 @@ module API
 
                     get "/:offer_id" do
                         offer = ::P2pOffer.find_by(offer_number: params[:offer_id])
+
+                        if offer[:side] == 'sell'
+                            all_payment = ::P2pPayment.joins(:fiat).where(fiats: {name: 'IDR'})
+                        end
+
                         payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
                                                     .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
                                                     .where(p2p_order_payments: {p2p_offer_id: offer[:id]})
 
                         present :offer, offer
                         present :payment, payment
+                        if offer[:side] == 'sell'
+                            present :all_payment, all_payment
+                        end
                     end
                 end
             end

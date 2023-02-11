@@ -8,6 +8,8 @@ module API
                 helpers ::API::V1::Market::NamedParams
                 helpers ::API::V1::Market::RequestParams
                 helpers ::API::V1::Market::OfferHelpers
+                helpers ::API::V1::Market::OrderHelpers
+
                 namespace :orders do
                     desc 'Create Order by P2p Offer'
                     params do
@@ -15,7 +17,7 @@ module API
                     end
                     post '/' do
                         if p2p_user_auth.blank?
-                            error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
+                            error!({ errors: ['p2p_user.user.accont_p2p_doesnt_exists'] }, 422)
                         end
 
                         if current_user == receiver_p2p
@@ -35,6 +37,30 @@ module API
 
                         present orders
                     end
+                    # post '/' do
+                    #     if p2p_user_auth.blank?
+                    #         error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
+                    #     end
+
+                    #     if current_user == receiver_p2p
+                    #         error!({ errors: ['p2p_order.order.can_not_order_to_yourself'] }, 422)
+                    #     end
+                        
+                    #     offer = ::P2pOffer.find_by(offer_number: params[:offer_number])
+                    #     otype = offer[:side] == 'sell' ? 'buy' : 'sell'
+                        
+                    #     if otype == 'buy'
+                    #         # present ::P2pOrder.submit_order(p2p_sell_params(offer, otype))
+                    #         orders = create_order(p2p_sell_params(offer, otype))
+                    #     else
+                    #         # present ::P2pOrder.submit_order(p2p_buy_params(offer, otype))
+                    #         orders = create_order(p2p_sell_params(offer, otype))
+                    #     end
+
+                    #     chat = ::P2pChat.create(chat_params(orders))
+
+                    #     present orders
+                    # end
 
                     desc 'Chat Order'
                     post '/information_chat/:offer_number' do
@@ -71,11 +97,17 @@ module API
                                                     .where(p2p_order_payments: {state: "active"})
                         
                         offer[:payment] = payment
-                        offer[:trader]  = ::Member.find_by(uid: order[:uid])
                         offer[:currency] = currency(offer[:currency])[:currency].upcase
+
+                        if offer[:side] == 'sell'
+                            payment_merchant = ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.*", "p2p_payments.name as bank","p2p_payments.logo_url","p2p_payments.base_color","p2p_payments.state")
+                        end
 
                         present :order, order, with: API::V1::Entities::Order
                         present :offer, offer, with: API::V1::Market::Entities::Offer
+                        if offer[:side] == 'sell'
+                            present :payment_user, payment_merchant, with: API::V1::Entities::PaymentUser
+                        end
                     end
 
                     desc 'Confirmation Target Payment final step'

@@ -34,12 +34,20 @@ module API
 
             expose(
                 :amount,
-                as: :amount,
+                as: :quantity,
                 documentation: {
                     desc: 'Filter Fiat.',
                     type: String
                 }
             )
+
+            expose :amount,
+                    documentation: {
+                        desc: 'Count Down Timer',
+                        type: String
+                    } do |order|
+                        order.amount_order
+                    end
 
             expose(
                 :state,
@@ -50,6 +58,14 @@ module API
                 }
             )
 
+            expose :count_down,
+                    documentation: {
+                        desc: 'Count Down Timer',
+                        type: String
+                    } do |order|
+                        order.first_count_down_time
+                    end
+
             expose(
                 :side,
                 as: :side,
@@ -58,6 +74,22 @@ module API
                     type: String
                 }
             )
+
+            expose :trades,
+                    documentation: {
+                        desc: 'Count Down Timer',
+                        type: String
+                    } do |order|
+                        order.trades
+                    end
+
+            expose :stats,
+                    documentation: {
+                        type: String,
+                        desc: 'Stats merchant'
+                    } do |order|
+                        order.trade
+                    end
 
             expose(
                 :first_approve_expire_at,
