@@ -39,10 +39,12 @@ class P2pUser < ApplicationRecord
 
     def trade_stats(data)
       state = 'completed'
+      completed = data.count == 0 ? 0 : (data.where(state: state).count/data.count)*100
+
       {
         total: data.count,
         mount_trade: data.count,
-        completed_rate: "#{(data.where(state: state).count/data.count)*100}",
+        completed_rate: "#{}",
         release_time: "00:45:00",
         pay_time: "00:45:00"
       }

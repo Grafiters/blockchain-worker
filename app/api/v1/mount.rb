@@ -38,17 +38,17 @@ module API
       mount API::V1::Market::Mount       => :market
       mount API::V1::Account::Mount      => :account
 
-      add_swagger_documentation base_path:   File.join(API::Mount::PREFIX, API_VERSION, 'exchange'),
+      add_swagger_documentation base_path:   File.join(API::Mount::PREFIX, 'v2', 'p2p'),
                                 add_base_path: true,
                                 mount_path:  '/swagger',
                                 api_version: API_VERSION,
                                 doc_version: Peatio::Application::VERSION,
                                 info: {
-                                  title:         "NagaExchange User API #{API_VERSION}",
-                                  description:   'API for exchange platform application.',
-                                  contact_name:  'nagaexchange.co.id',
-                                  contact_email: 'hello@nagaexchange.co.id',
-                                  contact_url:   'https://www.nagaexchange.co.id',
+                                  title:         "Nagap2p User API #{API_VERSION}",
+                                  description:   'API for p2p platform application.',
+                                  contact_name:  'nagap2p.co.id',
+                                  contact_email: 'hello@nagap2p.co.id',
+                                  contact_url:   'https://dev.heavenexchange.io',
                                 },
                                 models: [
                                   # API::V2::Entities::Currency,
