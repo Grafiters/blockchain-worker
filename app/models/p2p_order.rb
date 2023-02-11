@@ -12,11 +12,12 @@ class P2pOrder < ApplicationRecord
         def submit(id)
             ActiveRecord::Base.transaction do
                 order = self.find_by_id!(id)
+                Rails.logger.warn order
 
-                if order.first_approve_expire_at == Time.now
-                    order.update!(state: 'waiting')
+                if Time.now >= order[:first_approve_expire_at]
+                    order.update(state: 'waiting')
                 end
-                Rails.logger.warn Time.now
+                # Rails.logger.warn id
                 # AMQP::Queue.enqueue(:p2p_order_processor, action: 'submit', order: order)
             end
         end
@@ -27,16 +28,15 @@ class P2pOrder < ApplicationRecord
               return unless order.state != 'success'
       
               order.update!(state: 'canceled')
-            #   AMQP::Queue.enqueue(:p2p_order_processor, action: 'cancel', order: order)
             end
         end
     end
     
     def trades
         if side == 'sell'
-            member = Member.joins(:p2p_user).select("p2p_users.username","members.email").find_by(members: {uid: taker_uid})
+            member = Member.joins(:p2p_user).select("members.uid","p2p_users.username","members.email").find_by(members: {uid: maker_uid})
         elsif side == 'buy'
-            member = Member.joins(:p2p_user).select("p2p_users.username","members.email").find_by(members: {uid: taker_uid})
+            member = Member.joins(:p2p_user).select("members.uid","p2p_users.username","members.email").find_by(members: {uid: taker_uid})
         end
 
         as_json_trade(member)
@@ -52,10 +52,30 @@ class P2pOrder < ApplicationRecord
 
     def as_json_trade(data)
         {
+            uid: data[:uid],
             username: data[:username],
             email: email_data_masking(data[:email])
         }
     end
+
+    def trade
+        trade = ::P2pOrder.joins(:p2p_offer)
+                .where('(p2p_orders.p2p_user_id = ? AND p2p_orders.side = "buy")
+                            OR
+                        (p2p_offers.p2p_user_id = ? AND p2p_orders.side = "sell")', id, id)
+        
+        trade_stats(trade)
+      end
+  
+      def trade_stats(data)
+        state = 'completed'
+        completed_rate = data.count == 0 ? 0 : (data.where(state: state).count/data.count)*100
+        {
+          total: data.count,
+          mount_trade: data.count,
+          completed_rate: "#{completed_rate}",
+        }
+      end
 
     def submit_order
         return unless new_record?
@@ -88,6 +108,23 @@ class P2pOrder < ApplicationRecord
         }
     end
 
+    def amount_order
+        offer = ::P2pOffer.find_by(id: p2p_offer_id)
+        
+        amount * offer.price
+    end
+
+    def first_count_down_time
+        if state == 'prepare'
+            time = (self.first_approve_expire_at.to_i - self.created_at.to_i)
+        elsif state == 'waiting'
+            offer = ::P2pOffer.find_by(id: p2p_offer_id)
+            time = offer.payment_limit_time
+        end
+
+        Time.at(time).gmtime.strftime('%R:%S')
+    end
+
     private
 
     def assign_order_number
@@ -97,15 +134,11 @@ class P2pOrder < ApplicationRecord
     end
 
     def first_expired_time
-        self.first_approve_expire_at = Time.now + 5*60
+        self.first_approve_expire_at = Time.now + 15*60
     end
 
     def second_expire_at
-        self.second_approve_expire_at = Time.now + 5*60
-    end
-
-    def second_expired_time
-    
+        self.second_approve_expire_at = Time.now + 15*60
     end
 
     def InterIDGenerate(prefix)
