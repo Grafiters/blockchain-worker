@@ -50,6 +50,17 @@ module API
             search = klass.ransack(ransack_params)
             search.sorts = "#{params[:order_by]} #{params[:ordering]}"
 
+            if params[:filter].present? && params[:filter] == 'true'
+              currency = Currency.select("id as name", "type","price as total").all
+              currency.each do |data|
+                data[:total] = search.result.where('currency_id = ?', data[:name]).sum(:credit)
+              end
+  
+              present :from, params[:from].present? ? params[:from] : search.result.minimum('created_at')
+              present :to, params[:to].present? ? params[:to] : search.result.maximum('created_at')
+              present :currency, currency
+            end
+
             present paginate(search.result, false), with: API::V2::Admin::Entities::Operation
           end
         end

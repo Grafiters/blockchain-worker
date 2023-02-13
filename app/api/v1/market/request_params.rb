@@ -70,10 +70,7 @@ module API
                         maker_uid: current_user[:uid],
                         taker_uid: receiver_p2p[:uid],
                         amount: params[:amount],
-                        state: 'waiting',
-                        first_approve_expire_at: Time.now,
-                        side: side,
-                        p2p_order_payment_id: params[:payment_order]
+                        side: side
                     }
                 end
 
