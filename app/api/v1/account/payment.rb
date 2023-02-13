@@ -39,7 +39,7 @@ module API
                             errors!({errors: ["2pp_user.payment_user.payment_method_invalid_data"]}, 422)
                         end
 
-                        # name = params[:bank].split("-")
+                        name = params[:bank].split("-")
                         bank_name = ::P2pPayment.find_by(symbol: params[:symbol])
                         present bank_name
                     end

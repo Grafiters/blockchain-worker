@@ -10,11 +10,12 @@ class P2pOrder < ApplicationRecord
 
     after_commit on: :create do
         lock_amount_offer
+        state_order
     end
 
     after_commit on: :update do
-        if state == 'prepare'
-            self.state = 'waiting'
+        if state == 'canceled'
+            computed_unlocked
         end
     end
 
@@ -52,9 +53,18 @@ class P2pOrder < ApplicationRecord
         offer = ::P2pOffer.find_by(id: p2p_offer_id)
         offer.update!(available_amount: computed_locked(offer))
     end
+    
+    def unlock_funds
+        offer = ::P2pOffer.find_by(id: p2p_offer_id)
+        offer.update!(available_amount: computed_unlocked(offer))
+    end
 
     def computed_locked(offer)
         offer[:available_amount] - amount
+    end
+
+    def computed_unlocked(offer)
+        offer[:available_amount] + amount
     end
 
     def fiat_logo
@@ -141,14 +151,10 @@ class P2pOrder < ApplicationRecord
             time = (self.first_approve_expire_at.to_i - self.created_at.to_i)
         elsif state == 'waiting'
             offer = ::P2pOffer.find_by(id: p2p_offer_id)
-            time = offer.paymen_limit_time
+            time = offer.paymen_limit_time.to_i
         end
 
-        time*1000
-    end
-
-    def second_expire_at
-        self.second_approve_expire_at = Time.now + 15*60
+        time * 60
     end
 
     private
@@ -159,7 +165,7 @@ class P2pOrder < ApplicationRecord
         self.order_number = InterIDGenerate('P2PORD')
     end
 
-    def first_expired_time
+    def state_order
         self.state = side == 'buy' ? 'waiting' : 'prepare'
     end
 

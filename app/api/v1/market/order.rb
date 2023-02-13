@@ -88,7 +88,7 @@ module API
                         order = ::P2pOrder.select("p2p_orders.*","p2p_orders.p2p_order_payment_id as payment").find_by(order_number: params[:order_number])
 
                         if order[:p2p_order_payment_id].present?
-                            order_payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment).select("p2p_payments.*","p2p_order_payments.*").find_by(p2p_order_payments: {id: order[:p2p_order_payment_id]})
+                            order_payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment).select("p2p_payments.*","p2p_order_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number").find_by(p2p_order_payments: {id: order[:p2p_order_payment_id]})
                             order[:payment] = order_payment
                         end
 
@@ -129,7 +129,7 @@ module API
 
                         present order
                     end
-
+                    
                     desc 'Confirmation Target Payment step 1'
                     params do
                         requires :payment_method,
@@ -145,7 +145,16 @@ module API
                             error!({ errors: ['p2p_order.order.already_completed_process'] }, 422)
                         end
 
-                        order.update({p2p_order_payment_id: params[:payment_method]})
+                        if order[:state] == 'canceled'
+                            error!({ errors: ['p2p_order.order.process_has_canceled'] }, 422)
+                        end
+
+                        order.update({
+                            p2p_order_payment_id: params[:payment_method],
+                            first_approve_expire_at: Time.now,
+                            second_approve_expire_at: Time.now + (order.p2p_offer.paymen_limit_time.to_i * 60),
+                            state: 'waiting'
+                        })
                         present order
                     end
 

@@ -14,6 +14,18 @@ module API
                 }
             )
 
+            expose :account_name,
+                    documentation: {
+                        type: String,
+                        desc: 'Account name payment method user'
+                    }
+
+            expose :account_number,
+                    documentation: {
+                        type: String,
+                        desc: 'Account Number payment method user'
+                    }
+
             expose(
                 :name,
                 as: :bank_name,
