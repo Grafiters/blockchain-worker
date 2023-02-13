@@ -21,17 +21,25 @@ module API
                     :offer_number,
                     as: :offer_number,
                     documentation: {
-                        desc: 'Order Number.',
+                        desc: 'Offer Number.',
                         type: String
                     }
                 )
 
                 expose :fiat,
                     documentation: {
-                        desc: 'Order Number.',
+                        desc: 'Order Fiat.',
                         type: String
                     } do |p2p_order|
                         p2p_order.fiat_logo
+                    end
+
+                expose :currency,
+                    documentation: {
+                        desc: 'Order Currency.',
+                        type: String
+                    } do |p2p_order|
+                        p2p_order.currency_logo
                     end
 
                 expose :fiat_amount,

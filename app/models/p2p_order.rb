@@ -46,6 +46,10 @@ class P2pOrder < ApplicationRecord
         ::Fiat.select("name", "icon_url").find_by(name: fiat)
     end
 
+    def currency_logo
+        ::Currency.select("id as name", "icon_url").find_by(id: currency)
+    end
+
     def fiat_amounts
         BigDecimal(price) * BigDecimal(amount)
     end
@@ -114,7 +118,6 @@ class P2pOrder < ApplicationRecord
         amount * offer.price
     end
 
-
     def first_count_down_time
         if state == 'canceled'
             return 'xx:xx:xx'
@@ -123,10 +126,10 @@ class P2pOrder < ApplicationRecord
             time = (self.first_approve_expire_at.to_i - self.created_at.to_i)
         elsif state == 'waiting'
             offer = ::P2pOffer.find_by(id: p2p_offer_id)
-            time = offer.paymen_limit_time * 60
+            time = offer.paymen_limit_time
         end
 
-        Time.at(time).gmtime.strftime('%R:%S')
+        time
     end
 
     private
