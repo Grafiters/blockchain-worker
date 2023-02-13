@@ -17,22 +17,24 @@ module API
                     end
                     post '/' do
                         if p2p_user_auth.blank?
-                            error!({ errors: ['p2p_user.user.accont_p2p_doesnt_exists'] }, 422)
+                            error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
                         end
 
                         if current_user == receiver_p2p
                             error!({ errors: ['p2p_order.order.can_not_order_to_yourself'] }, 422)
                         end
-                        
+
                         offer = ::P2pOffer.find_by(offer_number: params[:offer_number])
-                        otype = offer[:side] == 'sell' ? 'buy' : 'sell'
-                        
-                        if otype == 'buy'
-                            orders = ::P2pOrder.create(p2p_sell_params(offer, otype))
-                        else
-                            orders = ::P2pOrder.create(p2p_buy_params(offer, otype))
+                        if offer.blank?
+                            error!({ errors: ['p2p_order.order.offer_number_does_not_exists'] }, 422)
                         end
 
+                        otype = offer[:side] == 'sell' ? 'buy' : 'sell'
+                        if offer[:side] == 'buy'
+                            validation_request
+                        end
+
+                        orders = ::P2pOrder.create(p2p_order_params(offer, otype))
                         chat = ::P2pChat.create(chat_params(orders))
 
                         present orders
@@ -123,7 +125,7 @@ module API
 
                         state = 'success'
 
-                        order.update({state: state, aproved_by: order[:maker_uid], second_approve_expire_at: Time.now})
+                        order.update({state: state, aproved_by: order[:maker_uid]})
 
                         present order
                     end
@@ -143,7 +145,7 @@ module API
                             error!({ errors: ['p2p_order.order.already_completed_process'] }, 422)
                         end
 
-                        order.update({p2p_order_payment_id: params[:payment_method], first_approve_expire_at: Time.now})
+                        order.update({p2p_order_payment_id: params[:payment_method]})
                         present order
                     end
 

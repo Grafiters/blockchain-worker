@@ -8,15 +8,21 @@ class P2pOrder < ApplicationRecord
 
     validates :side, :amount, presence: true
 
+    after_commit on: :create do
+        lock_amount_offer
+    end
+
+    after_commit on: :update do
+        if state == 'prepare'
+            self.state = 'waiting'
+        end
+    end
+
     class << self
         def submit(id)
             ActiveRecord::Base.transaction do
                 order = self.find_by_id!(id)
-                Rails.logger.warn order
 
-                if Time.now >= order[:first_approve_expire_at]
-                    order.update(state: 'waiting')
-                end
                 # Rails.logger.warn id
                 # AMQP::Queue.enqueue(:p2p_order_processor, action: 'submit', order: order)
             end
@@ -40,6 +46,15 @@ class P2pOrder < ApplicationRecord
         end
 
         as_json_trade(member)
+    end
+
+    def lock_amount_offer
+        offer = ::P2pOffer.find_by(id: p2p_offer_id)
+        offer.update!(available_amount: computed_locked(offer))
+    end
+
+    def computed_locked(offer)
+        offer[:available_amount] - amount
     end
 
     def fiat_logo
@@ -129,7 +144,11 @@ class P2pOrder < ApplicationRecord
             time = offer.paymen_limit_time
         end
 
-        time
+        time*1000
+    end
+
+    def second_expire_at
+        self.second_approve_expire_at = Time.now + 15*60
     end
 
     private
@@ -141,11 +160,11 @@ class P2pOrder < ApplicationRecord
     end
 
     def first_expired_time
-        self.first_approve_expire_at = Time.now + 15*60
+        self.state = side == 'buy' ? 'waiting' : 'prepare'
     end
 
-    def second_expire_at
-        self.second_approve_expire_at = Time.now + 15*60
+    def first_expired_time
+        self.first_approve_expire_at = Time.now + 15*60
     end
 
     def InterIDGenerate(prefix)

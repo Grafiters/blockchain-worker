@@ -52,32 +52,22 @@ module API
                     }
                 end
 
-                def p2p_sell_params(offer, side)
+                def p2p_order_params(offer, side)
                     params_mapping = {
                         p2p_offer_id: offer[:id],
                         p2p_user_id: p2p_user_id[:id],
                         maker_uid: current_user[:uid],
                         taker_uid: receiver_p2p[:uid],
                         amount: params[:amount],
-                        side: side
-                    }
-                end
-
-                def p2p_buy_params(offer, side)
-                    params_mapping = {
-                        p2p_offer_id: offer[:id],
-                        p2p_user_id: p2p_user_id[:id],
-                        maker_uid: current_user[:uid],
-                        taker_uid: receiver_p2p[:uid],
-                        amount: params[:amount],
-                        side: side
+                        side: side,
+                        p2p_order_payment_id: side == 'sell' ? params[:payment_order] : nil
                     }
                 end
 
                 def chat_params(order)
                     params_mapping = {
                         p2p_order_id: order[:id],
-                        user_uid: current_user[:uid] == p2p_user_id[:uid] ? 'Nusablocks' : p2p_user_id[:uid],
+                        user_uid: 'Nusablocks',
                         chat: params[:message].present? ? params[:message] : 'Mohon Kirim Bukti tranfer'
                     }
                 end
