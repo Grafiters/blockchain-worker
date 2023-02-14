@@ -3,12 +3,12 @@
 
 module Workers
   module AMQP
-    class OrderProcessor < Base
+    class P2pOrderProcessor < Base
       def initialize
-        Order.spot.where(state: ::Order::PENDING).find_each do |order|
-          Order.submit(order.id)
+        ::P2pOrder.where(state: 'prepare').find_each do |order|
+          ::P2pOrder.submit(order.id)
         rescue StandardError => e
-          AMQP::Queue.enqueue(:trade_error, e.message)
+          ::AMQP::Queue.enqueue(:trade_error, e.message)
           report_exception_to_screen(e)
 
           raise e if is_db_connection_error?(e)
@@ -18,9 +18,9 @@ module Workers
       def process(payload)
         case payload['action']
         when 'submit'
-          Order.submit(payload.dig('order', 'id'))
+          ::P2pOrder.submit(payload.dig('order', 'id'))
         when 'cancel'
-          Order.cancel(payload.dig('order', 'id'))
+          ::P2pOrder.cancel(payload.dig('order', 'id'))
         end
       rescue StandardError => e
         ::AMQP::Queue.enqueue(:trade_error, e.message)
