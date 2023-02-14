@@ -69,7 +69,7 @@ module API
 
                     desc 'Chat Order'
                     post '/information_chat/:offer_number' do
-                        order = ::P2pOrder.find_by(offer_number: params[:offer_number])
+                        order = ::P2pOrder.find_by(order_number: params[:offer_number])
 
                         chat = ::P2pChat.create(chat_params(order))
                         present chat
