@@ -166,7 +166,7 @@ class P2pOrder < ApplicationRecord
     end
 
     def state_order
-        self.state = side == 'buy' ? 'waiting' : 'prepare'
+        self.state = side == 'sell' ? 'waiting' : 'prepare'
     end
 
     def first_expired_time
