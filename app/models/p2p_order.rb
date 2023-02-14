@@ -15,7 +15,7 @@ class P2pOrder < ApplicationRecord
 
     after_commit on: :update do
         if state == 'canceled'
-            computed_unlocked
+            unlock_funds
         end
     end
 
