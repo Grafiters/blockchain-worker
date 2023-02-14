@@ -37,6 +37,9 @@ module API
                         orders = ::P2pOrder.create(p2p_order_params(offer, otype))
                         chat = ::P2pChat.create(chat_params(orders))
 
+                        ActionCable.server.broadcast 'order_channel',
+                            message: orders
+
                         present orders
                     end
                     # post '/' do
@@ -73,9 +76,9 @@ module API
                     end
 
                     get '/information_chat/:offer_number' do
-                        room = ::P2pChat.joins(:p2p_order).where(p2p_orders: { offer_number: params[:offer_number] })
+                        room = ::P2pChat.joins(:p2p_order).where(p2p_orders: { order_number: params[:offer_number] })
                         room.each do |chat|
-                            if chat[:user_uid] == user_uid
+                            if chat[:user_uid] == p2p_user_id[:uid]
                                 chat[:user_uid] = 'You'
                             end
                         end
