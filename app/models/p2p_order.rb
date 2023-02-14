@@ -154,6 +154,7 @@ class P2pOrder < ApplicationRecord
             time = offer.paymen_limit_time.to_i
         end
 
+        return "00:00" if time.blank?
         time * 60
     end
 

@@ -161,7 +161,7 @@ module API
                     desc 'Cancel Order of Offer'
                     put '/cancel_order/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
-                        if order[:state] == "success"
+                        if order[:state] == "success" || order[:state] == "completed"
                             error!({ errors: ['p2p_order.order.success_can_not_canceled_order'] }, 422)
                         end
 
