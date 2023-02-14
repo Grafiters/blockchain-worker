@@ -50,8 +50,6 @@ module API
                                             "p2p_orders.created_at as p2p_start","p2p_orders.updated_at as p2p_end", "p2p_orders.first_approve_expire_at as payment_limit")
                                             .where(p2p_offers: {p2p_user_id: p2p_user[:id]})
 
-                        # feedback = ::P2pOrderFeedback.all
-
                         feedback.each do |feed |
                             feed[:payment] = payments(feed[:payment])
                             feed[:member] = buyorsel(feed[:member])

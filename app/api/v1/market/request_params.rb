@@ -88,6 +88,10 @@ module API
                     }
                 end
 
+                def chat_user(uid)
+                    ::P2pUser.joins(:member).select("p2p_users.username","members.uid as uid","members.email").find_by(members: {uid: uid})
+                end
+
                 def p2p_user_id
                     ::P2pUser.joins(:member).select("p2p_users.*","members.uid as uid").find_by(members: {uid: current_user.uid})
                 end

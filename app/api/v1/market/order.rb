@@ -76,10 +76,10 @@ module API
                     end
 
                     get '/information_chat/:offer_number' do
-                        room = ::P2pChat.joins(:p2p_order).where(p2p_orders: { order_number: params[:offer_number] })
+                        room = ::P2pChat.joins(:p2p_order).select("p2p_chats.*","p2p_chats.user_uid as p2p_user").where(p2p_orders: { order_number: params[:offer_number] })
                         room.each do |chat|
-                            if chat[:user_uid] == p2p_user_id[:uid]
-                                chat[:user_uid] = 'You'
+                            if chat[:user_uid] != 'Nusablocks'
+                                chat[:p2p_user] = chat_user(chat[:user_uid])
                             end
                         end
 
