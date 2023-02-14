@@ -14,6 +14,14 @@ module API
                      values: { value: -> { Currency.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist' },
                      desc: 'Currency code.'
             optional :state, type: String, desc: 'The state to filter by.'
+            optional :from,
+                   allow_blank: { value: false, message: 'account.internal_tranfer.empty_time_from' },
+                   type: { value: Integer, message: 'account.internal_tranfer.non_integer_time_from' },
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'
+            optional :to,
+                   type: { value: Integer, message: 'account.internal_tranfer.non_integer_time_to' },
+                   allow_blank: { value: false, message: 'account.internal_tranfer.empty_time_to' },
+                   desc: 'An integer represents the seconds elapsed since Unix epoch.'
             optional :sender
           end
 
@@ -23,6 +31,7 @@ module API
             ransack_params = ::API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                                       .eq(:state)
                                                                       .translate(currency: :currency_id)
+                                                                      .with_daterange
                                                                       .merge(g: [
                                                                                { sender_id_eq: current_user.id, receiver_id_eq: current_user.id, m: 'or' }
                                                                              ]).build
