@@ -109,7 +109,9 @@ class Market < ApplicationRecord
               less_than_or_equal_to: ->(_m) { FUNDS_PRECISION }
             }
 
-  validates :total_precision
+  validates :total_precision,
+            presence: true,
+            numericality: { greater_than_or_equal_to: TOP_POSITION, only_integer: true }
 
   validates :amount_precision,
             numericality: {

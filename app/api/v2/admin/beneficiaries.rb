@@ -38,7 +38,7 @@ module API
           get do
             admin_authorize! :read, ::Beneficiary
 
-            address = params[:data][:address]
+            address = params[:data]
             
             ransack_params = Helpers::RansackBuilder.new(params)
                                                     .eq(:id, :blockchain_key)
