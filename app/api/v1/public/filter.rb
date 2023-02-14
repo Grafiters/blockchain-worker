@@ -19,7 +19,7 @@ module API
 
                         present :fiat, params[:fiat]
                         present :currency, currency, with: API::V1::Entities::Currency
-                        present :payment, paymen, with: API::V1::Entities::Payment
+                        present :payment, paymen, with: API::V1::Public::Entities::Payment
                     end
                 end
             end

@@ -48,7 +48,7 @@ module API
                             offer[:payment] = payment(offer[:id])
                         end
 
-                        present data, with: API::V1::Entities::Offer
+                        present data, with: API::V1::Public::Entities::Offer
                     end
 
                     desc 'Get Detail of Offer Trade Number'
