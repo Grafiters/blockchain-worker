@@ -36,10 +36,7 @@ module API
 
                         orders = ::P2pOrder.create(p2p_order_params(offer, otype))
                         chat = ::P2pChat.create(chat_params(orders))
-
-                        ActionCable.server.broadcast 'order_channel',
-                            message: orders
-
+                        
                         present orders
                     end
                     # post '/' do
@@ -126,9 +123,15 @@ module API
                             error!({ errors: ['p2p_order.order.already_completed_process'] }, 422)
                         end
 
-                        state = 'success'
+                        if order[:state] == 'waiting'
+                            state = 'accepted'
+                            order.update({state: state, aproved_by: order[:maker_uid]})
+                        end
 
-                        order.update({state: state, aproved_by: order[:maker_uid]})
+                        if order[:state] == 'accepted'
+                            state = 'accepted'
+                            order.update({state: state, aproved_by: order[:maker_uid]})
+                        end
 
                         present order
                     end

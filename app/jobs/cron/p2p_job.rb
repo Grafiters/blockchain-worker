@@ -5,7 +5,7 @@ module Jobs
                 def process
                     first_approvement
                     second_approvement
-                    sleep 5000000000
+                    sleep 2
                 end
 
                 def first_approvement
@@ -21,7 +21,7 @@ module Jobs
                         return if order.second_approve_expire_at.blank?
 
                         if Time.now >= order.second_approve_expire_at
-                            order.update!(state: 'success')
+                            order.update!(state: 'accepted')
                         end
                     end
                 end
