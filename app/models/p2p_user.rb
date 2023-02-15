@@ -53,8 +53,8 @@ class P2pUser < ApplicationRecord
     def stats(data)
       {
         total: data.count,
-        positif: data.where(p2p_order_feedbacks: {assessment: 'positif'}).count,
-        negatif: data.where(p2p_order_feedbacks: {assessment: 'negatif'}).count
+        positive: data.where(p2p_order_feedbacks: {assessment: 'positive'}).count,
+        negative: data.where(p2p_order_feedbacks: {assessment: 'negative'}).count
       }
     end
 end

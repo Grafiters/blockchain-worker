@@ -6,7 +6,7 @@ module API
         module Account
             module Entities
                 class Stats < API::V1::Entities::UserWithMember
-                    expose :positif_feedback,
+                    expose :feedback,
                             documentation: {
                                 desc: 'Order Number.',
                                 type: String
