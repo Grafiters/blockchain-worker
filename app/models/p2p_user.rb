@@ -23,7 +23,7 @@ class P2pUser < ApplicationRecord
     end
 
     def positif_feedback
-      feedback = ::P2pOrder.joins(:p2p_order_feedback).where(p2p_orders: {p2p_user_id: id}).where.not(p2p_orders: {state: 'prepare'})
+      feedback = ::P2pOrder.joins(:p2p_order_feedback, :p2p_offer).where(p2p_offers: {p2p_user_id: id}).where.not(p2p_orders: {state: 'prepare'})
 
       stats(feedback)
     end

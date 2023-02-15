@@ -25,8 +25,9 @@ module API
                     }
                 end
 
-                def p2p_user
-                    ::P2pUser.find_by(member_id: current_user[:id])
+                def p2p_user_feedback
+                    user = ::P2pUser.find_by(member_id: current_user[:id])
+                    user[:id]
                 end
 
                 def exists

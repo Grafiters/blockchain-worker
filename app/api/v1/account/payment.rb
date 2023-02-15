@@ -12,7 +12,7 @@ module API
 
                         # present ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.*", "p2p_payments.*").where(p2p_payment_users: {p2p_user_id: p2p_user[:id]})
                         present paginate(
-                                ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.*", "p2p_payments.*").where(p2p_payment_users: {p2p_user_id: p2p_user[:id]})
+                                ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.name as account_name", "p2p_payment_users.account_number", "p2p_payments.*").where(p2p_payment_users: {p2p_user_id: p2p_user[:id]})
                             )
                     end
 
