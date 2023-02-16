@@ -23,6 +23,30 @@ module API
         )
 
         expose(
+          :logo_url,
+          as: :logo_url,
+          documentation: {
+            type: String,
+            desc: "The market in which the order is placed, e.g. 'btcusd'."\
+                  "All available markets can be found at /api/v2/markets."
+          }
+        )do |deposit|
+          deposit.currency[:icon_url]
+        end
+
+        expose(
+          :fullname,
+          as: :fullname,
+          documentation: {
+            type: String,
+            desc: "The market in which the order is placed, e.g. 'btcusd'."\
+                  "All available markets can be found at /api/v2/markets."
+          }
+        )do |deposit|
+          deposit.currency[:name]
+        end
+
+        expose(
           :blockchain_key,
           documentation:{
             type: String,

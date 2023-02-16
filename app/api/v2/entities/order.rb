@@ -66,6 +66,30 @@ module API
         )
 
         expose(
+          :logo_url,
+          as: :logo_url,
+          documentation: {
+            type: String,
+            desc: "The market in which the order is placed, e.g. 'btcusd'."\
+                  "All available markets can be found at /api/v2/markets."
+          }
+        )do |order|
+          order.market.base[:icon_url]
+        end
+
+        expose(
+          :fullname,
+          as: :fullname,
+          documentation: {
+            type: String,
+            desc: "The market in which the order is placed, e.g. 'btcusd'."\
+                  "All available markets can be found at /api/v2/markets."
+          }
+        )do |order|
+          order.market.base[:name]
+        end
+
+        expose(
           :market_id,
           as: :market,
           documentation: {
