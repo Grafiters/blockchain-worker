@@ -34,6 +34,17 @@ module API
         )
 
         expose(
+          :fullname,
+          as: :fullname,
+          documentation: {
+            desc: 'Full Name Currency',
+            type: String
+          }
+        ) do |market|
+          market.base[:name]
+        end
+
+        expose(
           :logo_url,
           as: :logo_url,
           documentation: {
