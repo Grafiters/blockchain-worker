@@ -58,6 +58,17 @@ gem 'influxdb', '~> 0.7.0'
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
 gem 'composite_primary_keys', '~> 11.3.1'
 gem 'dotenv-rails'
+# Use ActiveStorage variant
+gem 'mini_magick', '~> 4.8'
+# storage related gems
+gem 'carrierwave', '~> 2.1', '>= 2.1.0'
+gem 'fog-core', '~> 2.1.0'
+# alicloud support
+gem 'fog-aliyun', '~> 0.3.5'
+# aws support (amazon)
+gem 'fog-aws', '~> 3.5.2'
+# gcp support (google)
+gem 'fog-google', '~> 1.9.1'
 
 group :development, :test do
   gem 'irb'

@@ -9,7 +9,7 @@ MAINTAINER qenjie@nusatech.id
 #
 # See https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables-build-arg
 #
-ARG RAILS_ENV=development
+ARG RAILS_ENV=production
 ENV RAILS_ENV=${RAILS_ENV} APP_HOME=/home/app KAIGARA_VERSION=0.1.28
 
 # Allow customization of user ID and group ID (it's useful when you use Docker bind mounts)
@@ -47,11 +47,9 @@ COPY --chown=app:app . $APP_HOME
 # Switch to application user.
 USER app
 
-RUN chmod +x ./bin/init_config
-
 # Initialize application configuration & assets.
 RUN echo "# This file was overridden by default during docker image build." > Gemfile.plugin \
-  && ./bin/init_config \
+  && chmod +x ./bin/init_config \
   && chmod +x ./bin/logger \
   && bundle exec rake tmp:create
 
