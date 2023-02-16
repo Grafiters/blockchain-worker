@@ -88,6 +88,21 @@ module API
                     }
                 end
 
+                def report_params
+                    {
+                        p2p_user_id: p2p_user_id[:id],
+                        order_number: params[:order_number]
+                    }
+                end
+
+                def report_detail(report_id, data)
+                    {
+                        p2p_user_report_id: report_id,
+                        key: params[:reason_key][data],
+                        reason: params[:message][data]
+                    }
+                end
+
                 def chat_user(uid)
                     ::P2pUser.joins(:member).select("p2p_users.username","members.uid as uid","members.email").find_by(members: {uid: uid})
                 end
