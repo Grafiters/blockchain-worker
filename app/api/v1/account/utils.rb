@@ -12,7 +12,11 @@ module API
                 end
 
                 def current_p2p_user
-                    ::P2pUser.joins(:member).find_by(members: {uid: current_user[:uid]})
+                    ::P2pUser.joins(:member).select("p2p_users.*","members.uid").find_by(members: {uid: current_user[:uid]})
+                end
+
+                def target_p2p_user
+                    ::P2pUser.joins(:member).select("p2p_users.*","members.uid").find_by(members: {uid: params[:merchant]})
                 end
 
                 def payments(payment)

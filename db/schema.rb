@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_03_082254) do
+ActiveRecord::Schema.define(version: 2023_02_16_022024) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -21,21 +21,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.datetime "updated_at", null: false
     t.index ["currency_id", "member_id"], name: "index_accounts_on_currency_id_and_member_id", unique: true
     t.index ["member_id"], name: "index_accounts_on_member_id"
-  end
-
-  create_table "activities", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.bigint "user_id"
-    t.string "target_uid"
-    t.string "category"
-    t.string "user_ip"
-    t.string "user_ip_country"
-    t.string "user_agent"
-    t.string "topic"
-    t.string "action"
-    t.string "result"
-    t.text "data"
-    t.timestamp "created_at"
   end
 
   create_table "adjustments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -55,24 +40,11 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.index ["currency_id"], name: "index_adjustments_on_currency_id"
   end
 
-  create_table "apikeys", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.bigint "key_holder_account_id", unsigned: true
-    t.string "key_holder_account_type"
-    t.string "kid"
-    t.string "algorithm"
-    t.string "scope"
-    t.string "secret_encrypted", limit: 1024
-    t.string "state"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
-    t.bigint "reference_id"
     t.string "reference_type"
+    t.bigint "reference_id"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -81,18 +53,9 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.index ["reference_type", "reference_id"], name: "index_assets_on_reference_type_and_reference_id"
   end
 
-  create_table "attachments", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.bigint "user_id", unsigned: true
-    t.string "upload"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "beneficiaries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
-    t.string "blockchain_key"
     t.string "name", limit: 64, null: false
     t.string "description", default: ""
     t.string "data_encrypted", limit: 1024
@@ -149,16 +112,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.index ["status"], name: "index_blockchains_on_status"
   end
 
-  create_table "comments", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.bigint "user_id", unsigned: true
-    t.string "author_uid", limit: 16
-    t.string "title", limit: 64
-    t.text "data", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "currencies", id: :string, limit: 10, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -182,19 +135,9 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.index ["wallet_id"], name: "index_currencies_wallets_on_wallet_id"
   end
 
-  create_table "data_storages", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.bigint "user_id", unsigned: true
-    t.string "title", limit: 64
-    t.text "data", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "deposits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
-    t.string "blockchain_key"
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.decimal "fee", precision: 32, scale: 16, null: false
     t.string "address", limit: 95
@@ -219,22 +162,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.index ["type"], name: "index_deposits_on_type"
   end
 
-  create_table "documents", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.bigint "user_id", unsigned: true
-    t.string "upload"
-    t.string "doc_type"
-    t.date "doc_expire"
-    t.string "doc_number_encrypted"
-    t.bigint "doc_number_index"
-    t.date "doc_issue"
-    t.string "doc_category"
-    t.string "identificator"
-    t.text "metadata"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "engines", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
     t.string "driver", null: false
@@ -249,8 +176,8 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
   create_table "expenses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
-    t.bigint "reference_id"
     t.string "reference_type"
+    t.bigint "reference_id"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -272,6 +199,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
   end
 
   create_table "internal_transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "inter_id", limit: 50, null: false
     t.string "currency_id", null: false
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.bigint "sender_id", null: false
@@ -279,6 +207,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.integer "state", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["inter_id"], name: "index_internal_transfers_on_inter_id"
   end
 
   create_table "jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -292,55 +221,12 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.datetime "finished_at"
   end
 
-  create_table "labels", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.bigint "user_id", unsigned: true
-    t.string "key"
-    t.string "value"
-    t.string "scope"
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "legacy_markets_back", id: :string, limit: 20, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "base_unit", limit: 10, null: false
-    t.string "quote_unit", limit: 10, null: false
-    t.bigint "engine_id", null: false
-    t.integer "amount_precision", limit: 1, default: 4, null: false
-    t.integer "price_precision", limit: 1, default: 4, null: false
-    t.decimal "min_price", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "max_price", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "min_amount", precision: 32, scale: 16, default: "0.0", null: false
-    t.integer "position", null: false
-    t.json "data"
-    t.string "state", limit: 32, default: "enabled", null: false
-    t.boolean "enabled", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["base_unit", "quote_unit"], name: "index_legacy_markets_on_base_unit_and_quote_unit", unique: true
-    t.index ["base_unit"], name: "index_legacy_markets_on_base_unit"
-    t.index ["enabled"], name: "index_legacy_markets_on_enabled"
-    t.index ["engine_id"], name: "index_legacy_markets_on_engine_id"
-    t.index ["position"], name: "index_legacy_markets_on_position"
-    t.index ["quote_unit"], name: "index_legacy_markets_on_quote_unit"
-  end
-
-  create_table "levels", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.string "key"
-    t.string "value"
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "liabilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
     t.bigint "member_id"
-    t.bigint "reference_id"
     t.string "reference_type"
+    t.bigint "reference_id"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -358,6 +244,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.bigint "engine_id", null: false
     t.integer "amount_precision", limit: 1, default: 4, null: false
     t.integer "price_precision", limit: 1, default: 4, null: false
+    t.integer "total_precision", default: 4
     t.decimal "min_price", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "max_price", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "min_amount", precision: 32, scale: 16, default: "0.0", null: false
@@ -535,7 +422,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.integer "fiat_id", null: false
     t.string "name", limit: 50, null: false
     t.string "symbol", limit: 50, null: false
-    t.string "logo_url", null: false
+    t.string "logo_url", limit: 256, null: false
     t.string "base_color", limit: 50
     t.string "state", limit: 10, null: false
     t.string "tipe", limit: 50, null: false
@@ -554,6 +441,33 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.datetime "updated_at"
   end
 
+  create_table "p2p_user_blockeds", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_user_id"
+    t.integer "target_user_id"
+    t.integer "state"
+    t.datetime "state_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "p2p_user_report_details", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_user_report_id"
+    t.string "key", limit: 50
+    t.text "reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["p2p_user_report_id"], name: "index_p2p_user_reports_on_p2p_user_report_details"
+  end
+
+  create_table "p2p_user_reports", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_user_id"
+    t.string "order_number", limit: 50
+    t.integer "state", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["p2p_user_id"], name: "index_p2p_user_on_p2p_user_reports"
+  end
+
   create_table "p2p_users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "member_id"
     t.string "logo", limit: 50
@@ -570,76 +484,14 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
   create_table "payment_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id"
     t.bigint "wallet_id"
-    t.string "blockchain_key"
-    t.string "currency_id", limit: 10, null: false
-    t.integer "account_id", null: false
     t.string "address", limit: 95
     t.boolean "remote", default: false, null: false
     t.string "secret_encrypted"
     t.string "details_encrypted", limit: 1024
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["currency_id", "address"], name: "index_payment_addresses_on_currency_id_and_address", unique: true
     t.index ["member_id"], name: "index_payment_addresses_on_member_id"
     t.index ["wallet_id"], name: "index_payment_addresses_on_wallet_id"
-  end
-
-  create_table "permissions", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.string "action"
-    t.string "role"
-    t.string "verb"
-    t.string "path"
-    t.string "topic"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "phones", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.integer "user_id", unsigned: true
-    t.string "country"
-    t.string "code", limit: 5
-    t.string "number_encrypted"
-    t.bigint "number_index"
-    t.datetime "validated_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "retries_send"
-    t.integer "retries_verify"
-  end
-
-  create_table "profiles", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.bigint "user_id"
-    t.string "nik"
-    t.string "author"
-    t.string "applicant_id"
-    t.string "first_name_encrypted", limit: 1024
-    t.string "last_name_encrypted", limit: 1024
-    t.string "dob_encrypted"
-    t.string "address_encrypted", limit: 1024
-    t.string "postcode"
-    t.string "place_of_birth"
-    t.string "city"
-    t.string "province"
-    t.string "district"
-    t.string "country"
-    t.integer "state", limit: 1, unsigned: true
-    t.text "metadata"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "public_addresses", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.string "uid"
-    t.string "role"
-    t.string "address"
-    t.integer "level"
-    t.string "state"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "refunds", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -652,41 +504,18 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.index ["state"], name: "index_refunds_on_state"
   end
 
-  create_table "restrictions", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.string "category"
-    t.string "scope", limit: 64
-    t.string "value", limit: 64
-    t.integer "code"
-    t.string "state", limit: 16
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "revenues", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
     t.bigint "member_id"
-    t.bigint "reference_id"
     t.string "reference_type"
+    t.bigint "reference_id"
     t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency_id"], name: "index_revenues_on_currency_id"
     t.index ["reference_type", "reference_id"], name: "index_revenues_on_reference_type_and_reference_id"
-  end
-
-  create_table "service_accounts", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.string "uid"
-    t.bigint "owner_id", unsigned: true
-    t.string "email"
-    t.string "role"
-    t.integer "level"
-    t.string "state"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "stats_member_pnl", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -782,23 +611,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.index ["key"], name: "index_transfers_on_key", unique: true
   end
 
-  create_table "users", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "id"
-    t.string "uid"
-    t.string "username"
-    t.string "email"
-    t.string "password_digest"
-    t.string "role"
-    t.text "data"
-    t.integer "level"
-    t.boolean "otp"
-    t.string "state"
-    t.string "confirmation_code"
-    t.bigint "referral_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "virtual_accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "member_id", null: false
     t.string "currency_id", limit: 5
@@ -816,7 +628,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
 
   create_table "wallets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "blockchain_key", limit: 32
-    t.string "currency_id", limit: 10
     t.string "name", limit: 64
     t.string "address", null: false
     t.integer "kind", null: false
@@ -828,8 +639,7 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.string "status", limit: 32
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["currency_id"], name: "index_wallets_on_currency_id"
-    t.index ["kind", "currency_id", "status"], name: "index_wallets_on_kind_and_currency_id_and_status"
+    t.index ["kind", "status"], name: "index_wallets_on_kind_and_currency_id_and_status"
     t.index ["kind"], name: "index_wallets_on_kind"
     t.index ["status"], name: "index_wallets_on_status"
   end
@@ -860,7 +670,6 @@ ActiveRecord::Schema.define(version: 2023_02_03_082254) do
     t.bigint "member_id", null: false
     t.bigint "beneficiary_id"
     t.string "currency_id", limit: 10, null: false
-    t.string "blockchain_key"
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.decimal "fee", precision: 32, scale: 16, null: false
     t.string "txid", limit: 128, collation: "utf8_bin"

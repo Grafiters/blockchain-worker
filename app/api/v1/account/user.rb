@@ -58,6 +58,12 @@ module API
 
                         present feedback, with: API::V1::Entities::Feedback
                     end
+                    
+                    get '/blocked' do
+                        blocked = ::P2pUserBlocked.joins(:p2p_user).where(p2p_users: {id: current_p2p_user[:id]})
+
+                        present blocked
+                    end
                 end
             end
         end
