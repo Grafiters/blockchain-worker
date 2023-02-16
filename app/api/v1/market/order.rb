@@ -68,6 +68,17 @@ module API
                     post '/information_chat/:offer_number' do
                         order = ::P2pOrder.find_by(order_number: params[:offer_number])
 
+                        if params[:message]['tempfile'].present?
+                            # Base64.strict_encode64(File.open(params[:message]['tempfile'].path).read)
+                            # image = MiniMagick::Image.open(params[:message]['tempfile'].path)
+                            # image.resize "941x1254"
+                            # scaled_image_bytes = image.to_blob
+                            # base64Resized = Base64.strict_encode64(scaled_image_bytes)
+
+                            error!({ errors: ['p2p_order.information.chat.cant_upload_image'], 
+                                    message: ['p2p_order.information.chat.still.maintenance']}, 422)
+                        end
+
                         chat = ::P2pChat.create(chat_params(order))
                         present chat
                     end
@@ -98,7 +109,7 @@ module API
                                                     .where(p2p_order_payments: {p2p_offer_id: offer[:id]})
                                                     .where(p2p_order_payments: {state: "active"})
                         
-                        offer[:payment] = payment
+                        # offer[:payment] = payment
                         offer[:currency] = currency(offer[:currency])[:currency].upcase
 
                         if offer[:side] == 'sell'
@@ -173,6 +184,44 @@ module API
 
                         order.update(state: "canceled")
                         present order
+                    end
+
+                    desc 'Report merchant when order progress'
+                    params do
+                        optional :image_payment
+                        requires :order_number,
+                                type: String,
+                                desc: -> { V1::Entities::Order.documentation[:order_number] }
+                        requires :reason_key
+                        requires :message
+                    end
+                    post '/report/:order_number' do
+                        order = ::P2pOrder.find_by(order_number: params[:order_number])
+                        
+                        if params[:image_payment].present?
+                            error!({ errors: ['p2p_order.order.report.upload_image_still_maintenance'] }, 422)
+                        end
+
+                        if params[:reason_key].blank?
+                            error!({ errors: ['p2p_order.order.report.reason_can_not_blank'] }, 422)
+                        end
+
+                        report = ::P2pUserReport.create!(report_params)
+
+                        params[:reason_key].each do |i, r|
+                            ::P2pUserReportDetail.create!(report_detail(report[:id], i))
+                        end
+
+                        report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})
+
+                        present report, with: API::V1::Entities::Report
+                    end
+
+                    desc 'Get Report By Order Number'
+                    get '/report/:order_number' do
+                        report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})
+
+                        present report, with: API::V1::Entities::Report
                     end
                 end
             end

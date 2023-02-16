@@ -32,6 +32,7 @@ module API
                                                 .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
+                        
                         search = ::P2pOffer.joins(:p2p_pair)
                                             .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
@@ -60,9 +61,13 @@ module API
 
                     desc 'Get Detail Merchant Trade'
                     get "/merchant/:merchant" do
-                        merchant = ::Member.find_by(uid: params[:merchant])
-                        
-                        present merchant
+                        member = ::P2pUser.joins(:member).find_by(members: {uid: params[:merchant]})
+
+                        if member.blank?
+                            member = p2p_user
+                        end
+
+                        present member, with: API::V1::Account::Entities::Stats, masking: true
                     end
                 end
             end

@@ -33,6 +33,17 @@ module API
         )
 
         expose(
+          :logo_url,
+          as: :logo_url,
+          documentation: {
+            desc: 'Logo Url',
+            type: String
+          }
+        ) do |account|
+          account.currency[:icon_url]
+        end
+
+        expose(
           :deposit_addresses,
           if: ->(account, _options) { account.currency.coin? },
           using: API::V2::Entities::PaymentAddress,
@@ -60,6 +71,7 @@ module API
           member_id = options[:current_user] if options[:current_user]
           ::VirtualAccount.where(member_id: member_id)
         end
+
       end
     end
   end

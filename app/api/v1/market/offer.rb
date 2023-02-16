@@ -33,9 +33,11 @@ module API
                     get "/" do
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                 .lt_any
+                                                .with_range_amount
                                                 .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
+                        
                         search = ::P2pOffer.joins(:p2p_pair)
                                             .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
@@ -52,7 +54,7 @@ module API
                             offer[:payment] = payment(offer[:id])
                         end
 
-                        present paginate(Rails.cache.fetch("offers_#{params}", expires_in: 600) { data }), with: API::V1::Entities::Offer
+                        present paginate(Rails.cache.fetch("offers_#{params}", expires_in: 600) { data }), with: API::V1::Public::Entities::Offer
                     end
 
                     desc 'Create offer trade'
