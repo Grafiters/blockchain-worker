@@ -34,6 +34,17 @@ module API
         )
 
         expose(
+          :logo_url,
+          as: :logo_url,
+          documentation: {
+            desc: 'Logo Url',
+            type: String
+          }
+        ) do |market|
+          market.base[:icon_url]
+        end
+
+        expose(
           :type,
           documentation: {
             type: String,
