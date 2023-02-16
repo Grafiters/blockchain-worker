@@ -25,6 +25,15 @@ module API
                     }
                 end
 
+                def blocked_params
+                    params_mapping = {
+                        p2p_user_id: current_p2p_user[:id],
+                        target_user_id: target_p2p_user[:id],
+                        state: params[:state],
+                        state_date: Time.now
+                    }
+                end
+
                 def p2p_user_feedback
                     user = ::P2pUser.find_by(member_id: current_user[:id])
                     user[:id]
