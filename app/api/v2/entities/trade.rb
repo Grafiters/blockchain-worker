@@ -45,8 +45,8 @@ module API
             desc: "The market in which the order is placed, e.g. 'btcusd'."\
                   "All available markets can be found at /api/v2/markets."
           }
-        )do |trade.market|
-          trade.market.currency[:icon_url]
+        )do |trade|
+          trade.market.base[:icon_url]
         end
 
         expose(
@@ -57,8 +57,8 @@ module API
             desc: "The market in which the order is placed, e.g. 'btcusd'."\
                   "All available markets can be found at /api/v2/markets."
           }
-        )do |trade.market|
-          trade.market.currency[:name]
+        )do |trade|
+          trade.market.base[:name]
         end
 
         expose(
