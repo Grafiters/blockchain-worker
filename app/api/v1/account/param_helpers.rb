@@ -29,7 +29,7 @@ module API
                     params_mapping = {
                         p2p_user_id: current_p2p_user[:id],
                         target_user_id: target_p2p_user[:id],
-                        reason: params[:reason]
+                        reason: params[:reason],
                         state: params[:state],
                         state_date: Time.now
                     }
