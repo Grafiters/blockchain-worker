@@ -150,9 +150,11 @@ module API
                     desc 'Confirmation Target Payment step 1'
                     params do
                         requires :payment_method,
-                                type: {value: Integer, message: 'offer.market.payment_method_invalid_value'}
+                                type: Integer,
+                                desc: 'order.market.payment_method_invalid_value',
+                                allow_blank: false
                     end
-                    put '/payment_confirm/:order_number' do
+                    post '/payment_confirm/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
                         if order.blank?
                             error!({ errors: ['p2p_order.order.can_not_update_data_not_exists'] }, 422)
