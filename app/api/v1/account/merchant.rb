@@ -12,6 +12,9 @@ module API
                         requires :state,
                                 type: String,
                                 desc: 'State requires blocked & unblocked'
+                        optional :reason,
+                                type: String,
+                                desc: 'Reason of blocked merchant'
                     end
                     put 'blocked/:merchant' do
 
@@ -20,6 +23,7 @@ module API
                         end
 
                         target = ::P2pUserBlocked.find_by(target_user_id: target_p2p_user[:id])
+
                         if target.blank?
                             blocked = ::P2pUserBlocked.create!(blocked_params)
                         else
