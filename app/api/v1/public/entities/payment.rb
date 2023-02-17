@@ -41,6 +41,15 @@ module API
                         type: String
                     }
                 )
+                
+                expose(
+                    :tipe,
+                    as: :type,
+                    documentation: {
+                        desc: 'Type Payment.',
+                        type: String
+                    }
+                )
     
                 expose(
                     :base_color,

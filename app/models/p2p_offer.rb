@@ -7,27 +7,16 @@ class P2pOffer < ApplicationRecord
     belongs_to :p2p_user, dependent: :destroy
 
     before_validation :assign_uuid
-
-    # def submit_offer
-    #     return unless new_record?
-
-    #     self.locked = self.origin_locked = if ord_type == 'market' && side == 'buy'
-    #                                         [compute_locked * OrderBid::LOCKING_BUFFER_FACTOR, member_balance].min
-    #                                     else
-    #                                         compute_locked
-    #                                     end
-
-    #     raise ::Account::AccountError unless member_balance >= locked
-
-    #     return trigger_third_party_creation unless market.engine.peatio_engine?
-
-    #     save!
-    #     AMQP::Queue.enqueue(:order_processor,
-    #                         { action: 'submit', order: attributes },
-    #                         { persistent: false })
-    # end
+    
+    after_commit om: :create do
+      update_account_offer
+    end
 
     private
+    def update_account_offer
+      self.increment!(:offers_count)
+    end
+
     def assign_uuid
         return unless offer_number.blank?
 

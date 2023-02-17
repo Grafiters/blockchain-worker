@@ -10,6 +10,10 @@ module Jobs
 
                 def first_approvement
                     ::P2pOrder.where(state: 'prepare').each do |order|
+                    rescue StandardError => e
+                        report_exception_to_screen(e)
+                        next
+
                         if Time.now >= order.first_approve_expire_at
                             order.update!(state: 'canceled')
                         end
@@ -18,6 +22,9 @@ module Jobs
     
                 def second_approvement
                     ::P2pOrder.where(state: 'waiting').each do |order|
+                    rescue StandardError => e
+                        report_exception_to_screen(e)
+                        next
                         return if order.second_approve_expire_at.blank?
 
                         if Time.now >= order.second_approve_expire_at

@@ -12,16 +12,16 @@ module API
                         p2p_user_id: p2p_user[:id],
                         p2p_payment_id: params[:payment_method],
                         account_number: params[:account_number],
-                        name: params[:full_name]
+                        name: params[:full_name].present? ? params[:full_name] : nil,
+                        qrcode: params[:qrcode].present? ? params[:qrcode] : nil
                     }
                 end
 
                 def update_params(data)
                     params_mapping = {
-                        p2p_user_id: p2p_user[:id],
-                        p2p_payment_id: params[:payment_method].present? ? params[:payment_method] : data[:p2p_payment_id],
                         account_number: params[:account_number].present? ? params[:account_number] : data[:account_number],
-                        name: params[:name].present? ? params[:name] : data[:name]
+                        name: params[:full_name].present? ? params[:full_name] : data[:name],
+                        qrcode: params[:qrcode].present? ? params[:qrcode].present? : data[:qrcode]
                     }
                 end
 
@@ -29,6 +29,7 @@ module API
                     params_mapping = {
                         p2p_user_id: current_p2p_user[:id],
                         target_user_id: target_p2p_user[:id],
+                        reason: params[:reason]
                         state: params[:state],
                         state_date: Time.now
                     }

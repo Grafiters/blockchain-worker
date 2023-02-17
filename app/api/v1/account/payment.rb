@@ -22,7 +22,9 @@ module API
                                 type: Integer
                         requires :account_number,
                                 type: String
-                        requires :full_name,
+                        optional :full_name,
+                                type: String
+                        optional :qrcode,
                                 type: String
                     end
                     post do
@@ -39,16 +41,34 @@ module API
                             errors!({errors: ["2pp_user.payment_user.payment_method_invalid_data"]}, 422)
                         end
 
-                        name = params[:bank].split("-")
-                        bank_name = ::P2pPayment.find_by(symbol: params[:symbol])
+                        name = params[:symbol].split("-")
+                        if name.length > 1
+                            bank_name = ::P2pPayment.find_by(symbol: namejoin(" "))
+                        else
+                            bank_name = ::P2pPayment.find_by(symbol: params[:symbol])
+                        end
+
+                        if bank_name.blank?
+                            error!({ errors: ['2pp_user.payment_user.payment_method_invalid_params'] }, 422)
+                        end
                         present bank_name
                     end
-                    post "/update/:payment" do
+
+                    desc 'update payment user by slug payment user uid'
+                    params do
+                        optional :account_number,
+                                type: String
+                        optional :full_name,
+                                type: String
+                        optional :qrcode,
+                                type: String
+                    end
+                    put "/update/:payment" do
                         if payment_exists.blank?
                             error!({ errors: ['p2p_user.payment_user.payment_user_does_not_exists'] }, 422)
                         end
 
-                        payement = ::P2pPaymentUser.find_by(id: params[:payment])
+                        payement = ::P2pPaymentUser.find_by(payment_user_uid: params[:payment])
 
                         payment = payement.update(update_params(payement))
 
