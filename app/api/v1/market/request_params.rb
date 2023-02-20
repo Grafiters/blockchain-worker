@@ -38,7 +38,6 @@ module API
                         min_order_amount: params[:min_order],
                         max_order_amount: params[:max_order],
                         side: params[:side],
-                        paymen_limit_time: params[:payment_limit],
                         term_of_condition: params[:term_of_condition],
                         auto_replay: params[:auto_replay]
                     }

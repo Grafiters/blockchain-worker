@@ -14,7 +14,8 @@ class P2pOffer < ApplicationRecord
 
     private
     def update_account_offer
-      self.increment!(:offers_count)
+      offer = ::P2pUser.find_by(id: p2p_user_id)
+      offer.increment!(:offers_count)
     end
 
     def assign_uuid
