@@ -8,7 +8,7 @@ class P2pOffer < ApplicationRecord
 
     before_validation :assign_uuid
     
-    after_commit om: :create do
+    after_commit on: :create do
       update_account_offer
     end
 

@@ -106,14 +106,13 @@ module API
                         offer = ::P2pOffer.select("p2p_offers.*", "p2p_offers.created_at as payment","p2p_offers.updated_at as trader", "p2p_offers.p2p_pair_id as currency").find_by(id: order[:p2p_offer_id])
                         payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
                                                     .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
-                                                    .where(p2p_order_payments: {p2p_offer_id: offer[:id]})
-                                                    .where(p2p_order_payments: {state: "active"})
+                                                    .find_by(p2p_order_payments: {p2p_offer_id: offer[:id]})
                         
-                        # offer[:payment] = payment
+                        offer[:payment] = payment
                         offer[:currency] = currency(offer[:currency])[:currency].upcase
 
                         if offer[:side] == 'sell'
-                            payment_merchant = ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.*", "p2p_payments.name as bank","p2p_payments.logo_url","p2p_payments.base_color","p2p_payments.state")
+                            payment_merchant = ::P2pOrderPayment.joins(p2p_payment_user: :p2p_payment).select("p2p_order_payments.id","p2p_payments.name as bank","p2p_payment_users.name as account_name","p2p_payment_users.name","p2p_payments.logo_url","p2p_payments.base_color","p2p_payment_users.account_number","p2p_payments.state").where(p2p_order_payments: {p2p_offer_id: offer[:id]})
                         end
 
                         present :order, order, with: API::V1::Entities::Order
@@ -171,7 +170,7 @@ module API
                         order.update({
                             p2p_order_payment_id: params[:payment_method],
                             first_approve_expire_at: Time.now,
-                            second_approve_expire_at: Time.now + (order.p2p_offer.paymen_limit_time.to_i * 60),
+                            second_approve_expire_at: Time.now + (15 * 60),
                             state: 'waiting'
                         })
                         present order
