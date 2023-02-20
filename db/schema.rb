@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_16_022024) do
+ActiveRecord::Schema.define(version: 2023_02_17_062744) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -375,6 +375,11 @@ ActiveRecord::Schema.define(version: 2023_02_16_022024) do
     t.index ["p2p_payment_user_id"], name: "index_p2p_order_payments_on_p2p_payment_user_id"
   end
 
+  create_table "p2p_order_report_details", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "p2p_orders", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "order_number", limit: 50, null: false
     t.integer "p2p_offer_id"
@@ -411,8 +416,10 @@ ActiveRecord::Schema.define(version: 2023_02_16_022024) do
   create_table "p2p_payment_users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "p2p_payment_id", null: false
     t.integer "p2p_user_id", null: false
+    t.string "payment_user_uid", limit: 50, null: false
     t.string "account_number", limit: 50, null: false
-    t.string "name", limit: 50, null: false
+    t.string "name", limit: 50
+    t.string "qrcode"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["p2p_payment_id"], name: "index_p2p_payment_users_on_p2p_payment_id"
@@ -425,7 +432,7 @@ ActiveRecord::Schema.define(version: 2023_02_16_022024) do
     t.string "logo_url", limit: 256, null: false
     t.string "base_color", limit: 50
     t.string "state", limit: 10, null: false
-    t.string "tipe", limit: 50, null: false
+    t.integer "tipe", null: false
     t.datetime "deleted_at"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -444,6 +451,7 @@ ActiveRecord::Schema.define(version: 2023_02_16_022024) do
   create_table "p2p_user_blockeds", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "p2p_user_id"
     t.integer "target_user_id"
+    t.text "reason", null: false
     t.integer "state"
     t.datetime "state_date"
     t.datetime "created_at", null: false

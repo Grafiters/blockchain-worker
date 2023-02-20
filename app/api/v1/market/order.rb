@@ -99,7 +99,7 @@ module API
                         order = ::P2pOrder.select("p2p_orders.*","p2p_orders.p2p_order_payment_id as payment").find_by(order_number: params[:order_number])
 
                         if order[:p2p_order_payment_id].present?
-                            order_payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment).select("p2p_payments.*","p2p_order_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number").find_by(p2p_order_payments: {id: order[:p2p_order_payment_id]})
+                            order_payment = ::P2pPaymentUser.joins(p2p_order_payment: :p2p_payment).select("p2p_payments.*","p2p_order_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number").find_by(p2p_order_payments: {id: order[:p2p_order_payment_id]})
                             order[:payment] = order_payment
                         end
 
