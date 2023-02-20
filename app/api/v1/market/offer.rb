@@ -21,6 +21,8 @@ module API
                         requires :side,
                                 type: String,
                                 desc: 'Side Offer by Sell Or Buy'
+                        requires :payment,
+                                allow_blank: false
                         optional :amount,
                                 type: { value: Integer, message: 'market.order.non_integer_limit' }
                         optional :max_amount,
@@ -66,11 +68,15 @@ module API
                             error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
                         end
 
+                        if params[:payment].blank?
+                            error!({ errors: ['p2p_user.user.payment_must_be_exists'] }, 422)
+                        end
+
                         create_offer = P2pOffer.create(build_params)
 
                         create_payment = create_payment_offer(create_offer[:id])
 
-                        present :offer, create_offer, with: API::V1::Market::Entities::Offer
+                        present :offer, create_offer
                         present :payment, create_offer.p2p_order_payment
                     end
 
