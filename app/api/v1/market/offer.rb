@@ -72,6 +72,8 @@ module API
                             error!({ errors: ['p2p_user.user.payment_must_be_exists'] }, 422)
                         end
 
+                        check_payment_user
+
                         create_offer = P2pOffer.create(build_params)
 
                         create_payment = create_payment_offer(create_offer[:id])

@@ -13,6 +13,18 @@ module API
                   ::P2pOrderPayment.create(payment_params(ofid, payment))
               end
           end
+
+          def check_payment_user
+            params[:payment].each do |index, payment|
+              check_payment(payment)
+            end
+          end
+
+          def check_payment(payment_id)
+            payment = ::P2pPaymentUser.find_by({id: payment_id, p2p_user_id: p2p_user_id[:id]})
+
+            error!({ errors: ['p2p_user.user.payment_method_users_not_compatible'] }, 422) unless payment.present?
+          end
     
           def order_param
             params[:order_by].downcase == 'asc' ? 'id asc' : 'id desc'
