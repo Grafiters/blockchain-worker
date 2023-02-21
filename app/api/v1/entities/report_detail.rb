@@ -23,6 +23,16 @@ module API
                 }
             )
 
+            expose :upload,
+                documentation: {
+                    type: 'String',
+                    desc: 'File url and type'
+                } do |p2p_user_report_detail|
+                {
+                    image: p2p_user_report_detail.upload
+                }
+            end
+
             expose(
                 :created_at,
                 :updated_at,
