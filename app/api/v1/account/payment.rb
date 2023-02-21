@@ -5,6 +5,7 @@ module API
                 namespace :payment do
                     helpers ::API::V2::Admin::Helpers
                     helpers ::API::V1::Account::ParamHelpers
+                    helpers ::API::V1::Account::Utils
 
                     desc 'Get available fiat'
                     get "/" do
