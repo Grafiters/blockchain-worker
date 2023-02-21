@@ -94,14 +94,13 @@ module API
                             p2p_order.trades
                         end
 
-                expose(
-                    :state,
-                    as: :state,
+                expose :state,
                     documentation: {
                         desc: 'Filter Fiat.',
                         type: String
-                    }
-                )
+                    } do |p2p_order|
+                        p2p_order.state_canceled
+                    end
     
                 expose(
                     :side,
