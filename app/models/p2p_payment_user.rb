@@ -1,4 +1,6 @@
 class P2pPaymentUser < ApplicationRecord
+    mount_uploader :qrcode, PaymentUserUploader
+
     has_many :p2p_order_payment, dependent: :destroy
     
     belongs_to :p2p_users
@@ -6,6 +8,10 @@ class P2pPaymentUser < ApplicationRecord
 
     before_create :assign_uuid
 
+    def verification_url
+        "/api/v2/p2p/confirmation_chat/#{id}"
+    end
+    
     private
     def assign_uuid
         return unless payment_user_uid.blank?

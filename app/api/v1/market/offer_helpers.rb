@@ -10,7 +10,8 @@ module API
 
           def create_payment_offer(ofid)
               params[:payment].each do |index, payment|
-                  ::P2pOrderPayment.create(payment_params(ofid, payment))
+                  payment_user = ::P2pPaymentUser.find_by(payment_user_uid: payment)
+                  ::P2pOrderPayment.create(payment_params(ofid, payment_user[:id]))
               end
           end
 
@@ -21,7 +22,7 @@ module API
           end
 
           def check_payment(payment_id)
-            payment = ::P2pPaymentUser.find_by({id: payment_id, p2p_user_id: p2p_user_id[:id]})
+            payment = ::P2pPaymentUser.find_by({payment_user_uid: payment_id, p2p_user_id: p2p_user_id[:id]})
 
             error!({ errors: ['p2p_user.user.payment_method_users_not_compatible'] }, 422) unless payment.present?
           end
@@ -41,4 +42,3 @@ module API
       end
     end
 end
-  
