@@ -6,8 +6,8 @@ module API
       module Entities
         class Payment < Base
             expose(
-                :id,
-                as: :payment_user_id,
+                :payment_user_uid,
+                as: :payment_user_uid,
                 documentation: {
                     desc: 'Filter Fiat.',
                     type: String

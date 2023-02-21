@@ -13,8 +13,8 @@ module API
 
                         # present ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.*", "p2p_payments.*").where(p2p_payment_users: {p2p_user_id: p2p_user[:id]})
                         present paginate(
-                                ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.name as account_name", "p2p_payment_users.account_number", "p2p_payments.*").where(p2p_payment_users: {p2p_user_id: p2p_user[:id]})
-                            )
+                                ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.id","p2p_payment_users.payment_user_uid","p2p_payment_users.name as account_name", "p2p_payment_users.account_number","p2p_payment_users.qrcode", "p2p_payments.symbol", "p2p_payments.logo_url","p2p_payments.base_color","p2p_payments.state","p2p_payments.name").where(p2p_payment_users: {p2p_user_id: p2p_user[:id]})
+                            ), with: API::V1::Account::Entities::Payment
                     end
 
                     desc 'Create new payment method for user p2p'
@@ -25,18 +25,28 @@ module API
                                 type: String
                         optional :full_name,
                                 type: String
-                        optional :qrcode,
-                                type: String
+                        optional :qrcode
+                        optional :otp,
+                                type: { value: Integer, message: 'p2p_user.payment.non_integer_otp' },
+                                allow_blank: true,
+                                desc: 'OTP to perform action'
                     end
                     post do
                         if exists.present?
                             error!({ errors: ['p2p_user.payment_user.payment_user_is_exists'] }, 422)
                         end
-                        
+
+                        if params[:otp].present?
+                            unless Vault::TOTP.validate?(current_user.uid, params[:otp])
+                                error!({ errors: ['p2p_user.payment.invalid_otp'] }, 422)
+                            end
+                        end
+
                         payment = ::P2pPaymentUser.create(build_params)
 
                         present payment
                     end
+
                     get "/:symbol" do
                         if params[:symbol].blank?
                             errors!({errors: ["2pp_user.payment_user.payment_method_invalid_data"]}, 422)
@@ -50,7 +60,7 @@ module API
                         end
 
                         if bank_name.blank?
-                            error!({ errors: ['2pp_user.payment_user.payment_method_invalid_params'] }, 422)
+                            error!({ errors: ['p2p_user.payment_user.payment_method_invalid_params'] }, 422)
                         end
                         present bank_name
                     end
@@ -61,19 +71,21 @@ module API
                                 type: String
                         optional :full_name,
                                 type: String
-                        optional :qrcode,
-                                type: String
+                        optional :qrcode
                     end
-                    put "/update/:payment" do
-                        if payment_exists.blank?
+                    post "/update/:payment" do
+                        payment = ::P2pPaymentUser.find_by(payment_user_uid: params[:payment])
+                        
+                        if payment.blank?
                             error!({ errors: ['p2p_user.payment_user.payment_user_does_not_exists'] }, 422)
                         end
 
-                        payement = ::P2pPaymentUser.find_by(payment_user_uid: params[:payment])
+                        payment.update(update_params(payment))
+                        
+                        present payment
+                        # payment = payment.update(update_params(payment))
 
-                        payment = payement.update(update_params(payement))
-
-                        present :succes, ['p2p_user.payment_user.updated']
+                        # present :succes, ['p2p_user.payment_user.updated']
                     end
                 end
             end

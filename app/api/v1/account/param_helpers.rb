@@ -13,7 +13,7 @@ module API
                         p2p_payment_id: params[:payment_method],
                         account_number: params[:account_number],
                         name: params[:full_name].present? ? params[:full_name] : nil,
-                        qrcode: params[:qrcode].present? ? params[:qrcode] : nil
+                        qrcode: params[:qrcode]['tempfile'].present? ? params[:qrcode]['tempfile'] : nil
                     }
                 end
 
@@ -21,8 +21,12 @@ module API
                     params_mapping = {
                         account_number: params[:account_number].present? ? params[:account_number] : data[:account_number],
                         name: params[:full_name].present? ? params[:full_name] : data[:name],
-                        qrcode: params[:qrcode].present? ? params[:qrcode].present? : data[:qrcode]
+                        qrcode: params[:qrcode].present? ? params[:qrcode]['tempfile'] : qrcode(data)
                     }
+                end
+
+                def qrcode(qr)
+                    qr[:qrcode].blank? ? nil : qr[:qrcode]
                 end
 
                 def blocked_params
@@ -46,6 +50,16 @@ module API
 
                 def payment_exists
                     ::P2pPaymentUser.find_by({p2p_payment_id: params[:payment], p2p_user_id: current_p2p_user[:id]})
+                end
+
+                def state_order(data)
+                    if data[:state] == 'waiting' && current_user[:uid] != data[:maker_uid]
+                        "#{data[:state]} from seller"
+                    elsif data[:state] == 'waiting'
+                        "#{data[:state]} from buyer"
+                    else
+                        "#{data[:state]}"
+                    end
                 end
             end
         end

@@ -7,14 +7,14 @@ module API
         module Entities
             class Payment < Grape::Entity
                 expose(
-                    :id,
-                    as: :payment_user_id,
+                    :payment_user_uid,
+                    as: :payment_user_uid,
                     documentation: {
                         desc: 'Filter Fiat.',
                         type: String
                     }
                 )
-    
+                
                 expose(
                     :name,
                     as: :bank_name,
@@ -32,6 +32,18 @@ module API
                         type: String
                     }
                 )
+
+                expose :account_name,
+                        documentation: {
+                            desc: 'Account Name Payment',
+                            type: String
+                        }
+
+                expose :account_number,
+                        documentation: {
+                            desc: 'Account Name Payment',
+                            type: String
+                        }
     
                 expose(
                     :logo_url,
@@ -42,6 +54,16 @@ module API
                     }
                 )
     
+                expose :qrcode,
+                    documentation: {
+                        type: 'String',
+                        desc: 'File url and type'
+                    } do |p2p_payment_user|
+                    {
+                        image: p2p_payment_user.qrcode
+                    }
+                end
+
                 expose(
                     :base_color,
                     as: :base_color,
