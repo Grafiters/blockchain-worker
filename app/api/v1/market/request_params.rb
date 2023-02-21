@@ -67,8 +67,17 @@ module API
                     params_mapping = {
                         p2p_order_id: order[:id],
                         user_uid: current_user[:uid] == p2p_user_id[:uid] ? p2p_user_id[:uid] : 'Nusablocks',
-                        chat: params[:message].present? ? params[:message] : 'Mohon Kirim Bukti tranfer'
+                        chat: params[:message].present? ? image_check : 'Mohon Kirim Bukti tranfer',
+                        upload: params[:message].present? ? image_exists : nil
                     }
+                end
+
+                def image_check
+                    params[:message]['tempfile'].blank? ? params[:message] : nil
+                end
+
+                def image_exists
+                    params[:message]['tempfile'].present? ? params[:message]['tempfile'] : nil
                 end
 
                 def receiver_p2p
@@ -102,8 +111,16 @@ module API
                     }
                 end
 
+                def report_image(report, data)
+                    {
+                        p2p_user_report_id: report,
+                        key: params[:reason_key][data],
+                        upload: params[:message][data]['tempfile']
+                    }
+                end
+
                 def chat_user(uid)
-                    ::P2pUser.joins(:member).select("p2p_users.username","members.uid as uid","members.email").find_by(members: {uid: uid})
+                    ::P2pUser.joins(:member).select("p2p_users.*","members.uid as uid","members.email").find_by(members: {uid: uid})
                 end
 
                 def p2p_user_id

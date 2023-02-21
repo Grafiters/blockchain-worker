@@ -25,6 +25,16 @@ module API
                 }
             )
 
+            expose :upload,
+               documentation: {
+                    type: 'String',
+                    desc: 'File url and type'
+               } do |p2p_chat|
+                {
+                    image: p2p_chat.upload
+                }
+            end
+
             expose(
                 :created_at,
                 :updated_at,
