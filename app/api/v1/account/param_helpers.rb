@@ -9,7 +9,7 @@ module API
                 
                 def build_params
                     params_mapping = {
-                        p2p_user_id: p2p_user[:id],
+                        p2p_user_id: current_p2p_user[:id],
                         p2p_payment_id: params[:payment_method],
                         account_number: params[:account_number],
                         name: params[:full_name].present? ? params[:full_name] : nil,
@@ -41,11 +41,11 @@ module API
                 end
 
                 def exists
-                    ::P2pPaymentUser.find_by({p2p_user_id: p2p_user[:id], p2p_payment_id: params[:payment_method]})
+                    ::P2pPaymentUser.find_by({p2p_user_id: current_p2p_user[:id], p2p_payment_id: params[:payment_method]})
                 end
 
                 def payment_exists
-                    ::P2pPaymentUser.find_by({p2p_payment_id: params[:payment], p2p_user_id: p2p_user[:id]})
+                    ::P2pPaymentUser.find_by({p2p_payment_id: params[:payment], p2p_user_id: current_p2p_user[:id]})
                 end
             end
         end
