@@ -49,6 +49,14 @@ class P2pOrder < ApplicationRecord
         as_json_trade(member)
     end
 
+    def state_canceled
+        if state == 'canceled'
+            "#{state} by #{aproved_by}"
+        else
+            "#{state}"
+        end
+    end
+
     def lock_amount_offer
         offer = ::P2pOffer.find_by(id: p2p_offer_id)
         offer.update!(available_amount: computed_locked(offer))
