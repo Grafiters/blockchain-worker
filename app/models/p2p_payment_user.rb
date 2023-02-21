@@ -4,9 +4,7 @@ class P2pPaymentUser < ApplicationRecord
     belongs_to :p2p_users
     belongs_to :p2p_payment
 
-    after_commit on: :create do
-        assign_uuid
-    end
+    before_create :assign_uuid
 
     private
     def assign_uuid
