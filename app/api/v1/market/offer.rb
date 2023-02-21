@@ -21,8 +21,8 @@ module API
                         requires :side,
                                 type: String,
                                 desc: 'Side Offer by Sell Or Buy'
-                        requires :payment,
-                                allow_blank: false
+                        optional :payment,
+                                allow_blank: true
                         optional :amount,
                                 type: { value: Integer, message: 'market.order.non_integer_limit' }
                         optional :max_amount,
