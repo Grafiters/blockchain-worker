@@ -31,15 +31,7 @@ module API
             type: BigDecimal
           }
         )
-
-        expose(
-          :p2p_wallet,
-          documentation: {
-            desc: 'Account P2p balance.',
-            type: BigDecimal
-          }
-        )
-
+        
         expose(
           :logo_url,
           as: :logo_url,
