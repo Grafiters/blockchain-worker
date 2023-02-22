@@ -18,7 +18,7 @@ module API
                             type: { value: BigDecimal, message: 'offer.order.non_decimal_price' },
                             values: { value: -> (p){ p.try(:positive?) }, message: 'offer.order.non_positive_price' }
                     optional :payment_order,
-                            type: {value: Integer, message: 'offer.market.payment_invalid_value'}
+                            type: {value: String, message: 'offer.market.payment_invalid_value'}
                 end
 
                 params :chats do
