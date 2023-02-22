@@ -20,9 +20,9 @@ module API
                             error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
                         end
 
-                        if current_user == receiver_p2p
-                            error!({ errors: ['p2p_order.order.can_not_order_to_yourself'] }, 422)
-                        end
+                        # if current_user == receiver_p2p
+                        #     error!({ errors: ['p2p_order.order.can_not_order_to_yourself'] }, 422)
+                        # end
 
                         offer = ::P2pOffer.find_by(offer_number: params[:offer_number])
                         if offer.blank?
@@ -37,30 +37,6 @@ module API
                         
                         present orders
                     end
-                    # post '/' do
-                    #     if p2p_user_auth.blank?
-                    #         error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
-                    #     end
-
-                    #     if current_user == receiver_p2p
-                    #         error!({ errors: ['p2p_order.order.can_not_order_to_yourself'] }, 422)
-                    #     end
-                        
-                    #     offer = ::P2pOffer.find_by(offer_number: params[:offer_number])
-                    #     otype = offer[:side] == 'sell' ? 'buy' : 'sell'
-                        
-                    #     if otype == 'buy'
-                    #         # present ::P2pOrder.submit_order(p2p_sell_params(offer, otype))
-                    #         orders = create_order(p2p_sell_params(offer, otype))
-                    #     else
-                    #         # present ::P2pOrder.submit_order(p2p_buy_params(offer, otype))
-                    #         orders = create_order(p2p_sell_params(offer, otype))
-                    #     end
-
-                    #     chat = ::P2pChat.create(chat_params(orders))
-
-                    #     present orders
-                    # end
 
                     desc 'Chat Order'
                     params do
@@ -203,34 +179,32 @@ module API
 
                     desc 'Report merchant when order progress'
                     params do
-                        optional :image_payment
                         requires :order_number,
                                 type: String,
                                 desc: -> { V1::Entities::Order.documentation[:order_number] }
-                        requires :reason_key
-                        requires :message
+                        requires :reason
                     end
                     post '/report/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
+                        
+                        params[:reason].each do |param|
+                            if param[:key].blank?
+                                error!({ errors: ['p2p_order.order.report.reason_key_can_not_blank'] }, 422)
+                            end
 
-                        if params[:reason_key].blank?
-                            error!({ errors: ['p2p_order.order.report.reason_can_not_blank'] }, 422)
-                        end
+                            if param[:message].blank? && param[:upload_payment].present?
+                                error!({ errors: ['p2p_order.order.report.message_can_not_blank'] }, 422)
+                            end
 
-                        report = ::P2pUserReport.create!(report_params)
-
-                        params[:reason_key].each do |i, r|
-                            if params[:message][i]['tempfile'].present?
+                            if (param[:message].blank? || param[:message].present? )&& param[:upload_payment].present?
                                 error!({ errors: ['p2p_order.order.report.upload_image_still_maintenance'] }, 422)
                             end
                         end
 
-                        params[:reason_key].each do |i, r|
-                            if params[:message][i]['tempfile'].present?
-                                ::P2pUserReportDetail.create!(report_image(report[:id], i))
-                            else
-                                ::P2pUserReportDetail.create!(report_detail(report[:id], i))
-                            end
+                        report = ::P2pUserReport.create!(report_params)
+
+                        params[:reason].each do |param|
+                            ::P2pUserReportDetail.create!(report_detail(report[:id], param))
                         end
 
                         report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})

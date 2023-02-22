@@ -29,6 +29,17 @@ module API
           if params[:amount] > offer[:available_amount]
             error!({ errors: ['p2p.order.price_order_not_available_for_offer'] }, 422)
           end
+
+          if offer[:side] == 'buy'
+            if params[:payment_order].blank?
+              error!({ errors: ['p2p.order.payment_method_must_exists'] }, 422)
+            end
+
+            payment = ::P2pOrderPayment.joins(:p2p_payment_user).find_by(p2p_payment_users: {payment_user_uid: params[:payment_method]})
+            if payment.blank?
+              error!({ errors: ['p2p.order.payment_method_not_avail_on_your_account'] }, 422)
+            end
+          end
         end
       end
     end
