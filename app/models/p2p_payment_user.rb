@@ -3,6 +3,10 @@ class P2pPaymentUser < ApplicationRecord
 
     has_many :p2p_order_payment, dependent: :destroy
     
+    extend Enumerize
+    STATES = { active: 0, inactive: -100, deleted: -200 }
+    enumerize :state, in: STATES, scope: true
+
     belongs_to :p2p_users
     belongs_to :p2p_payment
 
