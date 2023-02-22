@@ -106,16 +106,9 @@ module API
                 def report_detail(report_id, data)
                     {
                         p2p_user_report_id: report_id,
-                        key: params[:reason_key][data],
-                        reason: params[:message][data]
-                    }
-                end
-
-                def report_image(report, data)
-                    {
-                        p2p_user_report_id: report,
-                        key: params[:reason_key][data],
-                        upload: params[:message][data]['tempfile']
+                        key: data[:key],
+                        reason: data[:message].present? ? data[:message] : nil,
+                        upload: data[:upload_payment].present? ? data[:upload_payment]['tempfile'] : nil
                     }
                 end
 
