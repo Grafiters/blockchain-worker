@@ -33,12 +33,13 @@ module API
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
                         
-                        search = ::P2pOffer.joins(:p2p_pair)
-                                            .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
+                        order = ::P2pOffer.joins(:p2p_pair, p2p_order_payment: :p2p_payment_user)
+                                            .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
-                                            .ransack(search_params)
+                        order = order.where('p2p_payment_users.p2p_payment_id IN (?)', params[:payment]) unless params[:payment][0] == ""
+                        search = order.ransack(search_params)
                         
                         result = search.result.load
                         data = result.each do |offer|
@@ -46,10 +47,10 @@ module API
                             offer[:persentage] = persentage(offer[:id])
                             offer[:currency] = currency(offer[:currency])[:currency].upcase
                             offer[:member] = trader(offer[:p2p_user_id])
-                            offer[:payment] = payment(offer[:id])
                         end
 
-                        present data, with: API::V1::Public::Entities::Offer
+                        # present params
+                        present paginate(data), with: API::V1::Public::Entities::Offer
                     end
 
                     desc 'Get Detail of Offer Trade Number'

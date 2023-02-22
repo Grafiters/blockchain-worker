@@ -12,6 +12,12 @@ class P2pOffer < ApplicationRecord
       update_account_offer
     end
 
+    def payment
+      ::P2pOrderPayment.joins(p2p_payment_user: :p2p_payment)
+                                                    .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
+                                                    .where(p2p_order_payments: {p2p_offer_id: id})
+    end
+
     private
     def update_account_offer
       offer = ::P2pUser.find_by(id: p2p_user_id)

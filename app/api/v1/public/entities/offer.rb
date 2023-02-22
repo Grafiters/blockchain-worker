@@ -106,7 +106,12 @@ module API
                 )
     
                 expose :member, as: :trader, using: API::V1::Entities::Trader
-                expose :payment, using: API::V1::Public::Entities::Payment
+                expose :payment,
+                        documentation: {
+                            desc: 'All Payment Offer',
+                        } do |p2p_offer|
+                            p2p_offer.payment
+                        end
             end
         end
     end
