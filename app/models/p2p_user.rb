@@ -43,11 +43,17 @@ class P2pUser < ApplicationRecord
 
       {
         total: data.count,
-        mount_trade: data.count,
-        completed_rate: "#{}",
+        mount_trade: data.where("p2p_orders.created_at >= ? AND p2p_orders.created_at <= ?", last_month, Time.now).count,
+        completed_rate: data.where("p2p_orders.state = ?", 'success').where("p2p_orders.created_at >= ? AND p2p_orders.created_at <= ?", last_month, Time.now).count,
         release_time: "00:45:00",
         pay_time: "00:45:00"
       }
+    end
+
+    def last_month
+      now = Date.today
+
+      ninety_days_ago = (now - 30)
     end
 
     def stats(data)

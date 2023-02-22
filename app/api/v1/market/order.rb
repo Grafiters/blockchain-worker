@@ -96,7 +96,7 @@ module API
                             target = ::P2pUser.joins(:member).find_by(members: {uid: order[:taker_uid]})
                         end
 
-                        present :target, target, with: API::V1::Entities::UserP2p
+                        present :target, target, with: API::V1::Account::Entities::Stats
                         present :room, room, with: API::V1::Entities::Chat
                     end
 
