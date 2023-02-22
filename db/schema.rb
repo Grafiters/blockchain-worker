@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_17_062744) do
+ActiveRecord::Schema.define(version: 2023_02_22_125328) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
     t.decimal "balance", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "p2p_wallet", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "locked", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -328,7 +329,8 @@ ActiveRecord::Schema.define(version: 2023_02_17_062744) do
 
   create_table "p2p_chats", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "p2p_order_id"
-    t.text "chat", null: false
+    t.text "chat"
+    t.text "upload"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "user_uid", limit: 50, null: false
@@ -348,7 +350,7 @@ ActiveRecord::Schema.define(version: 2023_02_17_062744) do
     t.string "side", limit: 10, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "paymen_limit_time", null: false
+    t.string "paymen_limit_time", default: "0", null: false
     t.text "term_of_condition"
     t.string "auto_replay", limit: 150
     t.index ["p2p_pair_id"], name: "index_p2p_offers_on_p2p_pair_id"
@@ -373,11 +375,6 @@ ActiveRecord::Schema.define(version: 2023_02_17_062744) do
     t.datetime "updated_at"
     t.index ["p2p_offer_id"], name: "index_p2p_order_payments_on_p2p_offer_id"
     t.index ["p2p_payment_user_id"], name: "index_p2p_order_payments_on_p2p_payment_user_id"
-  end
-
-  create_table "p2p_order_report_details", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "p2p_orders", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -419,7 +416,8 @@ ActiveRecord::Schema.define(version: 2023_02_17_062744) do
     t.string "payment_user_uid", limit: 50, null: false
     t.string "account_number", limit: 50, null: false
     t.string "name", limit: 50
-    t.string "qrcode"
+    t.text "qrcode"
+    t.integer "state", default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["p2p_payment_id"], name: "index_p2p_payment_users_on_p2p_payment_id"
@@ -464,6 +462,7 @@ ActiveRecord::Schema.define(version: 2023_02_17_062744) do
     t.text "reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "upload"
     t.index ["p2p_user_report_id"], name: "index_p2p_user_reports_on_p2p_user_report_details"
   end
 
