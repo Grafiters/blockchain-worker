@@ -49,7 +49,7 @@ module API
                 end
 
                 def exists
-                    ::P2pPaymentUser.find_by({p2p_user_id: current_p2p_user[:id], p2p_payment_id: params[:payment_method]})
+                    ::P2pPaymentUser.find_by({p2p_user_id: current_p2p_user[:id], p2p_payment_id: params[:payment_method], state: 'active'})
                 end
 
                 def payment_exists
