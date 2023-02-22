@@ -13,7 +13,7 @@ module API
                         p2p_payment_id: payment[:id],
                         account_number: params[:account_number],
                         name: params[:full_name].present? ? params[:full_name] : nil,
-                        qrcode: params[:qrcode]['tempfile'].present? ? params[:qrcode]['tempfile'] : nil
+                        qrcode: params[:qrcode].present? ? params[:qrcode]['tempfile'] : nil
                     }
                 end
 
