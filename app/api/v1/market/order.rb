@@ -63,6 +63,9 @@ module API
                     # end
 
                     desc 'Chat Order'
+                    params do
+                        optional :message
+                    end
                     post '/information_chat/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
 
@@ -87,10 +90,10 @@ module API
                             end
                         end
 
-                        if order[:p2p_user_id] == p2p_user_id[:id]
-                            target = ::P2pUser.find_by(id: order[:p2p_user_id])
+                        if order[:p2p_user_id] != p2p_user_id[:id]
+                            target = ::P2pUser.joins(:member).find_by(members: {uid: order[:maker_uid]})
                         else
-                            target = ::P2pUser.find_by(id: p2p_user_id[:id])
+                            target = ::P2pUser.joins(:member).find_by(members: {uid: order[:taker_uid]})
                         end
 
                         present :target, target, with: API::V1::Entities::UserP2p
