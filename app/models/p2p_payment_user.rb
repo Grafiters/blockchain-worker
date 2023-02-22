@@ -1,5 +1,5 @@
 class P2pPaymentUser < ApplicationRecord
-    mount_uploader :qrcode, PaymentUserUploader
+    # mount_uploader :qrcode, PaymentUserUploader
 
     has_many :p2p_order_payment, dependent: :destroy
     
