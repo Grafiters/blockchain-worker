@@ -23,7 +23,7 @@ module Jobs
                 def second_approvement
                     ::P2pOrder.where(state: 'waiting').each do |order|
                         return if order.second_approve_expire_at.blank?
-                        Rails.logger.warn order
+                        Rails.logger.warn order.order_number
 
                         if Time.now >= order.second_approve_expire_at
                             order.update!(state: 'accepted')
