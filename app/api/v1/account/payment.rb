@@ -36,7 +36,7 @@ module API
                             error!({ errors: ['p2p_user.payment_user.payment_user_is_exists'] }, 422)
                         end
 
-                        if params[:qrcode]['tempfile'].present?
+                        if params[:qrcode].present?
                             error!({ errors: ['p2p_user.payment_user.upload_qrcode_image_still_maintenance'] }, 422)
                         end
 
