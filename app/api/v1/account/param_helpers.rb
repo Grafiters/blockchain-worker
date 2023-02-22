@@ -10,7 +10,7 @@ module API
                 def build_params
                     params_mapping = {
                         p2p_user_id: current_p2p_user[:id],
-                        p2p_payment_id: params[:payment_method],
+                        p2p_payment_id: payment[:id],
                         account_number: params[:account_number],
                         name: params[:full_name].present? ? params[:full_name] : nil,
                         qrcode: params[:qrcode]['tempfile'].present? ? params[:qrcode]['tempfile'] : nil
@@ -37,6 +37,10 @@ module API
                         state: params[:state],
                         state_date: Time.now
                     }
+                end
+
+                def payment
+                    ::P2pPayment.find_by(symbol: params[:payment_method])
                 end
 
                 def p2p_user_feedback

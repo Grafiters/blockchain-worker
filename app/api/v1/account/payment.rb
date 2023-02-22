@@ -20,7 +20,7 @@ module API
                     desc 'Create new payment method for user p2p'
                     params do
                         requires :payment_method,
-                                type: Integer
+                                type: String
                         requires :account_number,
                                 type: String
                         optional :full_name,
