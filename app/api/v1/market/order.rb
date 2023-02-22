@@ -30,9 +30,7 @@ module API
                         end
 
                         otype = offer[:side] == 'sell' ? 'buy' : 'sell'
-                        if offer[:side] == 'buy'
-                            validation_request
-                        end
+                        validation_request
 
                         orders = ::P2pOrder.create(p2p_order_params(offer, otype))
                         chat = ::P2pChat.create(chat_params(orders))
@@ -67,6 +65,14 @@ module API
                     desc 'Chat Order'
                     post '/information_chat/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
+
+                        if params[:message]['tempfile'].present?
+                            error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
+                        end
+
+                        if order[:state] == 'canceled' || order[:state] == 'success' || order[:state] == 'rejected'
+                            error!({ errors: ['p2p_order.information_chat.can_not_send_message_order_is_done'] }, 422)
+                        end
                         
                         chat = ::P2pChat.create(chat_params(order))
                         present chat
@@ -209,6 +215,12 @@ module API
                         end
 
                         report = ::P2pUserReport.create!(report_params)
+
+                        params[:reason_key].each do |i, r|
+                            if params[:message][i]['tempfile'].present?
+                                error!({ errors: ['p2p_order.order.report.upload_image_still_maintenance'] }, 422)
+                            end
+                        end
 
                         params[:reason_key].each do |i, r|
                             if params[:message][i]['tempfile'].present?

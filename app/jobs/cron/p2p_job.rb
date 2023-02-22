@@ -3,17 +3,17 @@ module Jobs
         class P2pJobs
             class <<self
                 def process
+                    Rails.logger.warn "Running Job For P2p Job"
+
                     first_approvement
                     second_approvement
                     sleep 2
                 end
 
                 def first_approvement
-                    ::P2pOrder.where(state: 'prepare').each do |order|
-                    rescue StandardError => e
-                        report_exception_to_screen(e)
-                        next
 
+                    ::P2pOrder.where(state: 'prepare').each do |order|
+                        Rails.logger.warn order.order_number
                         if Time.now >= order.first_approve_expire_at
                             order.update!(state: 'canceled')
                         end
@@ -22,10 +22,8 @@ module Jobs
     
                 def second_approvement
                     ::P2pOrder.where(state: 'waiting').each do |order|
-                    rescue StandardError => e
-                        report_exception_to_screen(e)
-                        next
                         return if order.second_approve_expire_at.blank?
+                        Rails.logger.warn order
 
                         if Time.now >= order.second_approve_expire_at
                             order.update!(state: 'accepted')

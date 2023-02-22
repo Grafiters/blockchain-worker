@@ -36,6 +36,10 @@ module API
                             error!({ errors: ['p2p_user.payment_user.payment_user_is_exists'] }, 422)
                         end
 
+                        if params[:qrcode]['tempfile'].present?
+                            error!({ errors: ['p2p_user.payment_user.upload_qrcode_image_still_maintenance'] }, 422)
+                        end
+
                         if params[:otp].present?
                             unless Vault::TOTP.validate?(current_user.uid, params[:otp])
                                 error!({ errors: ['p2p_user.payment.invalid_otp'] }, 422)
