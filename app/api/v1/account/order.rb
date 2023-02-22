@@ -37,7 +37,11 @@ module API
                                     "p2p_offers.price", "p2p_offers.price as fiat_amount")
                             .where('(p2p_orders.p2p_user_id = ? AND p2p_orders.side = "buy")
                                         OR
-                                    (p2p_offers.p2p_user_id = ? AND p2p_offers.side = "sell")', p2p_user_feedback, p2p_user_feedback)
+                                    (p2p_orders.p2p_user_id = ? AND p2p_orders.side = "sell")
+                                        OR
+                                    (p2p_offers.p2p_user_id = ? AND p2p_offers.side = "buy")
+                                        OR
+                                    (p2p_offers.p2p_user_id = ? AND p2p_offers.side = "sell")', p2p_user_feedback, p2p_user_feedback, p2p_user_feedback, p2p_user_feedback)
                             .ransack(ransack_params)
                         
                         order.sorts = "id DESC"

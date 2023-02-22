@@ -59,7 +59,7 @@ module API
                         taker_uid: receiver_p2p[:uid],
                         amount: params[:amount],
                         side: side,
-                        p2p_order_payment_id: side == 'sell' ? params[:payment_order] : nil
+                        p2p_order_payment_id: side == 'sell' ? payment(offer)[:id] : nil
                     }
                 end
 
@@ -70,6 +70,10 @@ module API
                         chat: params[:message].present? ? image_check : 'Mohon Kirim Bukti tranfer',
                         upload: params[:message].present? ? image_exists : nil
                     }
+                end
+
+                def payment(offer)
+                    payment_user = ::P2pPaymentUser.find_by(payment_user_uid: params[:payment_order])
                 end
 
                 def image_check
