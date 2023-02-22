@@ -16,7 +16,8 @@ module API
           end
 
           def check_payment_user
-            params[:payment].each do |index, payment|
+            params[:payment].each do |payment|
+              Rails.logger.warn payment
               check_payment(payment)
             end
           end
