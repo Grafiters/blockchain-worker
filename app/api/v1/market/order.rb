@@ -120,15 +120,15 @@ module API
                             error!({ errors: ['p2p_order.order.can_not_confirm_by_your_self'] }, 422)
                         end
 
-                        if order[:state] == 'waiting' && p2p_user_id[:uid] == order[:maker_uid]
+                        if order[:state] == 'waiting' && p2p_user_id[:uid] == order[:taker_uid]
                             state = 'accepted'
-                            order.update({state: state, aproved_by: order[:maker_uid]})
+                            order.update({state: state, aproved_by: order[:taker_uid]})
                         elsif order[:state] == 'accepted'
                             state = 'success'
-                            order.update({state: state, aproved_by: order[:maker_uid]})
+                            order.update({state: state})
                         end
 
-                        { message: "Order Sucessfully Confirm by #{p2p_user_id[:uid]}" }
+                        present order
 
                     end
                     
