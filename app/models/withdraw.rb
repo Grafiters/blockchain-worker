@@ -175,7 +175,7 @@ class Withdraw < ApplicationRecord
 
   class << self
     def sum_query
-      'SELECT sum(w.sum * c.price) as sum FROM withdraws as w ' \
+      'SELECT sum(w.sum) as sum FROM withdraws as w ' \
       'INNER JOIN currencies as c ON c.id=w.currency_id ' \
       'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?;'
     end
