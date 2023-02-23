@@ -54,6 +54,7 @@ module API
                         end
                         
                         chat = ::P2pChat.create(chat_params(order, nil))
+
                         present chat
                     end
 
@@ -173,7 +174,7 @@ module API
                             error!({ errors: ['p2p_order.order.success_can_not_canceled_order'] }, 422)
                         end
 
-                        order.update({state: "canceled", approved_by: current_user[:uid]})
+                        order.update({state: "canceled", aproved_by: current_user[:uid]})
                         present order
                     end
 
