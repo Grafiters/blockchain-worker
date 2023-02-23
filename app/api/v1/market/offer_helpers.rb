@@ -9,7 +9,7 @@ module API
           end
 
           def create_payment_offer(ofid)
-              params[:payment].each do |index, payment|
+              params[:payment].each do |payment|
                   payment_user = ::P2pPaymentUser.find_by(payment_user_uid: payment)
                   ::P2pOrderPayment.create(payment_params(ofid, payment_user[:id]))
               end
