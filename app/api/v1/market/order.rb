@@ -20,9 +20,9 @@ module API
                             error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
                         end
 
-                        # if current_user == receiver_p2p
-                        #     error!({ errors: ['p2p_order.order.can_not_order_to_yourself'] }, 422)
-                        # end
+                        if current_user == receiver_p2p
+                            error!({ errors: ['p2p_order.order.can_not_order_to_yourself'] }, 422)
+                        end
 
                         offer = ::P2pOffer.find_by(offer_number: params[:offer_number])
                         if offer.blank?
@@ -33,7 +33,7 @@ module API
                         validation_request
 
                         orders = ::P2pOrder.create(p2p_order_params(offer, otype))
-                        chat = ::P2pChat.create(chat_params(orders))
+                        chat = ::P2pChat.create(chat_params(orders, orders[:taker_uid]))
                         
                         present orders
                     end
@@ -53,7 +53,7 @@ module API
                             error!({ errors: ['p2p_order.information_chat.can_not_send_message_order_is_done'] }, 422)
                         end
                         
-                        chat = ::P2pChat.create(chat_params(order))
+                        chat = ::P2pChat.create(chat_params(order, nil))
                         present chat
                     end
 
@@ -115,7 +115,7 @@ module API
                             error!({ errors: ['p2p_order.order.already_completed_process'] }, 422)
                         end
 
-                        if order[:state] == 'waiting' && p2p_user_id[:uid] == order[:taker_uid] || order[:state] == 'accepted' && p2p_user_id[:uid] == order[:maker_uid]
+                        if order[:state] == 'waiting' && p2p_user_id[:uid] == order[:maker_uid] || order[:state] == 'accepted' && p2p_user_id[:uid] == order[:taker_uid]
                             error!({ errors: ['p2p_order.order.can_not_confirm_by_your_self'] }, 422)
                         end
 

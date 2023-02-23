@@ -63,10 +63,10 @@ module API
                     }
                 end
 
-                def chat_params(order)
+                def chat_params(order, target_user)
                     params_mapping = {
                         p2p_order_id: order[:id],
-                        user_uid: current_user[:uid] == p2p_user_id[:uid] ? p2p_user_id[:uid] : 'Nusablocks',
+                        user_uid: target_user.present? ? target_user : current_user[:uid],
                         chat: params[:message].present? ? image_check : 'Mohon Kirim Bukti tranfer',
                         upload: params[:message].present? ? image_exists : nil
                     }
