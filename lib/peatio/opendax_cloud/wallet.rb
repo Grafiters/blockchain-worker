@@ -1,4 +1,4 @@
-module NusadaxCloud
+module OpendaxCloud
   class Wallet < Peatio::Wallet::Abstract
     Error = Class.new(StandardError)
     DEFAULT_FEATURES = { skip_deposit_collection: true }.freeze
@@ -42,7 +42,7 @@ module NusadaxCloud
                                  })
 
       { address: response['address'], details: response.except('address') }
-    rescue NusadaxCloud::Client::Error => e
+    rescue OpendaxCloud::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
 
@@ -55,7 +55,7 @@ module NusadaxCloud
                   }.compact)
       transaction.options = response['options']
       transaction
-    rescue NusadaxCloud::Client::Error => e
+    rescue OpendaxCloud::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
 
@@ -65,7 +65,7 @@ module NusadaxCloud
       }.compact).fetch('balance')
 
       response.to_d
-    rescue NusadaxCloud::Client::Error => e
+    rescue OpendaxCloud::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
 
@@ -88,7 +88,7 @@ module NusadaxCloud
             tid: params[:tid]
           })
       ]
-    rescue NusadaxCloud::Client::Error => e
+    rescue OpendaxCloud::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
 
@@ -96,7 +96,7 @@ module NusadaxCloud
     # to transaction states (rejected, success, penging, rejected)
     def translate_state(event, state)
       # Get transaction state translation which depends on event
-      states = NusadaxCloud::Wallet.const_get("#{event.upcase}_TRANSACTION_STATE_TRANSLATIONS")
+      states = OpendaxCloud::Wallet.const_get("#{event.upcase}_TRANSACTION_STATE_TRANSLATIONS")
       res = states.find { |key, values| values.include?(state) }
 
       # result consists of array [key, [values]]

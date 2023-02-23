@@ -1,4 +1,4 @@
-module NusadaxCloud
+module OpendaxCloud
   class Client
     Error = Class.new(StandardError)
 
