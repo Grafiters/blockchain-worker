@@ -89,7 +89,14 @@ module API
                         desc: 'Filter Fiat.',
                         type: String
                     }
-                )
+                    ) do |payment|
+                        tipe_bank(payment)
+                    end
+
+                
+                def tipe_bank(payment)
+                    payment.tipe == 100 ? 'bank' : 'ewallet'
+                end
             end
           end
         end
