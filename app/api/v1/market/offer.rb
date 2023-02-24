@@ -45,6 +45,7 @@ module API
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
+                                            .where.not(p2p_offers: {state: 'canceled'})
                                             .ransack(search_params)
                         
                         result = search.result.load

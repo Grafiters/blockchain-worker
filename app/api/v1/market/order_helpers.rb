@@ -22,6 +22,11 @@ module API
 
         def validation_request
           offer = ::P2pOffer.find_by(offer_number: params[:offer_number])
+          if offer[:state] == 'canceled'
+            by_user = offer[:side] == 'buy' ? 'buyer' : 'seller'
+            error!({ errors: ["p2p.order.this_offer_has_canceled_by_the_#{by_user}"] }, 422)
+          end
+
           if params[:amount] < offer[:min_order_amount] || params[:amount] > offer[:max_order_amount]
             error!({ errors: ['p2p.order.price_order_not_available_for_offer'] }, 422)
           end

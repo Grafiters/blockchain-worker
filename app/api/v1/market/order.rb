@@ -16,6 +16,8 @@ module API
                         use :order
                     end
                     post '/' do
+                        validation_request
+
                         if p2p_user_auth.blank?
                             error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
                         end
@@ -30,7 +32,6 @@ module API
                         end
 
                         otype = offer[:side] == 'sell' ? 'buy' : 'sell'
-                        validation_request
 
                         orders = ::P2pOrder.create(p2p_order_params(offer, otype))
                         chat = ::P2pChat.create(chat_params(orders, orders[:taker_uid]))

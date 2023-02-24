@@ -38,6 +38,7 @@ module API
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
+                                            .where.not(p2p_offers: {state: 'canceled'})
                         order = order.where('p2p_payment_users.p2p_payment_id IN (?)', params[:payment]) unless params[:payment].blank? || params[:payment][0] == ""
                         search = order.ransack(search_params)
                         
