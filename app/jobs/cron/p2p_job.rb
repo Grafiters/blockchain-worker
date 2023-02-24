@@ -7,14 +7,14 @@ module Jobs
 
                     first_approvement
                     second_approvement
+                    process_to_success
                     sleep 2
                 end
 
                 def first_approvement
-
                     ::P2pOrder.where(state: 'prepare').each do |order|
                         Rails.logger.warn order.order_number
-                        if Time.now >= order.first_approve_expire_at
+                        if order.first_approve_expire_at.present? && Time.now >= order.first_approve_expire_at
                             order.update!(state: 'canceled')
                         end
                     end
@@ -25,8 +25,19 @@ module Jobs
                         return if order.second_approve_expire_at.blank?
                         Rails.logger.warn order.order_number
 
-                        if Time.now >= order.second_approve_expire_at
+                        if order.second_approve_expire_at.present? && Time.now >= order.second_approve_expire_at
                             order.update!(state: 'accepted')
+                        end
+                    end
+                end
+
+                def process_to_success
+                    ::P2pOrder.where(state: 'accepted').each do |order|
+                        return if order.second_approve_expire_at.blank?
+                        Rails.logger.warn order.order_number
+
+                        if order.second_approve_expire_at.present? && Time.now >= order.second_approve_expire_at
+                            order.update!(state: 'success')
                         end
                     end
                 end
