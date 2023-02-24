@@ -32,17 +32,21 @@ module API
         mount Admin::BlockchainCurrencies
         mount Admin::ImportConfigs
 
-        add_swagger_documentation base_path: File.join(API::Mount::PREFIX, API::V2::Mount::API_VERSION, PREFIX, 'exchange'),
+        # The documentation is accessible at http://localhost:3000/swagger?url=/api/v2/admin/swagger
+        # Add swagger documentation for Peatio Admin API
+        add_swagger_documentation base_path: File.join(API::Mount::PREFIX, API::V2::Mount::API_VERSION, PREFIX, 'peatio'),
                                   add_base_path: true,
                                   mount_path:  '/swagger',
                                   api_version: API::V2::Mount::API_VERSION,
                                   doc_version: Peatio::Application::VERSION,
                                   info: {
-                                    title:          "Admin API #{API::V2::Mount::API_VERSION}",
+                                    title:          "Peatio Admin API #{API::V2::Mount::API_VERSION}",
                                     description:    'Admin API high privileged API with RBAC.',
-                                    contact_name:   'nagaexchange.co.id',
-                                    contact_email:  'hello@nagaexchange.co.id',
-                                    contact_url:    'https://www.nagaexchange.co.id',
+                                    contact_name:   'openware.com',
+                                    contact_email:  'hello@openware.com',
+                                    contact_url:    'https://www.openware.com',
+                                    licence:        'MIT',
+                                    license_url:    'https://github.com/openware/peatio/blob/master/LICENSE.md'
                                   },
                                   models: [
                                     API::V2::Admin::Entities::Blockchain,

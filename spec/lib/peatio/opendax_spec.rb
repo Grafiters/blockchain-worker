@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe Peatio::Upstream::Nusadax do
-  let(:upstream_nusadax_config) do
+RSpec.describe Peatio::Upstream::Opendax do
+  let(:upstream_opendax_config) do
     {
-      "driver": 'nusadax',
+      "driver": 'opendax',
       "source": 'btcusd',
       "target": 'btcusd',
       "rest": 'http://localhost',
@@ -11,7 +11,7 @@ RSpec.describe Peatio::Upstream::Nusadax do
     }.stringify_keys
   end
 
-  let(:nusadax) { Peatio::Upstream::Nusadax.new(upstream_nusadax_config) }
+  let(:opendax) { Peatio::Upstream::Opendax.new(upstream_opendax_config) }
 
   let(:msg) do
     {
@@ -44,12 +44,12 @@ RSpec.describe Peatio::Upstream::Nusadax do
   end
 
   it 'detects trade' do
-    nusadax.expects(:notify_public_trade).with(trade)
-    nusadax.ws_read_public_message(msg)
+    opendax.expects(:notify_public_trade).with(trade)
+    opendax.ws_read_public_message(msg)
   end
 
   it 'doesnt notify about public trade' do
-    nusadax.expects(:notify_public_trade).never
-    nusadax.ws_read_public_message(subscribe_msg)
+    opendax.expects(:notify_public_trade).never
+    opendax.ws_read_public_message(subscribe_msg)
   end
 end

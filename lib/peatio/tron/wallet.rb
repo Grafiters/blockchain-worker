@@ -35,8 +35,8 @@ module Tron
     end
 
     def create_transaction!(transaction, options = {})
-      if @currency.dig(:options, :trc20_contract_address).present?
-        contract_address = @currency.dig(:options, :trc20_contract_address)
+      if @currency.dig(:options, :erc20_contract_address).present?
+        contract_address = @currency.dig(:options, :erc20_contract_address)
         if(contract_address.length > 15)
           create_erc20_transaction!(transaction)
         else
@@ -51,7 +51,7 @@ module Tron
 
     def prepare_deposit_collection!(transaction, deposit_spread, deposit_currency)
       # # Don't prepare for deposit_collection in case of eth deposit.
-      return [] if deposit_currency.dig(:options, :trc20_contract_address).blank?
+      return [] if deposit_currency.dig(:options, :erc20_contract_address).blank?
       return [] if deposit_spread.blank?
       options = DEFAULT_ERC20_FEE.merge(deposit_currency.fetch(:options).slice(:gas_limit, :gas_price))
       fees = convert_from_base_unit(options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i)
@@ -63,8 +63,8 @@ module Tron
     end
 
     def load_balance!
-      if @currency.dig(:options, :trc20_contract_address).present?
-        contract_address = @currency.dig(:options, :trc20_contract_address)
+      if @currency.dig(:options, :erc20_contract_address).present?
+        contract_address = @currency.dig(:options, :erc20_contract_address)
         if(contract_address.length > 15)
           load_erc20_balance(@wallet.fetch(:address))
         else
@@ -154,13 +154,13 @@ module Tron
     end
 
     def create_erc20_transaction!(transaction, options = {})
-      currency_options = @currency.fetch(:options).slice(:gas_limit, :gas_price, :trc20_contract_address)
+      currency_options = @currency.fetch(:options).slice(:gas_limit, :gas_price, :erc20_contract_address)
       options.merge!(DEFAULT_ERC20_FEE, currency_options)
 
       amount = convert_to_base_unit(transaction.amount)
 
       params = {
-      	contractAddress: options.fetch(:trc20_contract_address),
+      	contractAddress: options.fetch(:erc20_contract_address),
       	from: @wallet.fetch(:address),
       	to: transaction.to_address,
       	amount:amount,
@@ -188,7 +188,7 @@ module Tron
     end
 
     def contract_address
-      normalize_address(@currency.dig(:options, :trc20_contract_address))
+      normalize_address(@currency.dig(:options, :erc20_contract_address))
     end
 
     def valid_txid?(txid)

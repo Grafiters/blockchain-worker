@@ -155,7 +155,7 @@ describe API::V2::Admin::Markets, type: :request do
         min_amount: 0.01,
         data: {
           upstream: {
-            driver: :nusadax
+            driver: :opendax
           }
         }
       }
@@ -168,7 +168,7 @@ describe API::V2::Admin::Markets, type: :request do
       expect(result['id']).to eq 'trstbtc'
       expect(result['type']).to eq 'spot'
       expect(result['engine_id']).to eq Market.last.engine_id
-      expect(result['data']).to eq({ 'upstream' => { 'driver' => 'nusadax' } })
+      expect(result['data']).to eq({ 'upstream' => { 'driver' => 'opendax' } })
     end
 
     it 'create new market with qe type' do
@@ -178,7 +178,7 @@ describe API::V2::Admin::Markets, type: :request do
       expect(result['id']).to eq 'trstbtc'
       expect(result['type']).to eq 'qe'
       expect(result['engine_id']).to eq Market.last.engine_id
-      expect(result['data']).to eq({ 'upstream' => { 'driver' => 'nusadax' } })
+      expect(result['data']).to eq({ 'upstream' => { 'driver' => 'opendax' } })
     end
 
     it 'create new market with engine name param' do
@@ -187,7 +187,7 @@ describe API::V2::Admin::Markets, type: :request do
       expect(response).to be_successful
       expect(result['id']).to eq 'trstbtc'
       expect(result['engine_id']).to eq Market.last.engine_id
-      expect(result['data']).to eq({ 'upstream' => { 'driver' => 'nusadax' } })
+      expect(result['data']).to eq({ 'upstream' => { 'driver' => 'opendax' } })
     end
 
     it 'validate type param' do
@@ -295,11 +295,11 @@ describe API::V2::Admin::Markets, type: :request do
     end
 
     it 'updates data' do
-      api_post '/api/v2/admin/markets/update', params: { id: Market.first.symbol, data: { 'upstream' => { 'driver' => 'nusadax' } } }, token: token
+      api_post '/api/v2/admin/markets/update', params: { id: Market.first.symbol, data: { 'upstream' => { 'driver' => 'opendax' } } }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result['data']).to eq({ 'upstream' => { 'driver' => 'nusadax' } })
+      expect(result['data']).to eq({ 'upstream' => { 'driver' => 'opendax' } })
     end
 
     it 'validates data field' do

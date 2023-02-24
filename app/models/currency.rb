@@ -66,7 +66,7 @@ class Currency < ApplicationRecord
     insert_position(self)
   end
 
-  before_validation { self.code = code.downcase }
+  before_validation { self.code = code }
   before_validation(on: :create) { self.position = Currency.count + 1 unless position.present? }
 
   before_update { update_position(self) if position_changed? }
@@ -113,8 +113,8 @@ class Currency < ApplicationRecord
     super&.inquiry
   end
 
-  def update_price
-    market = Market.find_by(base_unit: id, quote_unit: "idr")
+  def update_price(pair)
+    market = Market.find_by(base_unit: id, quote_unit: pair[:id])
     ticker = Trade.market_ticker_from_influx(market.symbol) if market.present?
     currency_price = ticker.present? ? ticker[:vwap].to_d : self.price
     update_attribute(:price, currency_price)

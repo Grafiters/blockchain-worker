@@ -19,7 +19,7 @@ module Tron
 
       @settings.merge!(settings.slice(*SUPPORTED_SETTINGS))
       @settings[:currencies]&.each do |c|
-        if c.dig(:options, :trc20_contract_address).present?
+        if c.dig(:options, :erc20_contract_address).present?
           @erc20 << c
         else
           @eth << c
@@ -70,7 +70,7 @@ module Tron
             end
           else
 
-            currencies = @erc20.select { |c| c.dig(:options, :trc20_contract_address) == contract }
+            currencies = @erc20.select { |c| c.dig(:options, :erc20_contract_address) == contract }
             if currencies.length > 0
               currencies.each do |currency|
                 txss <<  Peatio::Transaction.new(
@@ -109,8 +109,8 @@ module Tron
       currency = settings[:currencies].find { |c| c[:id] == currency_id.to_s }
       raise UndefinedCurrencyError unless currency
 
-      if currency.dig(:options, :trc20_contract_address).present?
-        contract_address = currency.dig(:options, :trc20_contract_address)
+      if currency.dig(:options, :erc20_contract_address).present?
+        contract_address = currency.dig(:options, :erc20_contract_address)
         if(contract_address.length > 15)
           load_erc20_balance(address,contract_address,currency)
         else
@@ -185,7 +185,7 @@ module Tron
     end
 
     def contract_address(currency)
-      normalize_address(currency.dig(:options, :trc20_contract_address))
+      normalize_address(currency.dig(:options, :erc20_contract_address))
     end
 
     def abi_encode(method, *args)

@@ -129,13 +129,12 @@ module API
               if va.length == 0
                 bank_arr = ENV.fetch("PG_BANK",'').to_s.split(',')
                 bank_arr.each { |bank|
-                  body = {name: 'XDT NAGA ' + full_name, bank_code: bank, external_id: "VA_"+bank.upcase+"_"+current_user.uid}.to_json
+                  body = {name: full_name, bank_code: bank, external_id: "VA_"+bank.upcase+"_"+current_user.uid}.to_json
                   response = connection.post('/callback_virtual_accounts') do |req|
                     req.headers['Content-Type'] = 'application/json'
                     req.body = body
                   end
                   data = response.body
-                  Rails.logger.warn data
                   VirtualAccount.create(member_id: current_user.id, currency_id: currency.id, bank: bank, number: data['account_number'], state: 'active', expired: data['expiration_date'], external_id: data['external_id'], merchant_code: data['merchant_code'],name: data['name'])
                 }
               end

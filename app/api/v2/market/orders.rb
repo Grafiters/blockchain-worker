@@ -106,22 +106,27 @@ module API
         post '/orders' do
           user_authorize! :create, ::Order
           otype = params[:side] == 'buy' ? 'OrderBid' : 'OrderAsk'
-          if params[:ord_type] != 'market'
-            sum_orders = current_user.orders.where(state: 0,type: otype).sum(:locked)
-            market = ::Market.find_spot_by_symbol(params[:market])
-            base_unit = market.base_unit
-            quote_unit = market.quote_unit
-            account = current_user.get_account(params[:side] == 'buy' ? quote_unit : base_unit)
-            balance = account.balance
-            amount = params[:side] == 'buy' ? params[:volume] * params[:price] : params[:volume]
-            sum_locked = account.locked.to_d + sum_orders.to_d + amount.to_d
-            if (balance <= 0)
-              error!({ errors: ['market.account.insufficient_balance'] }, 422)
-            end
-            # if (sum_locked > balance)
-            #   error!({ errors: ['market.account.insufficient_balance'] }, 422)
-            # end
-          end
+
+          # setting default from git pull git lab
+
+          # if params[:ord_type] != 'market'
+          #   sum_orders = current_user.orders.where(state: 0,type: otype).sum(:locked)
+          #   market = ::Market.find_spot_by_symbol(params[:market])
+          #   base_unit = market.base_unit
+          #   quote_unit = market.quote_unit
+          #   account = current_user.get_account(params[:side] == 'buy' ? quote_unit : base_unit)
+          #   balance = account.balance
+          #   amount = params[:side] == 'buy' ? params[:volume] * params[:price] : params[:volume]
+          #   sum_locked = account.locked.to_d + sum_orders.to_d + amount.to_d
+          #   if (balance <= 0)
+          #     error!({ errors: ['market.account.insufficient_balance'] }, 422)
+          #   end
+          #   # if (sum_locked > balance)
+          #   #   error!({ errors: ['market.account.insufficient_balance'] }, 422)
+          #   # end
+          # end
+
+          # end of setting validation
 
           if params[:ord_type] == 'market' && params.key?(:price)
             error!({ errors: ['market.order.market_order_price'] }, 422)

@@ -1,7 +1,9 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
-
+# Usage
+# for revert all trading activity for particular user:
+# $> bundle exec rake revert:trading_activity["admin@barong.io"]
 namespace :revert do
   desc 'Revert user trade activity.'
   task :trading_activity, [:member_email] => [:environment] do |_, args|

@@ -1,7 +1,7 @@
-describe NusadaxCloud::Wallet do
-  let(:wallet) { NusadaxCloud::Wallet.new }
+describe OpendaxCloud::Wallet do
+  let(:wallet) { OpendaxCloud::Wallet.new }
 
-  before(:each) { ENV['PLATFORM_ID'] = 'nusadax'}
+  before(:each) { ENV['PLATFORM_ID'] = 'opendax'}
   after(:each) { ENV.delete('PLATFORM_ID') }
   context :configure do
     let(:settings) { { wallet: {}, currency: {} } }

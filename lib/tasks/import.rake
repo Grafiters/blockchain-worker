@@ -4,6 +4,14 @@ require 'csv'
 require 'peatio/import'
 
 namespace :import do
+  # Detailed instruction https://github.com/rubykube/peatio/blob/master/docs/tasks/import.md
+  # Required fields for import users:
+  # - uid
+  # - email
+  #
+  # Usage:
+  # For import users: -> bundle exec rake import:users['file_name.csv']
+
   desc 'Load members from csv file.'
   task :users, [:config_load_path] => [:environment] do |_, args|
     csv_table = File.read(Rails.root.join(args[:config_load_path]))

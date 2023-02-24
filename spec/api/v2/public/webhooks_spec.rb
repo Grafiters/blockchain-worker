@@ -8,15 +8,15 @@ describe API::V2::Public::Webhooks, type: :request do
       context 'deposit wallet doesnt exist' do
         it do
           expect {
-            api_post '/api/v2/public/webhooks/naga/deposit'
+            api_post '/api/v2/public/webhooks/opendax_cloud/deposit'
           }.not_to change { Deposit.count }
 
-          expect(Wallet.active_retired.where(kind: :deposit, gateway: 'naga_cloud').count).to eq 0
+          expect(Wallet.active_retired.where(kind: :deposit, gateway: 'opendax_cloud').count).to eq 0
         end
       end
 
       context 'deposit wallet exist' do
-        let!(:deposit_wallet) { create(:wallet, :eth_naga_cloud_deposit) }
+        let!(:deposit_wallet) { create(:wallet, :eth_opendax_cloud_deposit) }
 
         context 'transactions doesnt exist' do
           before do
@@ -25,17 +25,17 @@ describe API::V2::Public::Webhooks, type: :request do
 
           it do
             expect {
-              api_post '/api/v2/public/webhooks/naga/deposit'
+              api_post '/api/v2/public/webhooks/opendax_cloud/deposit'
             }.not_to change { Deposit.count }
           end
         end
 
         context 'there is no JWT' do
           it do
-            api_post '/api/v2/public/webhooks/naga/deposit'
+            api_post '/api/v2/public/webhooks/opendax_cloud/deposit'
 
             expect(response.status).to eq 422
-            expect(response).to include_api_error('public.webhook.cannot_perfom_naga_cloud_deposit')
+            expect(response).to include_api_error('public.webhook.cannot_perfom_opendax_cloud_deposit')
           end
         end
 
@@ -60,21 +60,21 @@ describe API::V2::Public::Webhooks, type: :request do
             context 'there is no payment address' do
               it do
                 expect {
-                  api_post '/api/v2/public/webhooks/naga/deposit'
+                  api_post '/api/v2/public/webhooks/opendax_cloud/deposit'
                 }.not_to change { Deposit.count }
               end
             end
 
             context 'there is payment address' do
               before do
-                # disable first deposit wallet for eth to have ability to use naga cloud deposit wallet
+                # disable first deposit wallet for eth to have ability to use opendax cloud deposit wallet
                 Wallet.deposit_wallets(transaction.currency_id)[0].update(status: 'disabled') if Wallet.deposit_wallets(transaction.currency_id)[0].gateway == 'geth'
                 PaymentAddress.create(member: member, wallet: deposit_wallet, address: '0x1ef338196bd0207ba4852ba7a6847eed59331b84')
               end
 
               it do
                 expect {
-                  api_post '/api/v2/public/webhooks/naga/deposit'
+                  api_post '/api/v2/public/webhooks/opendax_cloud/deposit'
                 }.to change { Deposit.count }.by(1)
               end
             end
@@ -98,7 +98,7 @@ describe API::V2::Public::Webhooks, type: :request do
               end
 
               before do
-                # disable first deposit wallet for eth to have ability to use naga cloud deposit wallet
+                # disable first deposit wallet for eth to have ability to use opendax cloud deposit wallet
                 Wallet.deposit_wallets(transaction.currency_id)[0].update(status: 'disabled') if Wallet.deposit_wallets(transaction.currency_id)[0].gateway == 'geth'
                 PaymentAddress.create(member: member, wallet: deposit_wallet, address: '0x1ef338196bd0207ba4852ba7a6847eed59331b84')
                 WalletService.any_instance.stubs(:trigger_webhook_event).returns([transaction])
@@ -108,7 +108,7 @@ describe API::V2::Public::Webhooks, type: :request do
 
               it do
                 expect {
-                  api_post '/api/v2/public/webhooks/naga/deposit'
+                  api_post '/api/v2/public/webhooks/opendax_cloud/deposit'
                 }.not_to change { Deposit.count }
                 deposit.reload
                 expect(deposit.tid).to eq 'TID9493F6CD41'
@@ -124,15 +124,15 @@ describe API::V2::Public::Webhooks, type: :request do
       context 'hot wallet doesnt exist' do
         it do
           expect {
-            api_post '/api/v2/public/webhooks/naga/withdraw'
+            api_post '/api/v2/public/webhooks/opendax_cloud/withdraw'
           }.not_to change { Withdraw.count }
 
-          expect(Wallet.active_retired.where(kind: :hot, gateway: 'naga_cloud').count).to eq 0
+          expect(Wallet.active_retired.where(kind: :hot, gateway: 'opendax_cloud').count).to eq 0
         end
       end
 
       context 'hot wallet exist' do
-        let!(:hot_wallet) { create(:wallet, :eth_naga_cloud_hot) }
+        let!(:hot_wallet) { create(:wallet, :eth_opendax_cloud_hot) }
 
         context 'transactions doesnt exist' do
           before do
@@ -140,7 +140,7 @@ describe API::V2::Public::Webhooks, type: :request do
           end
 
           it do
-            api_post '/api/v2/public/webhooks/naga/withdraw'
+            api_post '/api/v2/public/webhooks/opendax_cloud/withdraw'
             expect(response.status).to eq 200
           end
         end
@@ -161,7 +161,7 @@ describe API::V2::Public::Webhooks, type: :request do
 
             let(:params) do
               {
-                adapter: 'naga_cloud',
+                adapter: 'opendax_cloud',
                 event: 'withdraw'
               }
             end
@@ -182,7 +182,7 @@ describe API::V2::Public::Webhooks, type: :request do
             end
 
             it do
-              api_post '/api/v2/public/webhooks/naga/withdraw'
+              api_post '/api/v2/public/webhooks/opendax_cloud/withdraw'
               expect(response.status).to eq 200
 
               withdraw.reload
@@ -203,7 +203,7 @@ describe API::V2::Public::Webhooks, type: :request do
               end
 
               it do
-                api_post '/api/v2/public/webhooks/naga/withdraw'
+                api_post '/api/v2/public/webhooks/opendax_cloud/withdraw'
                 expect(response.status).to eq 200
 
                 withdraw.reload
@@ -218,15 +218,15 @@ describe API::V2::Public::Webhooks, type: :request do
     context 'deposit address' do
       context 'deposit wallet doesnt exist' do
         it do
-          api_post '/api/v2/public/webhooks/naga/deposit_address'
+          api_post '/api/v2/public/webhooks/opendax_cloud/deposit_address'
           expect(response.status).to eq 200
 
-          expect(Wallet.active_retired.where(kind: :deposit, gateway: 'naga_cloud').count).to eq 0
+          expect(Wallet.active_retired.where(kind: :deposit, gateway: 'opendax_cloud').count).to eq 0
         end
       end
 
       context 'deposit wallet exists' do
-        let!(:deposit_wallet) { create(:wallet, :eth_naga_cloud_deposit) }
+        let!(:deposit_wallet) { create(:wallet, :eth_opendax_cloud_deposit) }
 
         context 'event doesnt exist' do
           before do
@@ -234,7 +234,7 @@ describe API::V2::Public::Webhooks, type: :request do
           end
 
           it do
-            api_post '/api/v2/public/webhooks/naga/deposit_address'
+            api_post '/api/v2/public/webhooks/opendax_cloud/deposit_address'
             expect(response.status).to eq 200
           end
         end
@@ -249,7 +249,7 @@ describe API::V2::Public::Webhooks, type: :request do
           end
 
           before do
-            # disable first deposit wallet for eth to have ability to use naga cloud deposit wallet
+            # disable first deposit wallet for eth to have ability to use opendax cloud deposit wallet
             Wallet.deposit_wallets('eth')[0].update(status: 'disabled') if Wallet.deposit_wallets('eth')[0].gateway == 'geth'
             WalletService.any_instance.stubs(:trigger_webhook_event).returns(event)
           end
@@ -257,7 +257,7 @@ describe API::V2::Public::Webhooks, type: :request do
           let!(:payment_address) { PaymentAddress.create(member: member, wallet: deposit_wallet, address: nil, details: { address_id: 12}) }
 
           it do
-            api_post '/api/v2/public/webhooks/naga/deposit_address'
+            api_post '/api/v2/public/webhooks/opendax_cloud/deposit_address'
             expect(response.status).to eq 200
             payment_address.reload
             expect(payment_address.address).to eq event[:address].downcase
@@ -270,15 +270,15 @@ describe API::V2::Public::Webhooks, type: :request do
       context 'deposit wallet doesnt exist' do
         it do
           expect {
-            api_post '/api/v2/public/webhooks/naga/generic'
+            api_post '/api/v2/public/webhooks/opendax_cloud/generic'
           }.not_to change { Deposit.count }
 
-          expect(Wallet.where(status: :active, kind: :deposit, gateway: 'naga_cloud').count).to eq 0
+          expect(Wallet.where(status: :active, kind: :deposit, gateway: 'opendax_cloud').count).to eq 0
         end
       end
 
       context 'deposit wallet exist' do
-        let!(:deposit_wallet) { create(:wallet, :eth_naga_cloud_deposit) }
+        let!(:deposit_wallet) { create(:wallet, :eth_opendax_cloud_deposit) }
 
         context 'process deposits' do
           context 'transactions doesnt exist' do
@@ -288,7 +288,7 @@ describe API::V2::Public::Webhooks, type: :request do
 
             it do
               expect {
-                api_post '/api/v2/public/webhooks/naga/generic'
+                api_post '/api/v2/public/webhooks/opendax_cloud/generic'
               }.not_to change { Deposit.count }
             end
           end
@@ -314,21 +314,21 @@ describe API::V2::Public::Webhooks, type: :request do
               context 'there is no payment address' do
                 it do
                   expect {
-                    api_post '/api/v2/public/webhooks/naga/generic'
+                    api_post '/api/v2/public/webhooks/opendax_cloud/generic'
                   }.not_to change { Deposit.count }
                 end
               end
 
               context 'there is payment address' do
                 before do
-                  # disable first deposit wallet for eth to have ability to use naga cloud deposit wallet
+                  # disable first deposit wallet for eth to have ability to use opendax cloud deposit wallet
                   Wallet.deposit_wallets(transaction.currency_id)[0].update(status: 'disabled') if Wallet.deposit_wallets(transaction.currency_id)[0].gateway == 'geth'
                   PaymentAddress.create(member: member, wallet: deposit_wallet, address: '0x1ef338196bd0207ba4852ba7a6847eed59331b84')
                 end
 
                 it do
                   expect {
-                    api_post '/api/v2/public/webhooks/naga/generic'
+                    api_post '/api/v2/public/webhooks/opendax_cloud/generic'
                   }.to change { Deposit.count }.by(1)
                 end
               end
@@ -352,7 +352,7 @@ describe API::V2::Public::Webhooks, type: :request do
                 end
 
                 before do
-                  # disable first deposit wallet for eth to have ability to use naga cloud deposit wallet
+                  # disable first deposit wallet for eth to have ability to use opendax cloud deposit wallet
                   Wallet.deposit_wallets(transaction.currency_id)[0].update(status: 'disabled') if Wallet.deposit_wallets(transaction.currency_id)[0].gateway == 'geth'
                   PaymentAddress.create(member: member, wallet: deposit_wallet, address: '0x1ef338196bd0207ba4852ba7a6847eed59331b84')
                   WalletService.any_instance.stubs(:trigger_webhook_event).returns([transaction])
@@ -360,7 +360,7 @@ describe API::V2::Public::Webhooks, type: :request do
 
                 it do
                   expect {
-                    api_post '/api/v2/public/webhooks/naga/generic'
+                    api_post '/api/v2/public/webhooks/opendax_cloud/generic'
                   }.not_to change { Deposit.count }
                 end
               end
@@ -387,7 +387,7 @@ describe API::V2::Public::Webhooks, type: :request do
 
             let(:params) do
               {
-                adapter: 'naga_cloud',
+                adapter: 'opendax_cloud',
                 event: 'generic'
               }
             end
@@ -408,7 +408,7 @@ describe API::V2::Public::Webhooks, type: :request do
             end
 
             it do
-              api_post '/api/v2/public/webhooks/naga/generic'
+              api_post '/api/v2/public/webhooks/opendax_cloud/generic'
               expect(response.status).to eq 200
 
               withdraw.reload

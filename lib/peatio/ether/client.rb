@@ -11,7 +11,10 @@ module Ether
     end
 
     def rest_api(verb, path, data = nil)
-      args = [@endpoint.to_s + path.to_s]
+      url = URI.parse(@endpoint.to_s + path.to_s)
+      url.path.gsub! %r{/+}, '/'
+      url.path.sub! %r{/$}, ''
+      args = [url]
       if data
         if %i[post put patch].include?(verb)
           args << data.compact.to_json

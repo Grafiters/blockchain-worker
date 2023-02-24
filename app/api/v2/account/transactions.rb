@@ -1,7 +1,7 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
- require_relative '../validations'
+require_relative '../validations'
 
 module API
   module V2

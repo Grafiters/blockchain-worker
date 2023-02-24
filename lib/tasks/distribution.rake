@@ -3,6 +3,15 @@
 require 'csv'
 
 namespace :distribution do
+  # Detailed instruction https://github.com/rubykube/peatio/blob/master/docs/tasks/distribution.md
+  # Required fields for distribution:
+  # - uid
+  # - currency_id
+  # - amount
+  #
+  # Usage:
+  # For distribution process: -> bundle exec rake distribution:process['file_name.csv']
+
   desc 'Distribution process'
   task :process, [:config_load_path] => [:environment] do |_, args|
     csv_table = File.read(Rails.root.join(args[:config_load_path]))

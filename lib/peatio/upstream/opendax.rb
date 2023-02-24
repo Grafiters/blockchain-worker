@@ -2,7 +2,7 @@
 
 module Peatio
   module Upstream
-    class Nusadax < Peatio::Upstream::Base
+    class Opendax < Peatio::Upstream::Base
       def initialize(config)
         super
         @connection = Faraday.new(url: "#{config['rest']}") do |builder|

@@ -40,11 +40,11 @@ services:
       - "15672:15672"
 
   auth:
-    image: quay.io/koinku/account:0.1.1
+    image: quay.io/openware/authz-dummy:0.1.1
     ports:
       - "8005:8005"
     environment:
-      DUMMY_USER_EMAIL: "admin@nagaexchange.co.id"
+      DUMMY_USER_EMAIL: "admin@barong.io"
       DUMMY_USER_UID: "U123456789"
       DUMMY_USER_ROLE: "superadmin"
       DUMMY_USER_LEVEL: 3

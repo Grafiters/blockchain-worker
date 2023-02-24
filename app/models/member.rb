@@ -141,6 +141,22 @@ class Member < ApplicationRecord
       end
     end
 
+    # Create Member object from payload
+    # == Example payload
+    # {
+    #   :iss=>"barong",
+    #   :sub=>"session",
+    #   :aud=>["peatio"],
+    #   :email=>"admin@barong.io",
+    #   :username=>"barong",
+    #   :uid=>"U123456789",
+    #   :role=>"admin",
+    #   :state=>"active",
+    #   :level=>"3",
+    #   :iat=>1540824073,
+    #   :exp=>1540824078,
+    #   :jti=>"4f3226e554fa513a"
+    # }
 
     def from_payload(p)
       params = filter_payload(p)

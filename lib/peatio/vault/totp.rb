@@ -38,7 +38,7 @@ module Vault
       private
 
       def totp_code_key(uid)
-        "totp/code/naga_#{uid}"
+        "totp/code/#{Vault.application}_#{uid}"
       end
 
       def read_data(key)

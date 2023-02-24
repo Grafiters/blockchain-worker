@@ -79,7 +79,7 @@ describe Serializers::EventAPI::OrderUpdated, OrderAsk do
 end
 
 describe Serializers::EventAPI::OrderUpdated, OrderBid do
-  let(:buyer) { create(:member, :level_3, :account) }
+  let(:buyer) { create(:member, :level_3, :barong) }
 
   let :order_bid do
     # Buy 14 BTC for 0.42 USD (0.03 USD per BTC).

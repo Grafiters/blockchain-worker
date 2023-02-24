@@ -24,7 +24,7 @@ class PaymentAddress < ApplicationRecord
 
   before_validation do
     next if blockchain_api&.case_sensitive?
-    self.address = address.try(:downcase)
+    self.address = address
   end
 
   before_validation do

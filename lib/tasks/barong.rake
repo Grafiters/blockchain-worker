@@ -1,13 +1,13 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
-namespace :account do
-  desc 'Refresh access level for Account members.'
+namespace :barong do
+  desc 'Refresh access level for Barong members.'
   task levels: :environment do
-    url = "https://#{ENV.fetch('Account_DOMAIN')}/api/account"
+    url = "https://#{ENV.fetch('BARONG_DOMAIN')}/api/account"
     t   = Authentication.arel_table
     Authentication
-      .where(provider: :account)
+      .where(provider: :barong)
       .where(t[:token].is_not_blank)
       .where(t[:member_id].is_not_blank)
       .includes(:member)

@@ -73,6 +73,7 @@ class BlockchainCurrency < ApplicationRecord
   before_validation { self.deposit_fee = 0 unless currency.fiat? }
 
   before_validation do
+    self.erc20_contract_address = erc20_contract_address if erc20_contract_address.present?
     self.parent_id = nil if currency.fiat?
   end
 

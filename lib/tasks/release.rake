@@ -5,7 +5,7 @@ def bot_username
 end
 
 def repository_slug
-  ENV.fetch('REPOSITORY_SLUG', 'koinku/exchange')
+  ENV.fetch('REPOSITORY_SLUG', 'openware/peatio')
 end
 
 namespace 'release' do
@@ -24,8 +24,8 @@ namespace 'release' do
       Kernel.abort 'Bumping version aborted: the build has been triggered by Git tag.'
     end
 
-    sh %(git config --global user.name 'NagaExchange')
-    sh %(git config --global user.email 'support@nagaexchange.co.id')
+    sh %(git config --global user.name 'OpenWare')
+    sh %(git config --global user.email 'support@openware.com')
     sh %(git remote add authenticated-origin https://#{bot_username}:#{ENV.fetch('GITHUB_API_KEY')}@github.com/#{repository_slug})
     next_version = Bump::Bump.next_version('patch')
     sh %(V='#{next_version}' bin/gendocs)

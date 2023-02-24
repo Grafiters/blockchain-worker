@@ -12,6 +12,7 @@ class WalletService
 
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: blockchain_currency.to_blockchain_api_settings)
+    Rails.logger.warn @wallet.inspect
     @adapter.create_address!(uid: uid, pa_details: pa_details)
   end
 

@@ -45,7 +45,6 @@ module API
           use :pagination
           use :ordering
         end
-
         get '/orders' do
           admin_authorize! :read, ::Order
 
@@ -89,9 +88,10 @@ module API
             error!({ errors: ['admin.order.cancel_error'] }, 422)
           end
         end
-
         post '/orders/:id/cancel' do
           admin_authorize! :update, ::Order
+
+          # This part won't work with Finex
           begin
             order = Order.find(params[:id])
             order.trigger_cancellation
@@ -113,7 +113,6 @@ module API
                    values: { value: %w(sell buy), message: 'admin.order.invalid_side' },
                    desc: 'If present, only sell orders (asks) or buy orders (bids) will be cancelled.'
         end
-
         post '/orders/cancel' do
           admin_authorize! :update, ::Order
 

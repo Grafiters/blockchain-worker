@@ -3,7 +3,7 @@
 
 describe API::V2::Management::Entities::Deposit do
   context 'fiat' do
-    let(:record) { create(:deposit_usd, member: create(:member, :account)) }
+    let(:record) { create(:deposit_usd, member: create(:member, :barong)) }
 
     subject { OpenStruct.new API::V2::Management::Entities::Deposit.represent(record).serializable_hash }
 
@@ -22,7 +22,7 @@ describe API::V2::Management::Entities::Deposit do
   end
 
   context 'coin' do
-    let(:record) { create(:deposit_btc, member: create(:member, :account)) }
+    let(:record) { create(:deposit_btc, member: create(:member, :barong)) }
 
     subject { OpenStruct.new API::V2::Management::Entities::Deposit.represent(record).serializable_hash }
 

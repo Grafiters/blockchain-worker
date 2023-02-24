@@ -11,7 +11,7 @@ default: &default
 
 development:
   <<: *default
-  database: nagaexchange_development
+  database: peatio_development
 
 test:
   <<: *default

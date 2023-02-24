@@ -214,7 +214,7 @@ describe API::V2::Management::Markets, type: :request do
         min_amount: 0.01,
         data: {
           upstream: {
-            driver: :nusadax
+            driver: :opendax
           }
         }
       }
