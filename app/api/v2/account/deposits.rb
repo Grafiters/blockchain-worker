@@ -58,8 +58,8 @@ module API
                       .tap { |q| q.where!(txid: params[:txid]) if params[:txid] }
                       .tap { |q| q.where!(aasm_state: params[:state]) if params[:state] }
                       .tap { |q| q.where!(blockchain_key: params[:blockchain_key]) if params[:blockchain_key] }
-                      .tap { |q| q.where!('updated_at >= ?', Time.at(params[:time_from])) if params[:time_from].present? }
-                      .tap { |q| q.where!('updated_at <= ?', Time.at(params[:time_to])) if params[:time_to].present? }
+                      .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from].present? }
+                      .tap { |q| q.where!('created_at <= ?', Time.at(params[:time_to])) if params[:time_to].present? }
                       .tap { |q| present paginate(q), with: API::V2::Entities::Deposit }
         end
 
