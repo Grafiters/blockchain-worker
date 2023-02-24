@@ -18,6 +18,31 @@ class P2pOffer < ApplicationRecord
                                                     .where(p2p_order_payments: {p2p_offer_id: id})
     end
 
+    def sold
+      order = ::P2pOrder.joins(:p2p_offer).where(p2p_offer_id: id)
+
+      {
+        sold: sold_query(order).sum(:amount),
+        bought: bought_query(order).sum(:amount)
+      }
+    end
+
+    def sold_query(base)
+      base.where("p2p_offers.side = 'sell' AND p2p_orders.state IN (?)", %w(accepted, success))
+    end
+
+    def bought_query(base)
+      base.where("p2p_offers.side = 'buy' AND p2p_orders.state IN (?)", %w(accepted, success))
+    end
+
+    def fiat_logo
+      ::Fiat.select("name", "icon_url").find_by(name: fiat)
+    end
+
+    def currency_logo
+        ::Currency.select("id as name", "icon_url").find_by(id: currency)
+    end
+
     private
     def update_account_offer
       offer = ::P2pUser.find_by(id: p2p_user_id)
