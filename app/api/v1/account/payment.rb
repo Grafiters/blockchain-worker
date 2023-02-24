@@ -8,18 +8,12 @@ module API
                     helpers ::API::V1::Account::Utils
 
                     desc 'Get available fiat'
-                    params do
-                        optional :payment_user_uid,
-                                type: String,
-                                desc: 'p2p_user.payment.filter_by_payment_uid'
-                    end
                     get "/" do
                         p2p_user = ::P2pUser.joins(:member).find_by(members: {uid: current_user[:uid]})
 
-                        search = ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.id","p2p_payment_users.payment_user_uid","p2p_payment_users.name as account_name", "p2p_payment_users.account_number","p2p_payment_users.qrcode", "p2p_payments.symbol", "p2p_payments.logo_url","p2p_payments.base_color","p2p_payments.state","p2p_payments.name").where(p2p_payment_users: {p2p_user_id: p2p_user[:id], state: 'active'})
-                        search = search.where("p2p_payment_users.payment_user_uid = ?", params[:payment_user_uid]) unless params[:payment_user_uid].blank?
+                        # present ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.*", "p2p_payments.*").where(p2p_payment_users: {p2p_user_id: p2p_user[:id]})
                         present paginate(
-                            search
+                                ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.id","p2p_payment_users.payment_user_uid","p2p_payment_users.name as account_name", "p2p_payment_users.account_number","p2p_payment_users.qrcode", "p2p_payments.symbol", "p2p_payments.logo_url","p2p_payments.base_color","p2p_payments.state","p2p_payments.name").where(p2p_payment_users: {p2p_user_id: p2p_user[:id], state: 'active'})
                             ), with: API::V1::Account::Entities::Payment
                     end
 
@@ -98,8 +92,12 @@ module API
                     put "/delete/:payment" do
                         payment = ::P2pPaymentUser.find_by(payment_user_uid: params[:payment])
 
+                        if payment.blank?
+                            error!({ errors: ['p2p_user.payment_user.payment_user_does_not_exists'] }, 422)
+                        end
+
                         payment.update(state: 'deleted')
-                        {message: 'success deleted payment'}
+                        present payment
                     end
                 end
             end
