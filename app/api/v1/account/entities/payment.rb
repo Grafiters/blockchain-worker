@@ -81,6 +81,15 @@ module API
                         type: String
                     }
                 )
+
+                expose(
+                    :tipe,
+                    as: :tipe,
+                    documentation: {
+                        desc: 'Filter Fiat.',
+                        type: String
+                    }
+                )
             end
           end
         end
