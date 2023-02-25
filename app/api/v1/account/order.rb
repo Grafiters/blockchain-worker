@@ -41,14 +41,14 @@ module API
                                         OR
                                     (p2p_offers.p2p_user_id = ? AND p2p_offers.side = "buy")
                                         OR
-                                    (p2p_offers.p2p_user_id = ? AND p2p_offers.side = "sell")', p2p_user_feedback, p2p_user_feedback, p2p_user_feedback, p2p_user_feedback)
+                                    (p2p_offers.p2p_user_id = ? AND p2p_offers.side = "sell")', current_p2p_user[:id], current_p2p_user[:id], current_p2p_user[:id], current_p2p_user[:id])
                             .ransack(ransack_params)
                         
                         order.sorts = "id DESC"
 
                         present paginate(order.result.each do |ord|
                             ord[:state] = state_order(ord)
-                        end), with: API::V1::Account::Entities::Order, current_user: p2p_user_feedback
+                        end), with: API::V1::Account::Entities::Order, current_user: current_p2p_user[:id]
                     end
                 end
             end

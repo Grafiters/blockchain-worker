@@ -110,8 +110,8 @@ module API
                         type: String
                     },
                     if: ->(_, options) { options[:current_user] }
-                    ) do |trade, options|
-                        side_status(trade, options[:current_user])
+                    ) do |p2p_order|
+                        p2p_order.side_order(options[:current_user])
                     end
 
                 expose(

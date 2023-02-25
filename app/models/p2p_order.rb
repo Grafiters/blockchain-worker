@@ -75,6 +75,28 @@ class P2pOrder < ApplicationRecord
         offer[:available_amount] + amount
     end
 
+    def side_order(user)
+        offer = ::P2pOffer.find_by(id: p2p_offer_id)
+
+        Rails.logger.warn offer.inspect
+
+        if side == 'sell'
+            if p2p_user_id == user
+                "buy"
+            else
+                "sell"
+            end
+        end
+        
+        if side == 'buy'
+            if p2p_user_id == user
+                "buy"
+            else
+                "sell"
+            end
+        end
+    end
+
     def fiat_logo
         ::Fiat.select("name", "icon_url").find_by(name: fiat)
     end

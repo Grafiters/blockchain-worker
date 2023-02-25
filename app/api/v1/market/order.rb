@@ -83,16 +83,15 @@ module API
                         order = ::P2pOrder.select("p2p_orders.*","p2p_orders.p2p_order_payment_id as payment").find_by(order_number: params[:order_number])
 
                         if order[:p2p_order_payment_id].present?
-                            order_payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment).select("p2p_payments.*","p2p_order_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").find_by(p2p_order_payments: {id: order[:p2p_order_payment_id]})
-                            order[:payment] = order_payment
+                            order[:payment] = order_payments(order)
                         end
 
                         offer = ::P2pOffer.select("p2p_offers.*", "p2p_offers.created_at as payment","p2p_offers.updated_at as trader", "p2p_offers.p2p_pair_id as currency").find_by(id: order[:p2p_offer_id])
-                        payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
+                        payments = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
                                                     .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
                                                     .find_by(p2p_order_payments: {p2p_offer_id: offer[:id]})
                         
-                        offer[:payment] = payment
+                        offer[:payment] = payments
                         offer[:currency] = currency(offer[:currency])[:currency].upcase
 
                         if offer[:side] == 'sell'

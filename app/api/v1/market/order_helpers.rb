@@ -20,6 +20,14 @@ module API
           order
         end
 
+        def order_payments(order)
+          if order[:side] == 'sell'
+            payment = ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").find_by(p2p_payment_users: {id: order[:p2p_order_payment_id]})
+          else
+            payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment).select("p2p_payments.*","p2p_order_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").find_by(p2p_order_payments: {id: order[:p2p_order_payment_id]})
+          end
+        end
+
         def validation_request
           offer = ::P2pOffer.find_by(offer_number: params[:offer_number])
           if offer[:state] == 'canceled'

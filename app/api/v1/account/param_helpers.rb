@@ -42,12 +42,7 @@ module API
                 def payment
                     ::P2pPayment.find_by(symbol: params[:payment_method])
                 end
-
-                def p2p_user_feedback
-                    user = ::P2pUser.find_by(member_id: current_user[:id])
-                    user[:id]
-                end
-
+                
                 def exists
                     ::P2pPaymentUser.find_by({p2p_user_id: current_p2p_user[:id], p2p_payment_id: params[:payment_method], state: 'active'})
                 end
