@@ -66,10 +66,18 @@ module API
                 def chat_params(order, target_user)
                     params_mapping = {
                         p2p_order_id: order[:id],
-                        user_uid: target_user.present? ? target_user : current_user[:uid],
+                        user_uid: target_user.present? ? targer_offer_uid(order) : current_user[:uid],
                         chat: params[:message].present? ? image_check : 'Mohon Kirim Bukti tranfer',
                         upload: params[:message].present? ? image_exists : nil
                     }
+                end
+
+                def targer_offer_uid(order)
+                    if order[:side] == 'sell'
+                        order[:taker_uid]
+                    else
+                        order[:maker_uid]
+                    end
                 end
 
                 def payment(offer)

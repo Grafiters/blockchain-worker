@@ -90,9 +90,9 @@ class P2pOrder < ApplicationRecord
         
         if side == 'buy'
             if p2p_user_id == user
-                "buy"
-            else
                 "sell"
+            else
+                "buy"
             end
         end
     end
