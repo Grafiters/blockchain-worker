@@ -1,7 +1,7 @@
 class P2pPaymentUser < ApplicationRecord
     # mount_uploader :qrcode, PaymentUserUploader
 
-    has_many :p2p_order_payment, dependent: :destroy
+    has_many :p2p_offer_payment, dependent: :destroy
     
     extend Enumerize
     STATES = { active: 0, inactive: -100, deleted: -200 }

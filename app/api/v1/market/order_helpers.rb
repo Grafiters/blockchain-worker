@@ -21,11 +21,7 @@ module API
         end
 
         def order_payments(order)
-          if order[:side] == 'sell'
-            payment = ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").find_by(p2p_payment_users: {id: order[:p2p_order_payment_id]})
-          else
-            payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment).select("p2p_payments.*","p2p_order_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").find_by(p2p_order_payments: {id: order[:p2p_order_payment_id]})
-          end
+            payment = ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").find_by(p2p_payment_users: {id: order[:p2p_payment_user_id]})
         end
 
         def validation_request
@@ -51,7 +47,7 @@ module API
             payment_user = ::P2pPaymentUser.find_by(payment_user_uid: params[:payment_order])
 
             payment = ::P2pOrderPayment.joins(:p2p_payment_user).
-            find_by(p2p_order_payments: {p2p_offer_id: offer[:id]}, p2p_payment_users: {p2p_payment_id: payment_user[:p2p_payment_id]})
+            find_by(p2p_offer_payment: {p2p_offer_id: offer[:id]}, p2p_payment_users: {p2p_payment_id: payment_user[:p2p_payment_id]})
             if payment.blank?
               error!({ errors: ['p2p.order.payment_method_not_avail_on_your_account'] }, 422)
             end

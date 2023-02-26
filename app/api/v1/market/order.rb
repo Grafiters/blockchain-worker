@@ -80,22 +80,22 @@ module API
 
                     desc 'Detail P2p Order By Order Number'
                     get '/:order_number' do
-                        order = ::P2pOrder.select("p2p_orders.*","p2p_orders.p2p_order_payment_id as payment").find_by(order_number: params[:order_number])
+                        order = ::P2pOrder.select("p2p_orders.*","p2p_orders.p2p_payment_user_id as payment").find_by(order_number: params[:order_number])
 
-                        if order[:p2p_order_payment_id].present?
+                        if order[:p2p_payment_user_id].present?
                             order[:payment] = order_payments(order)
                         end
 
                         offer = ::P2pOffer.select("p2p_offers.*", "p2p_offers.created_at as payment","p2p_offers.updated_at as trader", "p2p_offers.p2p_pair_id as currency").find_by(id: order[:p2p_offer_id])
-                        payments = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
-                                                    .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
-                                                    .find_by(p2p_order_payments: {p2p_offer_id: offer[:id]})
+                        payments = ::P2pPaymentUser.joins(:p2p_offer_payment, :p2p_payment)
+                                                    .select("p2p_payments.*","p2p_offer_payments.*","p2p_offer_payments.id as p2p_payments")
+                                                    .find_by(p2p_offer_payments: {p2p_offer_id: offer[:id]})
                         
                         offer[:payment] = payments
                         offer[:currency] = currency(offer[:currency])[:currency].upcase
 
                         if offer[:side] == 'sell'
-                            payment_merchant = ::P2pOrderPayment.joins(p2p_payment_user: :p2p_payment).select("p2p_order_payments.id","p2p_payment_users.payment_user_uid","p2p_payments.name as bank","p2p_payment_users.name as account_name","p2p_payment_users.name","p2p_payments.logo_url","p2p_payments.base_color","p2p_payment_users.account_number","p2p_payments.state").where(p2p_order_payments: {p2p_offer_id: offer[:id]})
+                            payment_merchant = ::P2pOrderPayment.joins(p2p_payment_user: :p2p_payment).select("p2p_offer_payments.id","p2p_payment_users.payment_user_uid","p2p_payments.name as bank","p2p_payment_users.name as account_name","p2p_payment_users.name","p2p_payments.logo_url","p2p_payments.base_color","p2p_payment_users.account_number","p2p_payments.state").where(p2p_offer_payments: {p2p_offer_id: offer[:id]})
                         end
 
                         present :order, order, with: API::V1::Entities::Order
@@ -108,7 +108,7 @@ module API
                     desc 'Confirmation Target Payment final step'
                     put '/confirm/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
-                        if order[:p2p_order_payment_id].blank?
+                        if order[:p2p_payment_user_id].blank?
                             error!({ errors: ['p2p_order.order.payment_confirm_not_exists'] }, 422)
                         end
 
@@ -153,13 +153,13 @@ module API
                             error!({ errors: ['p2p_order.order.process_has_canceled'] }, 422)
                         end
 
-                        payment = ::P2pOrderPayment.joins(:p2p_payment_user, :p2p_offer).find_by(p2p_payment_users: {payment_user_uid: params[:payment_method]}, p2p_order_payments: {p2p_offer_id: order[:p2p_offer_id]})
+                        payment = ::P2pOfferPayment.joins(:p2p_payment_user, :p2p_offer).find_by(p2p_payment_users: {payment_user_uid: params[:payment_method]}, p2p_offer_payments: {p2p_offer_id: order[:p2p_offer_id]})
                         if payment.blank?
                             error!({ errors: ['p2p_order.order.payment_user_not_found'] }, 422)
                         end
 
                         order.update({
-                            p2p_order_payment_id: payment[:id],
+                            p2p_payment_user_id: payment[:id],
                             first_approve_expire_at: Time.now,
                             second_approve_expire_at: Time.now + (24 * 60 * 60),
                             state: 'waiting'

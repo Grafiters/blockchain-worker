@@ -81,20 +81,20 @@ class CreateP2PTable < ActiveRecord::Migration[4.2]
     add_index "p2p_offers", ["p2p_user_id"], name: "index_p2p_offers_on_p2p_user_id", using: :btree
     add_index "p2p_offers", ["p2p_pair_id"], name: "index_p2p_offers_on_p2p_pair_id", using: :btree
 
-    create_table  "p2p_order_payments", force: :cascade do |t|
+    create_table  "p2p_offer_payments", force: :cascade do |t|
       t.integer   "p2p_offer_id",           limit: 4
       t.integer   "p2p_payment_user_id",    limit: 4
       t.string    "state",                  limit: 15, null: false
       t.datetime  "created_at"
       t.datetime  "updated_at"
     end
-    add_index "p2p_order_payments", ["p2p_offer_id"], name: "index_p2p_order_payments_on_p2p_offer_id", using: :btree
-    add_index "p2p_order_payments", ["p2p_payment_user_id"], name: "index_p2p_order_payments_on_p2p_payment_user_id", using: :btree
+    add_index "p2p_offer_payments", ["p2p_offer_id"], name: "index_p2p_offer_payments_on_p2p_offer_id", using: :btree
+    add_index "p2p_offer_payments", ["p2p_payment_user_id"], name: "index_p2p_offer_payments_on_p2p_payment_user_id", using: :btree
 
     create_table  "p2p_orders", force: :cascade do |t|
       t.integer   "p2p_user_id",              limit: 4
       t.integer   "p2p_offer_id",             limit: 4
-      t.integer   "p2p_order_payment_id",     limit: 4
+      t.integer   "p2p_payment_user_id",     limit: 4
       t.string    "state",                    limit: 20,  default: "prepare"
       t.decimal   "amount",                               precision: 32, scale: 16
       t.string    "side",                     limit: 10,  null: false
@@ -106,7 +106,7 @@ class CreateP2PTable < ActiveRecord::Migration[4.2]
     end
     add_index "p2p_orders", ["p2p_user_id"], name: "index_p2p_orders_on_p2p_user_id", using: :btree
     add_index "p2p_orders", ["p2p_offer_id"], name: "index_p2p_orders_on_p2p_offer_id", using: :btree
-    add_index "p2p_orders", ["p2p_order_payment_id"], name: "index_p2p_orders_on_p2p_order_payment_id", using: :btree
+    add_index "p2p_orders", ["p2p_payment_user_id"], name: "index_p2p_orders_on_p2p_payment_user_id", using: :btree
 
     create_table  "p2p_chats", force: :cascade do |t|
       t.integer   "p2p_order_id",      limit: 4

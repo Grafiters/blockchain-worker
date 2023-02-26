@@ -59,7 +59,7 @@ module API
                         taker_uid: receiver_p2p[:uid],
                         amount: params[:amount],
                         side: side,
-                        p2p_order_payment_id: side == 'sell' ? payment(offer)[:id] : nil
+                        p2p_payment_user_id: side == 'sell' ? payment(offer)[:id] : nil
                     }
                 end
 

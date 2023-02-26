@@ -20,9 +20,9 @@ module API
                 end
 
                 def payments(payment)
-                    ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
-                                                            .select("p2p_payments.*","p2p_order_payments.*")
-                                                            .find_by(p2p_order_payments: {id: payment})
+                    ::P2pPaymentUser.joins(:p2p_offer_payment, :p2p_payment)
+                                                            .select("p2p_payments.*","p2p_offer_payments.*")
+                                                            .find_by(p2p_offer_payments: {id: payment})
                 end
 
                 def buyorsel(uid)
@@ -39,7 +39,7 @@ module API
                 end
 
                 def payment_order(offer)
-                    ::P2pPaymentUser.joins(:p2p_payment, p2p_order_payment: :p2p_offer).select("p2p_payments.*","p2p_order_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").where(p2p_offers: {id: offer[:id]})
+                    ::P2pPaymentUser.joins(:p2p_payment, p2p_offer_payment: :p2p_offer).select("p2p_payments.*","p2p_offer_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").where(p2p_offers: {id: offer[:id]})
                 end
 
                 def count_time_limit(p2p_start, p2p_end)
