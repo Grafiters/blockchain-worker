@@ -33,7 +33,7 @@ module API
                                                 .with_range_amount
                                                 .build
 
-                        order = ::P2pOffer.joins(:p2p_pair, p2p_order_payment: :p2p_payment_user)
+                        order = ::P2pOffer.joins(:p2p_pair, p2p_offer_payment: :p2p_payment_user)
                                             .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as payments", "p2p_pairs.fiat","p2p_pairs.currency")
                                             .where(p2p_offers: {p2p_user_id: current_p2p_user[:id]})
 
@@ -68,7 +68,7 @@ module API
                                                 .with_range_amount
                                                 .build
                         
-                        offer = ::P2pOffer.joins(:p2p_pair, p2p_order_payment: :p2p_payment_user)
+                        offer = ::P2pOffer.joins(:p2p_pair, p2p_offer_payment: :p2p_payment_user)
                                             .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as payments", "p2p_pairs.fiat","p2p_pairs.currency")
                                             .find_by(p2p_offers: {offer_number: params[:offer_number]})
 

@@ -82,7 +82,7 @@ module API
                         create_payment = create_payment_offer(create_offer[:id])
 
                         present :offer, create_offer
-                        present :payment, create_offer.p2p_order_payment
+                        present :payment, create_offer.p2p_offer_payment
                     end
 
                     get "/:offer_id" do
@@ -92,9 +92,9 @@ module API
                             all_payment = ::P2pPayment.joins(:fiat).where(fiats: {name: 'IDR'})
                         end
 
-                        payment = ::P2pPaymentUser.joins(:p2p_order_payment, :p2p_payment)
-                                                    .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
-                                                    .where(p2p_order_payments: {p2p_offer_id: offer[:id]})
+                        payment = ::P2pPaymentUser.joins(:p2p_offer_payment, :p2p_payment)
+                                                    .select("p2p_payments.*","p2p_offer_payments.*","p2p_offer_payments.id as p2p_payments")
+                                                    .where(p2p_offer_payments: {p2p_offer_id: offer[:id]})
 
                         present :offer, offer
                         present :payment, payment

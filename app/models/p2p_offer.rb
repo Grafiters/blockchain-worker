@@ -1,7 +1,7 @@
 class P2pOffer < ApplicationRecord
     serialize :data, JSON unless Rails.configuration.database_support_json
 
-    has_many :p2p_order_payment
+    has_many :p2p_offer_payment
 
     belongs_to :p2p_pair, dependent: :destroy
     belongs_to :p2p_user, dependent: :destroy
@@ -13,9 +13,9 @@ class P2pOffer < ApplicationRecord
     end
 
     def payment
-      ::P2pOrderPayment.joins(p2p_payment_user: :p2p_payment)
-                                                    .select("p2p_payments.*","p2p_order_payments.*","p2p_order_payments.id as p2p_payments")
-                                                    .where(p2p_order_payments: {p2p_offer_id: id})
+      ::P2pOfferPayment.joins(p2p_payment_user: :p2p_payment)
+                                                    .select("p2p_payments.*","p2p_offer_payments.*","p2p_offer_payments.id as p2p_payments")
+                                                    .where(p2p_offer_payments: {p2p_offer_id: id})
     end
 
     def sold
