@@ -46,8 +46,8 @@ module API
 
             payment_user = ::P2pPaymentUser.find_by(payment_user_uid: params[:payment_order])
 
-            payment = ::P2pOrderPayment.joins(:p2p_payment_user).
-            find_by(p2p_offer_payment: {p2p_offer_id: offer[:id]}, p2p_payment_users: {p2p_payment_id: payment_user[:p2p_payment_id]})
+            payment = ::P2pOfferPayment.joins(:p2p_payment_user).
+            find_by(p2p_offer_payments: {p2p_offer_id: offer[:id]}, p2p_payment_users: {p2p_payment_id: payment_user[:p2p_payment_id]})
             if payment.blank?
               error!({ errors: ['p2p.order.payment_method_not_avail_on_your_account'] }, 422)
             end
