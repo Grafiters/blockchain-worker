@@ -13,7 +13,7 @@ class P2pOffer < ApplicationRecord
     end
 
     def payment
-      ::P2pOrderPayment.joins(p2p_payment_user: :p2p_payment)
+      ::P2pOfferPayment.joins(p2p_payment_user: :p2p_payment)
                                                     .select("p2p_payments.*","p2p_offer_payments.*","p2p_offer_payments.id as p2p_payments")
                                                     .where(p2p_offer_payments: {p2p_offer_id: id})
     end

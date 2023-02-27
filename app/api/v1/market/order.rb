@@ -46,15 +46,21 @@ module API
                     post '/information_chat/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
 
-                        if params[:message]['tempfile'].present?
-                            error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
-                        end
+                        # if params[:message]['tempfile'].present?
+                        #     error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
+                        # end
 
                         if order[:state] == 'canceled' || order[:state] == 'success' || order[:state] == 'rejected'
                             error!({ errors: ['p2p_order.information_chat.can_not_send_message_order_is_done'] }, 422)
                         end
+
+                        image = MiniMagick::Image.open(params[:message]['tempfile'].path)
+                        image.resize "941x1254"
+                        scaled_image_bytes = image.to_blob
+                        base64Resized = Base64.strict_encode64(scaled_image_bytes)
                         
-                        chat = ::P2pChat.create(chat_params(order, nil))
+                        chat = build_message(order, base64Resized)
+                        chat.submit_chat
 
                         present chat
                     end
@@ -76,6 +82,13 @@ module API
 
                         present :target, target, with: API::V1::Account::Entities::Stats
                         present :room, room, with: API::V1::Entities::Chat
+                    end
+
+                    desc 'Information Chat Detail'
+                    get '/information_chats/:chat_id' do 
+                        chat = ::P2pChat.find_by_id(params[:chat_id])
+                        
+                        present chat.upload.url, disposition: 'inline'
                     end
 
                     desc 'Detail P2p Order By Order Number'

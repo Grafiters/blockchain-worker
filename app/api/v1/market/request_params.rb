@@ -29,6 +29,14 @@ module API
                             type: {value: String, message: 'order.market.chat_must_be_exists'}
                 end
 
+                def build_message(order, resizeImage)
+                    ::P2pChat.new \
+                        p2p_order_id: order[:id],
+                        user_uid: current_user[:uid],
+                        chat: params[:message].present? ? image_check : 'Mohon Kirim Bukti tranfer',
+                        upload: params[:message]['tempfile']
+                end
+
                 def build_params
                     params_mapping = {
                         p2p_user_id: p2p_user_id[:id],
