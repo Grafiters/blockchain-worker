@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_22_125328) do
+ActiveRecord::Schema.define(version: 2023_02_27_013046) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -337,6 +337,16 @@ ActiveRecord::Schema.define(version: 2023_02_22_125328) do
     t.index ["p2p_order_id"], name: "index_p2p_orders_on_p2p_order_id"
   end
 
+  create_table "p2p_offer_payments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_offer_id"
+    t.integer "p2p_payment_user_id"
+    t.string "state", limit: 15, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["p2p_offer_id"], name: "index_p2p_offer_payments_on_p2p_offer_id"
+    t.index ["p2p_payment_user_id"], name: "index_p2p_offer_payments_on_p2p_payment_user_id"
+  end
+
   create_table "p2p_offers", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "offer_number", limit: 75, null: false
     t.integer "p2p_user_id"
@@ -365,16 +375,6 @@ ActiveRecord::Schema.define(version: 2023_02_22_125328) do
     t.datetime "updated_at"
     t.string "order_number", limit: 50, null: false
     t.index ["p2p_user_id"], name: "index_p2p_order_feedback_on_p2p_user_id"
-  end
-
-  create_table "p2p_offer_payments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "p2p_offer_id"
-    t.integer "p2p_payment_user_id"
-    t.string "state", limit: 15, null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["p2p_offer_id"], name: "index_p2p_offer_payments_on_p2p_offer_id"
-    t.index ["p2p_payment_user_id"], name: "index_p2p_offer_payments_on_p2p_payment_user_id"
   end
 
   create_table "p2p_orders", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
