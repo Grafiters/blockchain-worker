@@ -13,7 +13,6 @@ module Jobs
 
                 def first_approvement
                     ::P2pOrder.where(state: 'prepare').each do |order|
-                        Rails.logger.warn order.order_number
                         if order.first_approve_expire_at.present? && Time.now >= order.first_approve_expire_at
                             order.update!(state: 'canceled')
                         end
@@ -23,8 +22,6 @@ module Jobs
                 def second_approvement
                     ::P2pOrder.where(state: 'waiting').each do |order|
                         return if order.second_approve_expire_at.blank?
-                        Rails.logger.warn order.order_number
-
                         if order.second_approve_expire_at.present? && Time.now >= order.second_approve_expire_at
                             order.update!(state: 'accepted')
                         end
@@ -34,8 +31,6 @@ module Jobs
                 def process_to_success
                     ::P2pOrder.where(state: 'accepted').each do |order|
                         return if order.second_approve_expire_at.blank?
-                        Rails.logger.warn order.order_number
-
                         if order.second_approve_expire_at.present? && Time.now >= order.second_approve_expire_at
                             order.update!(state: 'success')
                         end

@@ -14,7 +14,7 @@ class P2pOrder < ApplicationRecord
     end
 
     after_commit on: :update do
-        if state == 'canceled'
+        if state == 'canceled' || state == 'rejected'
             unlock_funds
         end
     end
@@ -81,19 +81,11 @@ class P2pOrder < ApplicationRecord
         Rails.logger.warn offer.inspect
 
         if side == 'sell'
-            if p2p_user_id == user
-                "buy"
-            else
-                "sell"
-            end
-        end
-        
-        if side == 'buy'
-            if p2p_user_id == user
-                "sell"
-            else
-                "buy"
-            end
+            sides = p2p_user_id == user ? "sell" : "buy"
+            return sides
+        elsif side == 'buy'
+            sides = p2p_user_id == user ? "buy" : "sell"
+            return sides
         end
     end
 

@@ -26,7 +26,7 @@ module API
                         optional :full_name,
                                 type: String
                         optional :qrcode
-                        optional :otp,
+                        optional :otp_code,
                                 type: { value: Integer, message: 'p2p_user.payment.non_integer_otp' },
                                 allow_blank: true,
                                 desc: 'OTP to perform action'
@@ -40,13 +40,17 @@ module API
                             error!({ errors: ['p2p_user.payment_user.upload_qrcode_image_still_maintenance'] }, 422)
                         end
 
-                        if params[:otp].present?
-                            unless Vault::TOTP.validate?(current_user.uid, params[:otp])
+                        if payment[:tipe] == 'ewallet' && params[:otp_code].blank?
+                            error!({ errors: ['p2p_user.payment_user.missing_otp_code'] }, 422)
+                        end
+
+                        if params[:otp_code].present?
+                            unless Vault::TOTP.validate?(current_user.uid, params[:otp_code])
                                 error!({ errors: ['p2p_user.payment.invalid_otp'] }, 422)
                             end
                         end
 
-                        payment = ::P2pPaymentUser.create(build_params)
+                        payment = ::P2pPaymentUser.create(payment_params)
 
                         present payment
                     end

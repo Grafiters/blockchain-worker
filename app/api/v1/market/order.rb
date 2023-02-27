@@ -116,13 +116,20 @@ module API
                             error!({ errors: ['p2p_order.order.already_completed_process'] }, 422)
                         end
 
-                        if order[:state] == 'waiting' && p2p_user_id[:uid] == order[:maker_uid] || order[:state] == 'accepted' && p2p_user_id[:uid] == order[:taker_uid]
-                            error!({ errors: ['p2p_order.order.can_not_confirm_by_your_self'] }, 422)
+                        if order[:side] == 'buy'
+                            if order[:state] == 'waiting' && p2p_user_id[:uid] == order[:maker_uid] || order[:state] == 'accepted' && p2p_user_id[:uid] == order[:taker_uid]
+                                error!({ errors: ['p2p_order.order.can_not_confirm_by_your_self'] }, 422)
+                            end
+                        else
+                            if order[:state] == 'waiting' && p2p_user_id[:uid] == order[:taker_uid] || order[:state] == 'accepted' && p2p_user_id[:uid] == order[:maker_uid]
+                                error!({ errors: ['p2p_order.order.can_not_confirm_by_your_self'] }, 422)
+                            end
                         end
 
-                        if order[:state] == 'waiting' && p2p_user_id[:uid] == order[:taker_uid]
+                        if order[:state] == 'waiting'
                             state = 'accepted'
-                            order.update({state: state, aproved_by: order[:taker_uid]})
+                            approved = p2p_user_id[:uid] == order[:maker_uid] ? p2p_user_id[:uid] : order[:taker_uid]
+                            order.update({state: state, aproved_by: approved})
                         elsif order[:state] == 'accepted'
                             state = 'success'
                             order.update({state: state})
@@ -153,17 +160,20 @@ module API
                             error!({ errors: ['p2p_order.order.process_has_canceled'] }, 422)
                         end
 
-                        payment = ::P2pOrderPayment.joins(:p2p_payment_user, :p2p_offer).find_by(p2p_payment_users: {payment_user_uid: params[:payment_method]}, p2p_order_payments: {p2p_offer_id: order[:p2p_offer_id]})
-                        if payment.blank?
-                            error!({ errors: ['p2p_order.order.payment_user_not_found'] }, 422)
+                        if order[:side] == 'buy'
+                            payment = ::P2pOrderPayment.joins(:p2p_payment_user, :p2p_offer).find_by(p2p_payment_users: {payment_user_uid: params[:payment_method]}, p2p_order_payments: {p2p_offer_id: order[:p2p_offer_id]})
+                            if payment.blank?
+                                error!({ errors: ['p2p_order.order.payment_user_not_found'] }, 422)
+                            end
                         end
 
                         order.update({
-                            p2p_order_payment_id: payment[:id],
+                            p2p_order_payment_id: order[:side] == 'buy' ? payment[:id] : order[:p2p_order_payment_id],
                             first_approve_expire_at: Time.now,
                             second_approve_expire_at: Time.now + (24 * 60 * 60),
                             state: 'waiting'
                         })
+
                         present order
                     end
 
@@ -180,26 +190,23 @@ module API
 
                     desc 'Report merchant when order progress'
                     params do
-                        requires :order_number,
-                                type: String,
-                                desc: -> { V1::Entities::Order.documentation[:order_number] }
                         requires :reason
                     end
                     post '/report/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
-                        
+
                         params[:reason].each do |param|
                             if param[:key].blank?
                                 error!({ errors: ['p2p_order.order.report.reason_key_can_not_blank'] }, 422)
                             end
 
-                            if param[:message].blank? && param[:upload_payment].present?
+                            if param[:message].blank? && param[:upload_payment].blank?
                                 error!({ errors: ['p2p_order.order.report.message_can_not_blank'] }, 422)
                             end
+                        end
 
-                            if (param[:message].blank? || param[:message].present? )&& param[:upload_payment].present?
-                                error!({ errors: ['p2p_order.order.report.upload_image_still_maintenance'] }, 422)
-                            end
+                        if params[:upload_payment].present?
+                            error!({ errors: ['p2p_order.order.report.upload_image_still_maintenance'] }, 422)
                         end
 
                         report = ::P2pUserReport.create!(report_params)
@@ -208,7 +215,11 @@ module API
                             ::P2pUserReportDetail.create!(report_detail(report[:id], param))
                         end
 
-                        report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})
+                        if params[:upload_payment].present?
+                            ::P2pUserReportdetail.create!({p2p_user_report_id: report[:id], key: 'upload', reason: params[:upload_image]['filename'], upload: params[:upload_image]['tempfile']})
+                        end
+
+                        # report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})
 
                         present report, with: API::V1::Entities::Report
                     end

@@ -21,8 +21,6 @@ module API
                         requires :side,
                                 type: String,
                                 desc: 'Side Offer by Sell Or Buy'
-                        optional :payment,
-                                allow_blank: true
                         optional :amount,
                                 type: { value: Integer, message: 'market.order.non_integer_limit' }
                         optional :max_amount,
@@ -39,14 +37,18 @@ module API
                                                 .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
+
+                        blocked_merchant = ::P2pUserBlocked.where(p2p_user_id: p2p_user_id[:id]).pluck(:target_user_id)
                         
-                        search = ::P2pOffer.joins(:p2p_pair, p2p_order_payment: :p2p_payment_user)
-                                            .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_pairs.created_at as payment", "p2p_offers.p2p_pair_id as currency")
-                                            .where(p2p_pairs: {fiat: params[:fiat]})
+                        order = ::P2pOffer.joins(:p2p_pair).select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
+                        order = order.where(p2p_pairs: {fiat: params[:fiat]})
+                                            .where('p2p_offers.available_amount > 0')
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
                                             .where.not(p2p_offers: {state: 'canceled'})
-                                            .ransack(search_params)
+                        order = order.where.not(p2p_user_id: blocked_merchant)
+                        
+                        search = order.ransack(search_params)
                         
                         result = search.result.load
                         data = result.each do |offer|
@@ -54,10 +56,10 @@ module API
                             offer[:persentage] = persentage(offer[:id])
                             offer[:currency] = currency(offer[:currency])[:currency].upcase
                             offer[:member] = trader(offer[:p2p_user_id])
-                            offer[:payment] = payment(offer[:id])
                         end
 
-                        present paginate(Rails.cache.fetch("offers_#{params}", expires_in: 600) { data }), with: API::V1::Public::Entities::Offer
+                        # present params
+                        present paginate(data), with: API::V1::Public::Entities::Offer
                     end
 
                     desc 'Create offer trade'

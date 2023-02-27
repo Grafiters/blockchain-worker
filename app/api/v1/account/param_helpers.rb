@@ -7,7 +7,7 @@ module API
             module ParamHelpers
                 extend ::Grape::API::Helpers
                 
-                def build_params
+                def payment_params
                     params_mapping = {
                         p2p_user_id: current_p2p_user[:id],
                         p2p_payment_id: payment[:id],

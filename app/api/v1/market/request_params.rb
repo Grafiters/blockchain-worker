@@ -72,11 +72,15 @@ module API
                     }
                 end
 
+                def auto_message(order)
+                    order[:auto_replay].present? ? order[:auto_replay] : 'Mohon Kirim Bukti transfer'
+                end
+
                 def targer_offer_uid(order)
                     if order[:side] == 'sell'
-                        order[:taker_uid]
-                    else
                         order[:maker_uid]
+                    else
+                        order[:taker_uid]
                     end
                 end
 
@@ -120,7 +124,7 @@ module API
                         p2p_user_report_id: report_id,
                         key: data[:key],
                         reason: data[:message].present? ? data[:message] : nil,
-                        upload: data[:upload_payment].present? ? data[:upload_payment]['tempfile'] : nil
+                        upload: nil
                     }
                 end
 

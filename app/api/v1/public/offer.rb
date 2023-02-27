@@ -34,6 +34,7 @@ module API
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
                         
                         order = ::P2pOffer.joins(:p2p_pair).select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
+                                            .where('p2p_offers.available_amount > 0')
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
