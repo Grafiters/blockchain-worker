@@ -1,5 +1,5 @@
 class P2pChat < ApplicationRecord
-    mount_uploader :upload, UploaderUploader
+    # mount_uploader :upload, UploaderUploader
 
     belongs_to :p2p_order, dependent: :destroy
 

@@ -31,8 +31,7 @@ module API
                     desc: 'File url and type'
                } do |p2p_chat|
                 {
-                    url: p2p_chat.verification_url,
-                    image: p2p_chat.upload.url
+                    image: p2p_chat.upload
                 }
             end
 
