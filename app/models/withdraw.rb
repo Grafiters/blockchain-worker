@@ -175,15 +175,10 @@ class Withdraw < ApplicationRecord
 
   class << self
     def sum_query
-      'SELECT sum(w.sum) as sum FROM withdraws as w ' \
+      'SELECT sum(w.sum * c.price) as sum FROM withdraws as w ' \
       'INNER JOIN currencies as c ON c.id=w.currency_id ' \
       'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?;'
     end
-    # def sum_query
-    #   'SELECT sum(w.sum * c.price) as sum FROM withdraws as w ' \
-    #   'INNER JOIN currencies as c ON c.id=w.currency_id ' \
-    #   'where w.member_id = ? AND w.aasm_state IN (?) AND w.created_at > ?;'
-    # end
 
     def sanitize_execute_sum_queries(member_id)
       squery_24h = ActiveRecord::Base.sanitize_sql_for_conditions([sum_query, member_id, SUCCEED_PROCESSING_STATES, 24.hours.ago])
