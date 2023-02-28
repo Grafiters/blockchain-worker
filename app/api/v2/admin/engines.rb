@@ -17,7 +17,7 @@ module API
           admin_authorize! :read, ::Engine
           result = ::Engine.order(params[:order_by] => params[:ordering])
           # present paginate(result), with: API::V2::Admin::Entities::Engine
-          data = [{"id":1,"name":"exchange-default-engine","driver":"nusadax","uid":"","state":"online"}]
+          data = [{"id":1,"name":"exchange-default-engine","driver":"peatio","uid":"","state":"online"}]
           present data
         end
 
