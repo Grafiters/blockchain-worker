@@ -17,6 +17,11 @@ module API
                     end
 
                     post '/:order_number' do
+                        current_feedback = ::P2pOrderFeedback.find_by(order_number: params[:order_number])
+                        if current_feedback.present?
+                            error!({ errors: ['p2p_order.order.feedback_limit_submit'] }, 422)
+                        end
+
                         feedback = ::P2pOrderFeedback.create(feedback_params)
                         
                         if feedback.save
