@@ -64,11 +64,19 @@ module API
                     get "/merchant/:merchant" do
                         member = ::P2pUser.joins(:member).find_by(members: {uid: params[:merchant]})
 
-                        if member.blank?
-                            member = p2p_user
+                        feedback = ::P2pOrderFeedback.joins(p2p_order: :p2p_offer)
+                                            .select("p2p_order_feedbacks.*", "p2p_orders.p2p_payment_user_id as payment", "p2p_orders.p2p_user_id as member",
+                                            "p2p_orders.created_at as p2p_start","p2p_orders.updated_at as p2p_end", "p2p_orders.first_approve_expire_at as payment_limit")
+                                            .where(p2p_offers: {p2p_user_id: member[:id]})
+
+                        feedback.each do |feed |
+                            feed[:payment] = payments(feed[:payment])
+                            feed[:member] = buyorsel(feed[:member])
+                            feed[:payment_limit]   = count_time_limit(feed[:p2p_start], feed[:p2p_end])
                         end
 
-                        present member, with: API::V1::Account::Entities::Stats, masking: true
+                        present :merchant, member, with: API::V1::Public::Entities::Merchant
+                        present :feedbacks, feedback, with: API::V1::Public::Entities::Feedback
                     end
                 end
             end

@@ -4,7 +4,7 @@ class P2pUser < ApplicationRecord
     has_many :p2p_order_feedback, dependent: :destroy
     has_many :p2p_blocked
 
-    belongs_to :member, dependent: :destroy
+    belongs_to :member, class_name: "Member", foreign_key: :member_id, primary_key: :id
 
     class << self
         def from_payload(p)
