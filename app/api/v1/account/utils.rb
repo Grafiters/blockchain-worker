@@ -21,7 +21,7 @@ module API
 
                 def payments(payment)
                     ::P2pPaymentUser.joins(:p2p_offer_payment, :p2p_payment)
-                                                            .select("p2p_payments.*","p2p_offer_payments.*")
+                                                            .select("p2p_payment_users.payment_user_uid","p2p_payment_users.name as account_name","p2p_payment_users.qrcode","p2p_payment_users.account_number","p2p_payments.*","p2p_offer_payments.*")
                                                             .find_by(p2p_offer_payments: {id: payment})
                 end
 

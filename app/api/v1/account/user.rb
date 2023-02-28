@@ -56,7 +56,7 @@ module API
                             feed[:payment_limit]   = count_time_limit(feed[:p2p_start], feed[:p2p_end])
                         end
 
-                        present feedback, with: API::V1::Entities::Feedback
+                        present feedback, with: API::V1::Account::Entities::Feedback
                     end
                     
                     get '/blocked' do
