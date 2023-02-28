@@ -60,7 +60,7 @@ module API
                     end
                     
                     get '/blocked' do
-                        blocked = ::P2pUserBlocked.joins(:p2p_user).where(p2p_user_blockeds: {p2p_user_id: current_p2p_user[:id]})
+                        blocked = ::P2pUserBlocked.joins(:p2p_user).where(p2p_user_blockeds: {p2p_user_id: current_p2p_user[:id], state: 'blocked'})
 
                         present blocked, with: API::V1::Account::Entities::Blocked
                     end

@@ -37,10 +37,10 @@ module API
                                             .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as payments", "p2p_pairs.fiat","p2p_pairs.currency")
                                             .where(p2p_offers: {p2p_user_id: current_p2p_user[:id]})
 
-                        # search = order.ransack(search_params)
+                        search = order.ransack(search_params)
                         
-                        # result = search.result.load
-                        data = order.each do |offer|
+                        result = search.result.load
+                        data = result.each do |offer|
                             offer[:sum_order] = sum_order(offer[:id])
                             offer[:persentage] = persentage(offer[:id])
                             offer[:payments] = payment_order(offer)

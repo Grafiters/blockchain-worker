@@ -38,7 +38,7 @@ module API
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
 
-                        blocked_merchant = ::P2pUserBlocked.where(p2p_user_id: p2p_user_id[:id]).pluck(:target_user_id)
+                        blocked_merchant = ::P2pUserBlocked.where({p2p_user_id: p2p_user_id[:id], state: 'blocked'}).pluck(:target_user_id)
                         
                         order = ::P2pOffer.joins(:p2p_pair).select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
                         order = order.where(p2p_pairs: {fiat: params[:fiat]})

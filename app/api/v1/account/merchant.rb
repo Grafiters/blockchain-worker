@@ -22,7 +22,7 @@ module API
                             error!({ errors: ['p2p_order.merchant.blocked.cannot_block_yuorself'] }, 422)
                         end
 
-                        target = ::P2pUserBlocked.find_by(target_user_id: target_p2p_user[:id])
+                        target = ::P2pUserBlocked.find_by(target_user_id: target_p2p_user[:id], p2p_user_id: current_p2p_user[:id])
 
                         if target.blank?
                             blocked = ::P2pUserBlocked.create!(blocked_params)
