@@ -50,7 +50,7 @@ module API
                             error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
                         end
 
-                        if order[:state] == 'canceled' || order[:state] == 'success' || order[:state] == 'rejected'
+                        if order[:state] == 'canceled' || order[:state] == 'success'
                             error!({ errors: ['p2p_order.information_chat.can_not_send_message_order_is_done'] }, 422)
                         end
                         
@@ -102,8 +102,12 @@ module API
                         offer[:payment] = payments
                         offer[:currency] = currency(offer[:currency])[:currency].upcase
 
+                        feedback = ::P2pOrderFeedback.joins(p2p_order: :p2p_offer)
+                                            .select("p2p_order_feedbacks.*", "p2p_orders.p2p_payment_user_id as payment", "p2p_orders.p2p_user_id as member")
+                                            .find_by(p2p_order_feedbacks: {order_number: order[:order_number]})
+
                         if offer[:side] == 'sell'
-                            payment_merchant = ::P2pOrderPayment.joins(p2p_payment_user: :p2p_payment).select("p2p_offer_payments.id","p2p_payment_users.payment_user_uid","p2p_payments.name as bank","p2p_payment_users.name as account_name","p2p_payment_users.name","p2p_payments.logo_url","p2p_payments.base_color","p2p_payment_users.account_number","p2p_payments.state").where(p2p_offer_payments: {p2p_offer_id: offer[:id]})
+                            payment_merchant = ::P2pOfferPayment.joins(p2p_payment_user: :p2p_payment).select("p2p_offer_payments.id","p2p_payment_users.payment_user_uid","p2p_payments.name as bank","p2p_payment_users.name as account_name","p2p_payment_users.name","p2p_payments.logo_url","p2p_payments.base_color","p2p_payment_users.account_number","p2p_payments.state").where(p2p_offer_payments: {p2p_offer_id: offer[:id]})
                         end
 
                         present :order, order, with: API::V1::Entities::Order
@@ -111,6 +115,7 @@ module API
                         if offer[:side] == 'sell'
                             present :payment_user, payment_merchant, with: API::V1::Entities::PaymentUser
                         end
+                        present :feedback, feedback.present? ? feedback : [], with: API::V1::Market::Entities::Feedback
                     end
 
                     desc 'Confirmation Target Payment final step'
@@ -227,9 +232,13 @@ module API
                             ::P2pUserReportdetail.create!({p2p_user_report_id: report[:id], key: 'upload', reason: params[:upload_image]['filename'], upload: params[:upload_image]['tempfile']})
                         end
 
+                        if params[:text_message].present?
+                            ::P2pUserReportdetail.create!({p2p_user_report_id: report[:id], key: 'text_message', reason: params[:text_message], upload: nil})
+                        end
+
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
                         if order.present?
-                            order.update(state: 'rejected')
+                            order.update(state: 'rejected', second_approve_expire_at: Time.now)
                         end
                         # report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})
 
