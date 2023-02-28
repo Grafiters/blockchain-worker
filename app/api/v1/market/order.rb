@@ -46,20 +46,15 @@ module API
                     post '/information_chat/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
 
-                        # if params[:message]['tempfile'].present?
-                        #     error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
-                        # end
+                        if params[:message]['tempfile'].present?
+                            error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
+                        end
 
                         if order[:state] == 'canceled' || order[:state] == 'success' || order[:state] == 'rejected'
                             error!({ errors: ['p2p_order.information_chat.can_not_send_message_order_is_done'] }, 422)
                         end
-
-                        image = MiniMagick::Image.open(params[:message]['tempfile'].path)
-                        image.resize "941x1254"
-                        scaled_image_bytes = image.to_blob
-                        base64Resized = Base64.strict_encode64(scaled_image_bytes)
                         
-                        chat = build_message(order, base64Resized)
+                        chat = build_message(order, nil)
                         chat.submit_chat
 
                         present chat
@@ -232,6 +227,10 @@ module API
                             ::P2pUserReportdetail.create!({p2p_user_report_id: report[:id], key: 'upload', reason: params[:upload_image]['filename'], upload: params[:upload_image]['tempfile']})
                         end
 
+                        order = ::P2pOrder.find_by(order_number: params[:order_number])
+                        if order.present?
+                            order.update(state: 'rejected')
+                        end
                         # report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})
 
                         present report, with: API::V1::Entities::Report
