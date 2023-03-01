@@ -6,6 +6,7 @@ module API
       module Public
         module Entities
             class Feedback < Grape::Entity
+                format_with(:iso8601) {|t| t.to_time.in_time_zone(Rails.configuration.time_zone).iso8601 if t }
                 expose :member, with: API::V1::Account::Entities::Member
     
                 expose(
