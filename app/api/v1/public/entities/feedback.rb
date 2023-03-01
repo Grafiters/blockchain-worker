@@ -27,7 +27,7 @@ module API
                     }
                 )
     
-                expose :payment, with: API::V1::Account::Entities::Payment
+                expose :payments, with: API::V1::Public::Entities::Payment
     
                 expose(
                     :assessment,
