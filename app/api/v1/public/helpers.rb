@@ -41,6 +41,14 @@ module API
                     Time.at(time).utc.strftime("%H:%M:%S")
                 end
 
+                def email_data_masking(email)
+                    if email.present?
+                      email.downcase.sub(/(?<=[\w\d])[\w\d]+(?=[\w\d])/, '*****')
+                    else
+                      email
+                    end
+                end
+
                 def sum_order(uid)
                     ::P2pOrder.where(p2p_offer_id: uid).count
                 end
