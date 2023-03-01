@@ -35,6 +35,12 @@ module API
                     data
                 end
 
+                def count_time_limit(p2p_start, p2p_end)
+                    time = (p2p_end - p2p_start)
+
+                    Time.at(time).utc.strftime("%H:%M:%S")
+                end
+
                 def sum_order(uid)
                     ::P2pOrder.where(p2p_offer_id: uid).count
                 end
