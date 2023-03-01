@@ -29,7 +29,7 @@ module API
                     if data.present?
                         data[:email] = email_data_masking(data[:email])
                     else
-                        []
+                        {}
                     end
 
                     data
