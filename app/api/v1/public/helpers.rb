@@ -22,6 +22,19 @@ module API
                                                     .where(p2p_offer_payments: {p2p_offer_id: uid})
                 end
 
+                def buyorsel(uid)
+                    data = ::P2pUser.joins(:member)
+                                    .select("p2p_users.*", "members.*")
+                                    .find_by(p2p_users: {id: uid})
+                    if data.present?
+                        data[:email] = email_data_masking(data[:email])
+                    else
+                        []
+                    end
+
+                    data
+                end
+
                 def sum_order(uid)
                     ::P2pOrder.where(p2p_offer_id: uid).count
                 end
