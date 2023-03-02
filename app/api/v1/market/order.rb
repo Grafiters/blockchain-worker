@@ -55,8 +55,7 @@ module API
                         end
                         
                         chat = ::P2pChat.create(chat_params(order, nil))
-                        # chat = build_message(order, nil)
-                        # chat.submit_chat
+                        error!(chat.errors.details, 422) unless chat.save
 
                         present chat
 
@@ -230,29 +229,27 @@ module API
                             end
                         end
 
-                        # if params[:upload_payment].present?
-                        #     error!({ errors: ['p2p_order.order.report.upload_image_still_maintenance'] }, 422)
-                        # end
-
-                        report = ::P2pUserReport.create!(report_params)
+                        report = ::P2pUserReport.create(report_params)
+                        error!(report.errors.details, 422) unless report.save
 
                         params[:reason].each do |param|
                             ::P2pUserReportDetail.create!(report_detail(report[:id], param))
                         end
 
                         if params[:upload_payment].present?
-                            ::P2pUserReportdetail.create!({p2p_user_report_id: report[:id], key: 'upload', reason: params[:upload_image]['filename'], upload: params[:upload_image]['tempfile']})
+                            payment = ::P2pUserReportDetail.create!({p2p_user_report_id: report[:id], key: 'upload', reason: params[:upload_payment]['filename'], upload: params[:upload_payment]['tempfile']})
+                            error!(payment.errors.details, 422) unless payment.save
                         end
 
                         if params[:text_message].present?
-                            ::P2pUserReportdetail.create!({p2p_user_report_id: report[:id], key: 'text_message', reason: params[:text_message], upload: nil})
+                            text = ::P2pUserReportDetail.create!({p2p_user_report_id: report[:id], key: 'text_message', reason: params[:text_message], upload: nil})
+                            error!(text.errors.details, 422) unless text.save
                         end
 
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
                         if order.present?
                             order.update(state: 'rejected', second_approve_expire_at: Time.now)
                         end
-                        # report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})
 
                         present report, with: API::V1::Entities::Report
                     rescue Excon::Error => e

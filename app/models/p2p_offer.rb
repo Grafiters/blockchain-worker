@@ -9,7 +9,14 @@ class P2pOffer < ApplicationRecord
     before_validation :assign_uuid
     
     after_commit on: :create do
+      original_amount
       update_account_offer
+    end
+
+    class << self
+      def with_payment(payment)
+        self.joins(:p2p_offer_payment).where(p2p_offer_payments: {p2p_payment_user_id: payment})
+      end
     end
 
     def payment
@@ -47,6 +54,11 @@ class P2pOffer < ApplicationRecord
     def update_account_offer
       offer = ::P2pUser.find_by(id: p2p_user_id)
       offer.increment!(:offers_count)
+    end
+
+    def original_amount
+      self.update(origin_amount: available_amount)
+      save!
     end
 
     def assign_uuid

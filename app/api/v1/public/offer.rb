@@ -17,13 +17,13 @@ module API
                                 type: String,
                                 desc: 'Side Offer by Sell Or Buy'
                         optional :amount,
-                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                                type: { value: Integer, message: 'market.offer.non_integer_limit' }
                         optional :max_amount,
-                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                                type: { value: Integer, message: 'market.offer.non_integer_limit' }
                         optional :min_price,
-                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                                type: { value: Integer, message: 'market.offer.non_integer_limit' }
                         optional :max_price,
-                                type: { value: Integer, message: 'market.order.non_integer_limit' }
+                                type: { value: Integer, message: 'market.offer.non_integer_limit' }
                     end
                     get "/" do
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
@@ -32,14 +32,21 @@ module API
                                                 .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
+
+                        payment = ::P2pPaymentUser.where(p2p_payment_id: params[:payment]).pluck(:id)
                         
-                        order = ::P2pOffer.joins(:p2p_pair).select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
+                        offer = ::P2pOffer.joins(:p2p_pair)
+                                            .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
                                             .where('p2p_offers.available_amount > 0')
                                             .where(p2p_pairs: {fiat: params[:fiat]})
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
                                             .where.not(p2p_offers: {state: 'canceled'})
-                        search = order.ransack(search_params)
+                        
+                        offer = offer.with_payment(payment) unless params[:payment][0].blank?
+                        search = offer.ransack(search_params)
+
+                        search.sorts = "id DESC"
                         
                         result = search.result.load
                         data = result.each do |offer|
