@@ -94,14 +94,15 @@ module API
 
                     desc 'Cancel Offer by current user'
                     put '/cancel/:offer_number' do
-                        order = ::P2pOrder.joins(:p2p_offer).where(p2p_offers: {offer_number: params[:offer_number]})
+                        state = %w(prepare waiting rejected)
+                        order = ::P2pOrder.joins(:p2p_offer).where(p2p_offers: {offer_number: params[:offer_number]}).where("p2p_orders.state IN (?)", state)
 
                         error!({ errors: ['p2p_offer.account.some_orders_is_unfinished'] }, 422) unless order.count <= 0
 
                         offer = ::P2pOffer.find_by(offer_number: params[:offer_number])
                         offer.update(state: 'canceled')
 
-                        present order
+                        present offer
                     end
                 end
             end
