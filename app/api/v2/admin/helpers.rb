@@ -32,6 +32,14 @@ module API
             self
           end
 
+          def with_daterange_created
+            days = 24*60*60
+            to = @params[:to] + days
+            @build.merge!("#created_at_gteq" => @params[:from])
+            @build.merge!("#created_at_lteq" => to)
+            self
+          end
+
           def translate(opt)
             opt.each { |k, v| @build.merge!("#{v}_eq" => @params[k]) }
             self

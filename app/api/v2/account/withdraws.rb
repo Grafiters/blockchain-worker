@@ -56,7 +56,7 @@ module API
                       .tap { |q| q.where!(rid: params[:rid]) if params[:rid] }
                       .tap { |q| q.where!(blockchain_key: params[:blockchain_key]) if params[:blockchain_key] }
                       .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from].present? }
-                      .tap { |q| q.where!('created_at <= ?', Time.at(params[:time_to])) if params[:time_to].present? }
+                      .tap { |q| q.where!('created_at <= ?', Time.at(params[:time_to]+24*60*60)) if params[:time_to].present? }
                       .tap { |q| present paginate(q), with: API::V2::Entities::Withdraw }
         end
 

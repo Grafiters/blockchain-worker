@@ -98,8 +98,8 @@ module API
 
           result.select! { |t|  t['currency_id'] == params[:currency].downcase } if params[:currency].present?
           result.select! { |t|  t['txid'] == params[:txid] } if params[:txid].present?
-          result.select! { |t|  t['updated_at'] >= Time.at(params[:time_from]) } if params[:time_from].present?
-          result.select! { |t|  t['updated_at'] <= Time.at(params[:time_to]) } if params[:time_to].present?
+          result.select! { |t|  t['created_at'] >= Time.at(params[:time_from]) } if params[:time_from].present?
+          result.select! { |t|  t['created_at'] <= Time.at(params[:time_to]+24*60*60) } if params[:time_to].present?
 
           present paginate(result.each(&:symbolize_keys!)), with: API::V2::Entities::Transactions
         end
