@@ -50,7 +50,7 @@ class P2pOrder < ApplicationRecord
     end
 
     def state_canceled
-        approved = aproved_by.present? ? aproved_by : system
+        approved = aproved_by.present? ? aproved_by : "system"
         if state == 'canceled'
             "#{state} by #{approved}"
         else
