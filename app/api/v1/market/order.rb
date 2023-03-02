@@ -46,9 +46,9 @@ module API
                     post '/information_chat/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
 
-                        # if params[:message]['tempfile'].present?
-                        #     error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
-                        # end
+                        if params[:message].blank?
+                            error!({ errors: ['p2p_order.information_chat.message_can_not_blank'] }, 422)
+                        end
 
                         if order[:state] == 'canceled' || order[:state] == 'success'
                             error!({ errors: ['p2p_order.information_chat.can_not_send_message_order_is_done'] }, 422)
