@@ -208,12 +208,12 @@ module API
 
                     desc 'Report merchant when order progress'
                     params do
+                        optional :reason
                         optional :uplaod_payment,
                                 desc: 'Array of Rack::Multipart::UploadedFile'
                         optional :text_message,
                                 type: String,
                                 desc: 'Description of reported by order user'
-                        requires :reason
                     end
                     post '/report/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
@@ -225,7 +225,7 @@ module API
                                 error!({ errors: ['p2p_order.order.report.reason_key_can_not_blank'] }, 422)
                             end
 
-                            if param[:message].blank? && param[:upload_payment].blank?
+                            if param[:message].blank?
                                 error!({ errors: ['p2p_order.order.report.message_can_not_blank'] }, 422)
                             end
                         end
@@ -255,6 +255,9 @@ module API
                         # report = ::P2pUserReport.joins(:p2p_user_report_detail).find_by(p2p_user_reports: {order_number: params[:order_number]})
 
                         present report, with: API::V1::Entities::Report
+                    rescue Excon::Error => e
+                        Rails.logger.error e
+                        error!({ errors: ['p2p_order.order.report.error_#{e}'] }, 422)
                     end
 
                     desc 'Get Report By Order Number'
