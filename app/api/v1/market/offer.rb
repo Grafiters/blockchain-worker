@@ -46,9 +46,10 @@ module API
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
                                             .where.not(p2p_offers: {state: 'canceled'})
-                        order = order.where.not(p2p_user_id: blocked_merchant)
-                        
+                        order = order.where.not(p2p_user_id: blocked_merchant)                        
                         search = order.ransack(search_params)
+
+                        search.sorts = "id DESC"
                         
                         result = search.result.load
                         data = result.each do |offer|

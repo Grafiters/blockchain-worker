@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_27_013046) do
+ActiveRecord::Schema.define(version: 2023_03_02_091900) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -330,7 +330,7 @@ ActiveRecord::Schema.define(version: 2023_02_27_013046) do
   create_table "p2p_chats", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "p2p_order_id"
     t.text "chat"
-    t.text "upload"
+    t.text "upload", limit: 4294967295
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "user_uid", limit: 50, null: false
@@ -416,7 +416,7 @@ ActiveRecord::Schema.define(version: 2023_02_27_013046) do
     t.string "payment_user_uid", limit: 50, null: false
     t.string "account_number", limit: 50, null: false
     t.string "name", limit: 50
-    t.text "qrcode"
+    t.text "qrcode", limit: 4294967295
     t.integer "state", default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -462,7 +462,7 @@ ActiveRecord::Schema.define(version: 2023_02_27_013046) do
     t.text "reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "upload"
+    t.text "upload", limit: 4294967295
     t.index ["p2p_user_report_id"], name: "index_p2p_user_reports_on_p2p_user_report_details"
   end
 
