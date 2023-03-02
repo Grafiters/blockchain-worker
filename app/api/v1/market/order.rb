@@ -46,18 +46,23 @@ module API
                     post '/information_chat/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
 
-                        if params[:message]['tempfile'].present?
-                            error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
-                        end
+                        # if params[:message]['tempfile'].present?
+                        #     error!({ errors: ['p2p_order.information_chat.send_image_still_maintenance'] }, 422)
+                        # end
 
                         if order[:state] == 'canceled' || order[:state] == 'success'
                             error!({ errors: ['p2p_order.information_chat.can_not_send_message_order_is_done'] }, 422)
                         end
                         
-                        chat = build_message(order, nil)
-                        chat.submit_chat
+                        chat = ::P2pChat.create(chat_params(order, nil))
+                        # chat = build_message(order, nil)
+                        # chat.submit_chat
 
                         present chat
+
+                    rescue Excon::Error => e
+                        Rails.logger.error e
+                        error!('Connection error', 422)
                     end
 
                     get '/information_chat/:order_number' do
@@ -203,10 +208,17 @@ module API
 
                     desc 'Report merchant when order progress'
                     params do
+                        optional :uplaod_payment,
+                                desc: 'Array of Rack::Multipart::UploadedFile'
+                        optional :text_message,
+                                type: String,
+                                desc: 'Description of reported by order user'
                         requires :reason
                     end
                     post '/report/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
+                        
+                        error!({ errors: ['p2p_order.report.have_done_a_report_on_this_order'] }, 422) unless order[:state] != 'rejected'
 
                         params[:reason].each do |param|
                             if param[:key].blank?
@@ -218,9 +230,9 @@ module API
                             end
                         end
 
-                        if params[:upload_payment].present?
-                            error!({ errors: ['p2p_order.order.report.upload_image_still_maintenance'] }, 422)
-                        end
+                        # if params[:upload_payment].present?
+                        #     error!({ errors: ['p2p_order.order.report.upload_image_still_maintenance'] }, 422)
+                        # end
 
                         report = ::P2pUserReport.create!(report_params)
 

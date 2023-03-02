@@ -34,7 +34,7 @@ module API
                         p2p_order_id: order[:id],
                         user_uid: current_user[:uid],
                         chat: params[:message].present? ? image_check : 'Mohon Kirim Bukti tranfer',
-                        upload: params[:message]['tempfile']
+                        upload: params[:message]
                 end
 
                 def build_params
