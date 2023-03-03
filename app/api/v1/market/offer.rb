@@ -74,6 +74,14 @@ module API
                             error!({ errors: ['p2p_user.user.account_p2p_doesnt_exists'] }, 422)
                         end
 
+                        if params[:side] == 'sell'
+                            account = current_user.get_account(params[:currency])
+                            balance = account.p2p_balance
+                            if (balance < 0 || balance < params[:trade_amount])
+                                error!({ errors: ['p2p_user.user.insuffient_balance'] }, 422)
+                            end
+                        end
+
                         if params[:payment].blank?
                             error!({ errors: ['p2p_user.user.payment_must_be_exists'] }, 422)
                         end

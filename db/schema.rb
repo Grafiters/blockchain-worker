@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_02_091900) do
+ActiveRecord::Schema.define(version: 2023_03_03_012320) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
     t.decimal "balance", precision: 32, scale: 16, default: "0.0", null: false
-    t.decimal "p2p_wallet", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "p2p_balance", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "p2p_locked", precision: 32, scale: 18, default: "0.0", null: false
     t.decimal "locked", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

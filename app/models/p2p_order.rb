@@ -4,38 +4,29 @@ class P2pOrder < ApplicationRecord
     has_many :p2p_chat, dependent: :destroy
 
     belongs_to :p2p_offer, foreign_key: :p2p_offer_id, primary_key: :id
+
+    belongs_to :maker, class_name: "Member", foreign_key: :maker_uid, primary_key: :uid
+    belongs_to :taker, class_name: "Member", foreign_key: :taker_uid, primary_key: :uid
+
     before_create :assign_order_number, :first_expired_time
 
     validates :side, :amount, presence: true
 
     after_commit on: :create do
         lock_amount_offer
+        locked_fund_account(amount)
         state_order
     end
 
     after_commit on: :update do
-        if state == 'canceled' || state == 'rejected'
+        if state == 'canceled'
             unlock_funds
-        end
-    end
-
-    class << self
-        def submit(id)
-            ActiveRecord::Base.transaction do
-                order = self.find_by_id!(id)
-
-                # Rails.logger.warn id
-                # AMQP::Queue.enqueue(:p2p_order_processor, action: 'submit', order: order)
-            end
+            unlock_fund_success(amount)
         end
 
-        def cancel(id)
-            ActiveRecord::Base.transaction do
-              order = self.find_by_id!(id)
-              return unless order.state != 'success'
-      
-              order.update!(state: 'canceled')
-            end
+        if state == 'accepted'
+            unlock_fund_accepted(amount)
+            move_assets(amount)
         end
     end
     
@@ -57,6 +48,63 @@ class P2pOrder < ApplicationRecord
             "#{state}"
         end
     end
+
+    def currency
+        self.p2p_offer.p2p_pair.currency
+    end
+
+    def taker_data
+        member = ::Member.find_by(uid: taker_uid)
+        account = Account.find_by({member_id: member[:id], currency: currency})
+        return account
+    end
+
+    def maker_data
+        member = ::Member.find_by(uid: maker_uid)
+        account = Account.find_or_create_by({member_id: member[:id], currency: currency}) do |balance|
+            balance.member_id = member[:id]
+            balance.currency_id = currency
+        end
+        return account
+    end
+
+    def locked_fund_account(amount)
+        p2p_locked = taker_data[:p2p_locked] + amount
+        p2p_balance = taker_data[:p2p_balance] - amount
+        account_member = Account.find_by(member_id: taker_data[:member_id], currency_id: currency)
+        account_member.update({
+            p2p_locked: p2p_locked,
+            p2p_balance: p2p_balance
+        }) unless account_member.blank?
+    end
+
+    def unlock_fund_cancel(amount)
+        p2p_locked = taker_data[:p2p_locked] - amount
+        p2p_balance = taker_data[:p2p_balance] + amount
+        account_member = Account.find_by(member_id: taker_data[:member_id], currency_id: currency)
+        account_member.update({
+            p2p_locked: p2p_locked,
+            p2p_balance: p2p_balance
+        }) unless account_member.blank?
+    end
+
+    def unlock_fund_accepted(amount)
+        p2p_locked = taker_data[:p2p_locked] - amount
+        account_member = Account.find_by(member_id: taker_data[:member_id], currency_id: currency)
+        account_member.update({
+            p2p_locked: p2p_locked
+        }) unless account_member.blank?
+    end
+
+    def move_assets(amount)
+        maker_balance = maker_data[:p2p_balance] + amount
+
+        account_member = Account.find_or_create_by(member_id: maker_data[:member_id], currency_id: currency)
+        account_member.update({
+            p2p_balance: maker_balance
+        }) unless maker_balance.blank?
+    end
+
 
     def lock_amount_offer
         offer = ::P2pOffer.find_by(id: p2p_offer_id)

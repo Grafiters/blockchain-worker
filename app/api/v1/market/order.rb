@@ -34,6 +34,8 @@ module API
                         otype = offer[:side] == 'sell' ? 'buy' : 'sell'
 
                         orders = ::P2pOrder.create(p2p_order_params(offer, otype))
+                        error!(orders.errors.details, 422) unless orders.save
+                        
                         chat = ::P2pChat.create(chat_params(orders, orders[:taker_uid]))
                         
                         present orders
@@ -45,6 +47,7 @@ module API
                     end
                     post '/information_chat/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
+                        error!(order.errors.details, 422) unless order.save
 
                         if params[:message].blank?
                             error!({ errors: ['p2p_order.information_chat.message_can_not_blank'] }, 422)

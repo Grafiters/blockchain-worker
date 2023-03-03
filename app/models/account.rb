@@ -24,6 +24,8 @@ class Account < ApplicationRecord
       currency_id: currency_id,
       balance: balance,
       locked: locked,
+      p2p_balance: p2p_balance,
+      p2p_locked: p2p_locked,
       created_at: created_at&.iso8601,
       updated_at: updated_at&.iso8601
     }
