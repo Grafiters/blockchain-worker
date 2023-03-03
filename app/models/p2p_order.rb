@@ -61,11 +61,14 @@ class P2pOrder < ApplicationRecord
 
     def maker_data
         member = ::Member.find_by(uid: maker_uid)
-        account = Account.find_or_create_by({member_id: member[:id], currency: currency}) do |balance|
-            balance.member_id = member[:id]
-            balance.currency_id = currency
-        end
-        return account
+        wallet = Account.find_by(member_id: member[:id], currency: currency)
+        
+        account = Account.new({
+            member_id: member[:id],
+            currency_id: currency
+        }) unless wallet.present?
+
+        return wallet.present? ? wallet : account
     end
 
     def locked_fund_account(amount)
@@ -89,10 +92,10 @@ class P2pOrder < ApplicationRecord
     end
 
     def unlock_fund_accepted(amount)
-        p2p_balance = taker_data[:p2p_balance] + amount
+        p2p_locked = taker_data[:p2p_locked] - amount
         account_member = Account.find_by(member_id: taker_data[:member_id], currency_id: currency)
         account_member.update({
-            p2p_balance: p2p_balance
+            p2p_locked: p2p_locked
         }) unless account_member.blank?
     end
 
