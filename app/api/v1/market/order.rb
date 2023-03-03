@@ -220,7 +220,7 @@ module API
                         error!({ errors: ['p2p_order.report.have_done_a_report_on_this_order'] }, 422) unless order[:state] != 'rejected'
 
                         reason = JSON.parse(params[:reason])
-                        params[:reason].each do |param|
+                        reason.each do |param|
                             if param['key'].blank?
                                 error!({ errors: ['p2p_order.order.report.reason_key_can_not_blank'] }, 422)
                             end
@@ -233,7 +233,7 @@ module API
                         report = ::P2pUserReport.create(report_params)
                         error!(report.errors.details, 422) unless report.save
 
-                        params[:reason].each do |param|
+                        reason.each do |param|
                             ::P2pUserReportDetail.create!(report_detail(report[:id], param))
                         end
 
