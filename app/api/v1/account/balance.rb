@@ -22,6 +22,7 @@ module API
                                 allow_blank: false,
                                 desc: -> { V1::Entities::Fiat.documentation[:currency] }
                         requires :amount,
+                                allow_blank: false,
                                 type: {value: BigDecimal, message: 'balance.account.non_decimal_amount'}
                     end
                     post '/' do
