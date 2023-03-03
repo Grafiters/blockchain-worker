@@ -33,7 +33,7 @@ module API
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
 
-                        payment = ::P2pPaymentUser.where(p2p_payment_id: params[:payment]).pluck(:id)
+                        payment_filter = ::P2pPaymentUser.where(p2p_payment_id: params[:payment]).pluck(:id)
                         
                         offer = ::P2pOffer.joins(:p2p_pair)
                                             .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
@@ -43,7 +43,7 @@ module API
                                             .where(p2p_offers: {side: side})
                                             .where.not(p2p_offers: {state: 'canceled'})
                         
-                        offer = offer.with_payment(payment) unless params[:payment][0].blank?
+                        offer = offer.with_payment(payment_filter) unless params[:payment].blank? || params[:payment][0].blank?
                         search = offer.ransack(search_params)
 
                         search.sorts = "id DESC"

@@ -7,6 +7,15 @@ module API
         module Entities
             class Payment < Grape::Entity
                 expose(
+                    :id,
+                    as: :payment_id,
+                    documentation: {
+                        desc: 'Filter Fiat.',
+                        type: String
+                    }
+                )
+
+                expose(
                     :name,
                     as: :bank_name,
                     documentation: {

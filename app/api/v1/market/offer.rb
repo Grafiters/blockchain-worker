@@ -39,15 +39,17 @@ module API
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
 
                         blocked_merchant = ::P2pUserBlocked.where({p2p_user_id: p2p_user_id[:id], state: 'blocked'}).pluck(:target_user_id)
+                        payment_filter = ::P2pPaymentUser.where(p2p_payment_id: params[:payment]).pluck(:id)
                         
-                        order = ::P2pOffer.joins(:p2p_pair).select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
-                        order = order.where(p2p_pairs: {fiat: params[:fiat]})
+                        offer = ::P2pOffer.joins(:p2p_pair).select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
+                        offer = offer.where(p2p_pairs: {fiat: params[:fiat]})
                                             .where('p2p_offers.available_amount > 0')
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
                                             .where.not(p2p_offers: {state: 'canceled'})
-                        order = order.where.not(p2p_user_id: blocked_merchant)                        
-                        search = order.ransack(search_params)
+                        offer = offer.where.not(p2p_user_id: blocked_merchant)         
+                        offer = offer.with_payment(payment_filter) unless params[:payment].blank?
+                        search = offer.ransack(search_params)
 
                         search.sorts = "id DESC"
                         

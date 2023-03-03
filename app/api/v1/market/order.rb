@@ -94,6 +94,7 @@ module API
                     get '/:order_number' do
                         order = ::P2pOrder.select("p2p_orders.*","p2p_orders.p2p_payment_user_id as payment").find_by(order_number: params[:order_number])
 
+                        Rails.logger.warn order.inspect
                         if order[:p2p_payment_user_id].present?
                             order[:payment] = order_payments(order)
                         end
