@@ -59,6 +59,15 @@ module API
                         type: String
                     }
                 )
+
+                expose(
+                    :state,
+                    as: :state,
+                    documentation: {
+                        desc: 'Filter Fiat.',
+                        type: String
+                    }
+                )
     
                 expose(
                     :min_order_amount,

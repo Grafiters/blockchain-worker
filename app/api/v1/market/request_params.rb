@@ -47,7 +47,8 @@ module API
                         max_order_amount: params[:max_order],
                         side: params[:side],
                         term_of_condition: params[:term_of_condition],
-                        auto_replay: params[:auto_replay]
+                        auto_replay: params[:auto_replay],
+                        state: 'active'
                     }
                 end
 
