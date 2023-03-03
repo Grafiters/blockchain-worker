@@ -130,8 +130,8 @@ module API
                 def report_detail(report_id, data)
                     {
                         p2p_user_report_id: report_id,
-                        key: data[:key],
-                        reason: data[:message].present? ? data[:message] : nil,
+                        key: data['key'],
+                        reason: data['message'].present? ? data['message'] : nil,
                         upload: nil
                     }
                 end
