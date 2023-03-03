@@ -47,6 +47,7 @@ module API
                         end
 
                         payment = ::P2pPaymentUser.create(payment_params)
+                        error!(payment.errors.details, 422) unless payment.save
 
                         present payment
                     end

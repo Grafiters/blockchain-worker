@@ -2,7 +2,7 @@ module API
     module V1
         module Account
             class Balance < Grape::API
-                namespace :merchants do
+                namespace :balances do
                     helpers ::API::V2::Admin::Helpers
                     helpers ::API::V1::Account::Utils
                     helpers ::API::V1::Account::ParamHelpers
@@ -30,11 +30,16 @@ module API
                             error!({ errors: ['balance.account.invalid_target_wallet'] }, 422)
                         end
 
-                        balance = Account.find_by(member_id: current_user[:id], currency_id: params[:currency])
+                        balance = ::Account.find_by(member_id: current_user[:id], currency_id: params[:currency])
 
                         return error!({ errors: ['balance.account.balance_not_found'] }, 422) unless balance.present?
 
-                        if balance[:balance] <= 0 || balance[:p2p_balance] <= 0
+                        
+                        if params[:base_wallet] == 'spot' && balance[:balance] <= 0
+                            error!({ errors: ['balance.account.insuffient_balance'] }, 422)
+                        end
+
+                        if params[:base_wallet] == 'p2p' && balance[:p2p_balance] <= 0
                             error!({ errors: ['balance.account.insuffient_balance'] }, 422)
                         end
 
@@ -49,6 +54,8 @@ module API
                                 p2p_balance: balance[:p2p_balance] - params[:amount]
                             })
                         end
+
+                        error!(balance.errors.details, 422) unless balance.save
                     end
                 end
             end
