@@ -89,10 +89,10 @@ class P2pOrder < ApplicationRecord
     end
 
     def unlock_fund_accepted(amount)
-        p2p_locked = taker_data[:p2p_locked] - amount
+        p2p_balance = taker_data[:p2p_balance] + amount
         account_member = Account.find_by(member_id: taker_data[:member_id], currency_id: currency)
         account_member.update({
-            p2p_locked: p2p_locked
+            p2p_balance: p2p_balance
         }) unless account_member.blank?
     end
 
