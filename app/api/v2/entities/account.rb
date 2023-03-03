@@ -24,7 +24,16 @@ module API
         )
 
         expose(
-          :p2p_wallet,
+          :locked,
+          format_with: :decimal,
+          documentation: {
+            desc: 'Account locked funds.',
+            type: BigDecimal
+          }
+        )
+
+        expose(
+          :p2p_balance,
           format_with: :decimal,
           documentation: {
             desc: 'Account P2p balance.',
@@ -33,10 +42,10 @@ module API
         )
 
         expose(
-          :locked,
+          :p2p_locked,
           format_with: :decimal,
           documentation: {
-            desc: 'Account locked funds.',
+            desc: 'Account P2p balance.',
             type: BigDecimal
           }
         )
