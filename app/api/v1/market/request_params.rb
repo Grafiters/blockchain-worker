@@ -138,7 +138,23 @@ module API
                 end
 
                 def chat_user(uid)
-                    ::P2pUser.joins(:member).select("p2p_users.*","members.uid as uid","members.email").find_by(members: {uid: uid})
+                    user = ::P2pUser.joins(:member).select("p2p_users.*","members.uid as uid","members.email").find_by(members: {uid: uid})
+
+                    if user.blank?
+                        user = ::Member.find_by(uid: uid)
+                        response = {
+                            member: user,
+                            username: user[:username],
+                            logo: nil,
+                            offers_count: 0,
+                            success_rate: 0,
+                            banned_state: 0
+                        }
+
+                        return response
+                    end
+
+                    return user
                 end
 
                 def p2p_user_id
