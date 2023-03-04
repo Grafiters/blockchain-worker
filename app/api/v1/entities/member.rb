@@ -30,7 +30,7 @@ module API
           )
 
           expose(
-            :level,
+            :role,
             documentation: {
               type: String,
               desc: 'Member UID.'

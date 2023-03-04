@@ -5,7 +5,7 @@ module API
     module V1
       module Entities
         class UserP2p < Base
-            expose :member, with: API::V2::Entities::Member
+            expose :member, with: API::V1::Entities::Member
 
             expose(
                 :username,
