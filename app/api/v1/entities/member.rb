@@ -28,6 +28,14 @@ module API
               desc: 'Member\'s group.'
             }
           )
+
+          expose(
+            :level,
+            documentation: {
+              type: String,
+              desc: 'Member UID.'
+            }
+          )
         end
       end
     end

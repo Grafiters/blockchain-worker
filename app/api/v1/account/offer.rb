@@ -13,7 +13,7 @@ module API
                         optional :state,
                                  type: String,
                                  allow_blank: true,
-                                 values: { value: %w(prepare waiting accepted success rejected canceled), message: 'p2p_account.order.non_state_params' }
+                                 values: { value: %w(active canceled), message: 'p2p_account.order.non_state_params' }
                         optional :side,
                                 type: String,
                                 desc: 'Side Offer by Sell Or Buy'
@@ -25,19 +25,19 @@ module API
                                 type: { value: Integer, message: 'market.order.non_integer_limit' }
                         optional :max_price,
                                 type: { value: Integer, message: 'market.order.non_integer_limit' }
-                        use :date_picker
                     end
                     get "/" do
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                 .eq(:side, :state)
-                                                .lt_any
-                                                .with_range_amount
-                                                .with_daterange
                                                 .build
 
                         order = ::P2pOffer.joins(:p2p_pair, p2p_offer_payment: :p2p_payment_user)
                                             .select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as payments", "p2p_pairs.fiat","p2p_pairs.currency")
                                             .where(p2p_offers: {p2p_user_id: current_p2p_user[:id]})
+                        order = order.where('p2p_pairs.currency = ?', params[:currency]) unless params[:currency].blank?
+
+                        order = order.where('p2p_offers.created_at >= ?', Time.at(params[:time_from].to_i)) unless params[:time_from].blank?
+                        order = order.where('p2p_offers.created_at <= ?', Time.at(params[:time_to].to_i)) unless params[:time_to].blank?
                                             
                         search = order.ransack(search_params)
                         
