@@ -164,7 +164,6 @@ class Member < ApplicationRecord
       end
       member.assign_attributes(params)
       member.save! if member.changed?
-      ::P2pUser.from_payload(member)
       member
     end
 
