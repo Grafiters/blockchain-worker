@@ -67,7 +67,10 @@ module API
         get '/orders' do
           user_authorize! :read, ::Order
 
+          state = params[:state] == 'open' ? %w(pending wait) : %w(done cancel reject)
+
           current_user.orders.order(updated_at: params[:order_by])
+                      .tap { |q| q.where!(state: state) }
                       .tap { |q| q.where!(market_type: params[:market_type]) }
                       .tap { |q| q.where!(market: params[:market]) if params[:market] }
                       .tap { |q| q.where!(ask: params[:base_unit]) if params[:base_unit] }
