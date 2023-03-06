@@ -97,9 +97,8 @@ module Tron
       value.to_d / currency.fetch(:base_factor).to_d
     end
 
-
     def latest_block_number
-      response = client.rest_api(:get, '/get-height', {})
+      response = client.rest_api(:post, '/getHeight', {})
       height = response['height']
     rescue Tron::Client::Error => e
       raise Peatio::Blockchain::ClientError, e

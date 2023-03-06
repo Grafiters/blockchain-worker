@@ -85,6 +85,8 @@ class WalletService
     )
 
     deposit_spread.map do |transaction|
+	# Rails.logger.warn "---------------------"
+	# Rails.logger.warn transaction.inspect
       # In #spread_deposit valid transactions saved with pending state
       if transaction.status.pending?
         transaction = @adapter.create_transaction!(transaction, subtract_fee: true)

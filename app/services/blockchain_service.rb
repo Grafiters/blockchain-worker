@@ -10,8 +10,14 @@ class BlockchainService
     @currencies = @blockchain_currencies.pluck(:currency_id).uniq
     @whitelisted_addresses = blockchain.whitelisted_smart_contracts.active
     @adapter = Peatio::Blockchain.registry[blockchain.client.to_sym].new
+    server = ''
+    begin
+     server = @blockchain.server
+    rescue
+      server = ''
+    end
 
-    @adapter.configure(server: @blockchain.server.present? ? @blockchain.server : '',
+    @adapter.configure(server: server,
                        currencies: @blockchain_currencies.map(&:to_blockchain_api_settings),
                        whitelisted_addresses: @whitelisted_addresses)
   end

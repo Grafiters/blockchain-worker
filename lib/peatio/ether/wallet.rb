@@ -34,10 +34,14 @@ module Ether
     end
 
     def create_transaction!(transaction, options = {})
+	    Rails.logger.warn "-------------"
+	    Rails.logger.warn @currency.dig(:options, :erc20_contract_address).inspect
+	    Rails.logger.warn transaction.inspect
       if @currency.dig(:options, :erc20_contract_address).present?
         create_erc20_transaction!(transaction)
       else
-        create_eth_transaction!(transaction, options)
+        # create_erc20_transaction!(transaction, options)
+	create_eth_transaction!(transaction, options)
       end
     rescue Ether::Client::Error => e
       raise Peatio::Wallet::ClientError, e

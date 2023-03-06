@@ -53,7 +53,7 @@ module Workers
 
         wallet = PaymentAddress.find_by(address: deposit.address).wallet
         service = WalletService.new(wallet)
-
+	
         transactions = service.collect_deposit!(deposit, deposit.spread_to_transactions)
 
         if transactions.present?

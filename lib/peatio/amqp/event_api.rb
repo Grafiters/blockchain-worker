@@ -156,12 +156,10 @@ module EventAPI
     class PublishToRabbitMQ
       extend Memoist
       def call(event_name, event_payload)
-        Rails.logger.warn event_payload
         Rails.logger.debug do
           "\nPublishing #{routing_key(event_name)} (routing key) to #{exchange_name(event_name)} (exchange name).\n"
         end
         exchange = bunny_exchange(exchange_name(event_name))
-        Rails.logger.warn exchange.inspect
         exchange.publish(event_payload.to_json, routing_key: routing_key(event_name))
         [event_name, event_payload]
       end

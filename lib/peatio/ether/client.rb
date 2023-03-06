@@ -15,6 +15,8 @@ module Ether
       url.path.gsub! %r{/+}, '/'
       url.path.sub! %r{/$}, ''
       args = [url]
+
+
       if data
         if %i[post put patch].include?(verb)
           args << data.compact.to_json
