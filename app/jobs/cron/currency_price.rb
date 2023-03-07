@@ -12,7 +12,7 @@ module Jobs
             next
           end
 
-          sleep 25
+          sleep Peatio::App.config.currency_price_fetch_period_time
         end
       end
     end
