@@ -60,6 +60,22 @@ module API
             self
           end
 
+          def cont_data(*keys)
+            keys.each { |k| @build.merge!("#{k}_cont" => @params[k]) }
+            self
+          end
+
+          def lt_any
+            @build.merge!("min_order_amount_lteq" => @params[:amount])
+            self
+          end
+
+          def with_range_amount
+            @build.merge!("price_gteq" => @params[:min_price])
+            @build.merge!("price_lteq" => @params[:max_price])
+            self
+          end
+
           def address_eq(*keys)
             keys.each { |k| @build.merge!("#data_eq" => @params[k]) }
             self

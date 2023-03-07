@@ -56,7 +56,7 @@ module API
         params do
           requires :uid,      type: String, desc: 'The shared user ID.'
           optional :tid,      type: String, desc: 'The shared transaction ID. Must not exceed 64 characters. Peatio will generate one automatically unless supplied.'
-          requires :currency, type: String, values: -> { Currency.fiats.codes(bothcase: true) }, desc: 'The currency code.'
+          requires :currency, type: String, values: -> { Currency.coins.codes(bothcase: true) }, desc: 'The currency code.'
           requires :amount,   type: BigDecimal, desc: 'The deposit amount.'
           optional :state,    type: String, desc: 'The state of deposit.', values: %w[accepted]
           optional :transfer_type,  type: String,

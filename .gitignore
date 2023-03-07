@@ -19,6 +19,8 @@ log
 tmp
 
 # Ignore all config files
+/config/cable.yml
+/config/management_api.yml
 /config/application.yml
 /config/markets.yml
 /config/markets.old.yml

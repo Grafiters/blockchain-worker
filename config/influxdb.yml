@@ -14,4 +14,4 @@ test:
 
 production:
   <<: *default
-  database: <%= ENV.fetch('INFLUXDB_DATABASE_NAME', "exchange_production") %>
+  database: <%= ENV.fetch('INFLUXDB_DATABASE_NAME', "backendexchange_exchange_production") %>

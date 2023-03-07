@@ -108,13 +108,13 @@ module API
                    desc: -> { API::V2::Admin::Entities::Deposit.documentation[:tid][:desc] }
         end
         post '/deposits/new' do
-          admin_authorize! :create, ::Deposits::Fiat
+          admin_authorize! :create, ::Deposits::Coin
 
           declared_params = declared(params, include_missing: false)
           member   = Member.find_by(uid: declared_params[:uid])
           currency = Currency.find(declared_params[:currency])
           data     = { member: member, currency: currency }.merge!(declared_params.slice(:amount, :tid))
-          deposit  = ::Deposits::Fiat.new(data)
+          deposit  = ::Deposits::Coin.new(data)
 
           if deposit.save
             present deposit, with: API::V2::Admin::Entities::Deposit

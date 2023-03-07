@@ -26,6 +26,10 @@ module API
                      type: { value: JSON, message: 'admin.beneficiary.non_json_data' },
                      allow_blank: false,
                      desc: 'Beneficiary data in JSON format'
+            optional :data,
+                     type: { value: JSON, message: 'admin.beneficiary.non_json_data' },
+                     allow_blank: false,
+                     desc: 'Beneficiary data in JSON format'
             optional :state,
                      type: Array[Integer],
                      values: { value: ->(v) { (Array.wrap(v) - ::Beneficiary::STATES_MAPPING.values).blank? }, message: 'admin.beneficiary.invalid_state' },
@@ -38,14 +42,15 @@ module API
           get do
             admin_authorize! :read, ::Beneficiary
 
-            address = params[:data]
-            
+            address = params[:data][:address]
+
             ransack_params = Helpers::RansackBuilder.new(params)
                                                     .eq(:id, :blockchain_key)
                                                     .address_eq(address)
                                                     .in(:state)
                                                     .translate_in(currency: :currency_id)
                                                     .translate(uid: :member_uid)
+                                                    .cont_data(:data)
                                                     .build
 
             search = Beneficiary.ransack(ransack_params)

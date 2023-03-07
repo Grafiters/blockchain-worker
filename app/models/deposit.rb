@@ -63,6 +63,7 @@ class Deposit < ApplicationRecord
         if currency.coin? && (Peatio::App.config.deposit_funds_locked ||
                               Peatio::AML.adapter.present? ||
                               Peatio::App.config.manual_deposit_approval)
+          Rails.logger.warn currency
           account.plus_locked_funds(amount)
         else
           account.plus_funds(amount)
@@ -157,6 +158,7 @@ class Deposit < ApplicationRecord
   delegate :protocol, :warning, to: :blockchain
 
   def blockchain_api
+    Rails.logger.warn blockchain
     blockchain.blockchain_api
   end
 

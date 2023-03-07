@@ -6,7 +6,7 @@ require_relative 'jwt'
 require 'jwt/rack'
 
 on_error = lambda do |_error|
-  message = 'jwt.decode_and_verify'
+  message = _error
   body    = { errors: [message] }.to_json
   headers = { 'Content-Type' => 'application/json', 'Content-Length' => body.bytesize.to_s }
 
@@ -20,7 +20,8 @@ auth_args = {
   verify:   Rails.configuration.x.jwt_public_key.present?,
   exclude:  %w(/api/v2/public /api/v2//public /api/v2/management /api/v2//management
                /api/v2/swagger /api/v2//swagger /api/v2/admin/swagger /api/v2//admin/swagger
-               /api/v2/coinmarketcap /api/v2//coinmarketcap /api/v2/coingecko /api/v2//coingecko),
+               /api/v2/coinmarketcap /api/v2//coinmarketcap /api/v2/coingecko /api/v2//coingecko
+               /api/v1/public /api/v1//public /api/v1/swagger /api/v1//swagger /cable //cable),
   on_error: on_error
 }
 

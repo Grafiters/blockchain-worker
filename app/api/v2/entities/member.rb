@@ -13,13 +13,11 @@ module API
           }
         )
 
-        expose(
-          :email,
-          documentation: {
-            type: String,
-            desc: 'Member email.'
-          }
-        )
+        expose :email,
+                documentation: {
+                  type: String,
+                  desc: 'Member email.'
+                }
 
         expose(
           :group,

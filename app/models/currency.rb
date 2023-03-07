@@ -16,7 +16,7 @@ class Currency < ApplicationRecord
   attr_readonly :id,
                 :type
 
-  # Code is aliased to id because it's more user-friendly primary key.
+  # Code is aliased to id because it's more user-bothcasefriendly primary key.
   # It's preferred to use code where this attributes are equal.
   alias_attribute :code, :id
 

@@ -131,7 +131,7 @@ module EventAPI
 
         private_key = OpenSSL::PKey.read(Base64.urlsafe_decode64(ENV.fetch('EVENT_API_JWT_PRIVATE_KEY')))
         algorithm   = ENV.fetch('EVENT_API_JWT_ALGORITHM')
-        public_key = OpenSSL::PKey.read(Base64.urlsafe_decode64(ENV.fetch('JWT_PUBLIC_KEY')))
+        # public_key = OpenSSL::PKey.read(Base64.urlsafe_decode64('LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF3NHZiT3pLZzZibklHUHErOXVVbwppSGo5UGdNckE3OGI0S2kwOFRHd0diMVdsQ1VsMkFCVjlyVW1oOFhJYUR5cUtvQUlTR3BndDlQMmhRZlFaS3dpCkpKWUlIL2lZTFl4RkQveDNrSWVYcnk5aFRkSzF1N0V6bDg0cjlZTVgvY2VlVDVQQ0hWVG54MG5sOW42SlVPSk4KNjJxSC95THpraDZzTGlaRWxDR2diYmd2bE9IRGY3RGdiQ3VIc0NOQVJOb0VDV1lkNjR4UnVmNmFMQXpYNzYvUAp2YUNybjZkMEh6NkZPTElRRnZqeUJhN0pTaUlFTEYzS0ZubGF0L25QTklTTXRGRXVZcG1UaUw5Mk1zQms1NGxxCmxqZHJRSDMyQ0IxWjRXRFYyT0hRYzROczZ1R0FNREhUVG5Eb1V4Ty9vZkRKaU9xYW5jL1IwTDNMZnhIWGpaOWEKbHdJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='))
         jwt         = JWT::Multisig.generate_jwt jwt_payload, \
                                                    { Middlewares.application_name.to_sym => private_key },
                                                  { Middlewares.application_name.to_sym => algorithm }

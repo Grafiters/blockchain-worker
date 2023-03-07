@@ -1,0 +1,53 @@
+keychain:
+  sonic:
+    algorithm: RS256
+    value: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF2V3hnNC9RNUtsNUNyZGtkaTZoaApJTzlVWmdETHFBSHdJUTRNWnRFL0ZncFJ2MXRtQmJidW1wWGFzNFBsb0VFWlpOOGFORWdRenZjNVpYOFhqVUZrClFWK2dmbWJSdktOeUVnNTVYT3RiM05lTy96akErajZqN29RREpYekFRcjZnKzIwR256TENCRE9LV01vMXVoVWkKbXRONTcxdmpmZW9rbzhYU2VCdEYwQi9XQVJJbVZnUDB2OVpqNGNCNTZBNk4yczR6TzYvcVFHeUptc0ZuTDRXbgpoM1YrYkswQ1JBNE9mYTdDZDhIaDFGZnc0cURNRDVLM2V0K3AyMm9oSXpWQXhTdVVmSWRKSktUYkVPQ3M1Sk01CkczakZVTi8xdkYrNUVhM1BFOVVudGVRbCs1QWdUOExNMmdYNGwzVVdCOHVMTWtHN0R0WHZkKzg3ZGpEVHlWT28KNndJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==
+
+scopes:
+  read_engines:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+  write_engines:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+  read_markets:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+  write_markets:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+  read_currencies:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+  write_currencies:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+  read_operations:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+  read_wallets:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+  write_wallets:
+    mandatory_signers:
+      - sonic
+    permitted_signers:
+      - sonic
+
+jwt: {}

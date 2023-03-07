@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_27_101029) do
+ActiveRecord::Schema.define(version: 2023_03_03_012320) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
     t.decimal "balance", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "p2p_balance", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "p2p_locked", precision: 32, scale: 18, default: "0.0", null: false
     t.decimal "locked", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -56,7 +58,6 @@ ActiveRecord::Schema.define(version: 2021_07_27_101029) do
   create_table "beneficiaries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
-    t.string "blockchain_key"
     t.string "name", limit: 64, null: false
     t.string "description", default: ""
     t.string "data_encrypted", limit: 1024
@@ -139,7 +140,6 @@ ActiveRecord::Schema.define(version: 2021_07_27_101029) do
   create_table "deposits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
     t.string "currency_id", limit: 10, null: false
-    t.string "blockchain_key"
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.decimal "fee", precision: 32, scale: 16, null: false
     t.string "address", limit: 95
@@ -188,7 +188,20 @@ ActiveRecord::Schema.define(version: 2021_07_27_101029) do
     t.index ["reference_type", "reference_id"], name: "index_expenses_on_reference_type_and_reference_id"
   end
 
+  create_table "fiats", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", limit: 50, null: false
+    t.string "symbol", limit: 25, null: false
+    t.integer "scale", null: false
+    t.string "code", limit: 15, null: false
+    t.string "icon_url", null: false
+    t.decimal "taker_fee", precision: 32, scale: 16
+    t.decimal "maker_fee", precision: 32, scale: 16
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "internal_transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "inter_id", limit: 50, null: false
     t.string "currency_id", null: false
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.bigint "sender_id", null: false
@@ -196,6 +209,7 @@ ActiveRecord::Schema.define(version: 2021_07_27_101029) do
     t.integer "state", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["inter_id"], name: "index_internal_transfers_on_inter_id"
   end
 
   create_table "jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -232,6 +246,7 @@ ActiveRecord::Schema.define(version: 2021_07_27_101029) do
     t.bigint "engine_id", null: false
     t.integer "amount_precision", limit: 1, default: 4, null: false
     t.integer "price_precision", limit: 1, default: 4, null: false
+    t.integer "total_precision", default: 4
     t.decimal "min_price", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "max_price", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "min_amount", precision: 32, scale: 16, default: "0.0", null: false
@@ -313,10 +328,170 @@ ActiveRecord::Schema.define(version: 2021_07_27_101029) do
     t.index ["uuid"], name: "index_orders_on_uuid", unique: true
   end
 
+  create_table "p2p_chats", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_order_id"
+    t.text "chat"
+    t.text "upload", limit: 4294967295
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string "user_uid", limit: 50, null: false
+    t.index ["p2p_order_id"], name: "index_p2p_orders_on_p2p_order_id"
+  end
+
+  create_table "p2p_offer_payments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_offer_id"
+    t.integer "p2p_payment_user_id"
+    t.string "state", limit: 15, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["p2p_offer_id"], name: "index_p2p_offer_payments_on_p2p_offer_id"
+    t.index ["p2p_payment_user_id"], name: "index_p2p_offer_payments_on_p2p_payment_user_id"
+  end
+
+  create_table "p2p_offers", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "offer_number", limit: 75, null: false
+    t.integer "p2p_user_id"
+    t.integer "p2p_pair_id"
+    t.decimal "origin_amount", precision: 32, scale: 16
+    t.decimal "available_amount", precision: 32, scale: 16
+    t.decimal "price", precision: 32, scale: 16
+    t.decimal "min_order_amount", precision: 32, scale: 16
+    t.decimal "max_order_amount", precision: 32, scale: 16
+    t.string "state", limit: 15, default: "pending"
+    t.string "side", limit: 10, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string "paymen_limit_time", default: "0", null: false
+    t.text "term_of_condition"
+    t.string "auto_replay", limit: 150
+    t.index ["p2p_pair_id"], name: "index_p2p_offers_on_p2p_pair_id"
+    t.index ["p2p_user_id"], name: "index_p2p_offers_on_p2p_user_id"
+  end
+
+  create_table "p2p_order_feedbacks", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_user_id"
+    t.text "comment", null: false
+    t.string "assessment", limit: 25, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string "order_number", limit: 50, null: false
+    t.index ["p2p_user_id"], name: "index_p2p_order_feedback_on_p2p_user_id"
+  end
+
+  create_table "p2p_orders", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "order_number", limit: 50, null: false
+    t.integer "p2p_offer_id"
+    t.string "maker_uid", limit: 25, null: false
+    t.string "taker_uid", limit: 25, null: false
+    t.integer "p2p_payment_user_id"
+    t.string "state", limit: 20, default: "prepare"
+    t.decimal "amount", precision: 32, scale: 16
+    t.string "side", limit: 10, null: false
+    t.string "aproved_by", limit: 50
+    t.datetime "first_approve_expire_at"
+    t.datetime "second_approve_expire_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.decimal "maker_fee", precision: 17, scale: 16
+    t.decimal "taker_fee", precision: 17, scale: 16
+    t.integer "p2p_user_id", null: false
+    t.index ["p2p_offer_id"], name: "index_p2p_orders_on_p2p_offer_id"
+    t.index ["p2p_payment_user_id"], name: "index_p2p_orders_on_p2p_payment_user_id"
+    t.index ["p2p_user_id"], name: "index_p2p_orders_on_p2p_user_id"
+  end
+
+  create_table "p2p_pairs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "fiat", limit: 50, null: false
+    t.string "currency", limit: 50, null: false
+    t.decimal "taker_fee", precision: 32, scale: 16
+    t.decimal "maker_fee", precision: 32, scale: 16
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["currency"], name: "index_p2p_pairs_on_currency"
+    t.index ["fiat"], name: "index_p2p_pairs_on_fiat"
+  end
+
+  create_table "p2p_payment_users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_payment_id", null: false
+    t.integer "p2p_user_id", null: false
+    t.string "payment_user_uid", limit: 50, null: false
+    t.string "account_number", limit: 50, null: false
+    t.string "name", limit: 50
+    t.text "qrcode", limit: 4294967295
+    t.integer "state", default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["p2p_payment_id"], name: "index_p2p_payment_users_on_p2p_payment_id"
+  end
+
+  create_table "p2p_payments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "fiat_id", null: false
+    t.string "name", limit: 50, null: false
+    t.string "symbol", limit: 50, null: false
+    t.string "logo_url", limit: 256, null: false
+    t.string "base_color", limit: 50
+    t.string "state", limit: 10, null: false
+    t.integer "tipe", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["fiat_id"], name: "index_p2p_payments_on_member_id"
+  end
+
+  create_table "p2p_settings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", limit: 50, null: false
+    t.string "value", limit: 50, null: false
+    t.string "type", limit: 50, null: false
+    t.string "comment", limit: 50
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "p2p_user_blockeds", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_user_id"
+    t.integer "target_user_id"
+    t.text "reason", null: false
+    t.integer "state"
+    t.datetime "state_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "p2p_user_report_details", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_user_report_id"
+    t.string "key", limit: 50
+    t.text "reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "upload", limit: 4294967295
+    t.index ["p2p_user_report_id"], name: "index_p2p_user_reports_on_p2p_user_report_details"
+  end
+
+  create_table "p2p_user_reports", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "p2p_user_id"
+    t.string "order_number", limit: 50
+    t.integer "state", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["p2p_user_id"], name: "index_p2p_user_on_p2p_user_reports"
+  end
+
+  create_table "p2p_users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "member_id"
+    t.string "logo", limit: 50
+    t.integer "offers_count", default: 0
+    t.integer "success_rate", default: 0
+    t.boolean "banned_state", default: false
+    t.datetime "banned_time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string "username", limit: 50
+    t.index ["member_id"], name: "index_p2p_users_on_member_id"
+  end
+
   create_table "payment_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id"
     t.bigint "wallet_id"
-    t.string "blockchain_key"
     t.string "address", limit: 95
     t.boolean "remote", default: false, null: false
     t.string "secret_encrypted"
@@ -444,6 +619,21 @@ ActiveRecord::Schema.define(version: 2021_07_27_101029) do
     t.index ["key"], name: "index_transfers_on_key", unique: true
   end
 
+  create_table "virtual_accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "member_id", null: false
+    t.string "currency_id", limit: 5
+    t.string "bank", limit: 64, null: false
+    t.string "number", limit: 64, null: false
+    t.string "name", limit: 64, null: false
+    t.string "external_id", limit: 64
+    t.integer "merchant_code"
+    t.string "state", limit: 64, null: false
+    t.datetime "expired", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_virtual_accounts_on_member_id"
+  end
+
   create_table "wallets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "blockchain_key", limit: 32
     t.string "name", limit: 64
@@ -488,7 +678,6 @@ ActiveRecord::Schema.define(version: 2021_07_27_101029) do
     t.bigint "member_id", null: false
     t.bigint "beneficiary_id"
     t.string "currency_id", limit: 10, null: false
-    t.string "blockchain_key"
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.decimal "fee", precision: 32, scale: 16, null: false
     t.string "txid", limit: 128, collation: "utf8_bin"

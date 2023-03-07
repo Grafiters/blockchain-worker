@@ -12,6 +12,8 @@ class Member < ApplicationRecord
   has_many :deposits, -> { order(id: :desc) }
   has_many :beneficiaries, -> { order(id: :desc) }
 
+  has_many :p2p_user, dependent: :destroy
+
   scope :enabled, -> { where(state: 'active') }
 
   before_validation :downcase_email
@@ -120,6 +122,14 @@ class Member < ApplicationRecord
       pa = payment_addresses.create!(wallet: wallet, remote: remote)
     end
     pa
+  end
+
+  def email_data_masking
+    if email.present?
+      email.downcase.sub(/(?<=[\w\d])[\w\d]+(?=[\w\d])/, '*****')
+    else
+      email
+    end
   end
 
   private

@@ -33,7 +33,8 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = ENV['FORCE_SECURE_CONNECTION'] == 'true'
+  config.force_ssl = 'true'
+  Rails.application.routes.default_url_options[:protocol] = "http"
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]

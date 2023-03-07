@@ -49,7 +49,7 @@ USER app
 
 # Initialize application configuration & assets.
 RUN echo "# This file was overridden by default during docker image build." > Gemfile.plugin \
-  && ./bin/init_config \
+  && chmod +x ./bin/init_config \
   && chmod +x ./bin/logger \
   && bundle exec rake tmp:create
 
