@@ -4,7 +4,9 @@ module Jobs
       class <<self
         def process
           Currency.coins.active.find_each do |currency|
-            currency.update_price(currency)
+            Currency.active.find_each do |pair|
+              currency.update_price(pair)
+            end
           rescue StandardError => e
             report_exception_to_screen(e)
             next
