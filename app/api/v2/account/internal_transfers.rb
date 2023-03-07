@@ -22,6 +22,10 @@ module API
                    type: { value: Integer, message: 'account.internal_tranfer.non_integer_time_to' },
                    allow_blank: { value: false, message: 'account.internal_tranfer.empty_time_to' },
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'
+            optional :ord_type,
+                   type: String,
+                   values: { value: Order::TYPES, message: 'account.internal_tranfer.invalid_ord_type' },
+                   desc: 'Filter order by ord_type.'
             optional :sender
           end
 
@@ -31,13 +35,26 @@ module API
             ransack_params = ::API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                                       .eq(:state)
                                                                       .translate(currency: :currency_id)
-                                                                      .with_daterange_created
                                                                       .merge(g: [
                                                                                { sender_id_eq: current_user.id, receiver_id_eq: current_user.id, m: 'or' }
                                                                              ]).build
-            search = InternalTransfer.ransack(ransack_params)
+
+            if params[:time_from].present? && params[:time_to].present?
+              Rails.logger.warn "-------------------"
+              Rails.logger.warn "filter"
+              search = InternalTransfer.order(created_at: :desc)
+                                    .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from].present? }
+                                    .tap { |q| q.where!('created_at <= ?', Time.at(params[:time_to]+24*60*60)) if params[:time_to].present? }
+                                    .ransack(ransack_params)
+                                    .result
+                                    .order('id desc')
+            else
+              Rails.logger.warn "-------------------"
+              Rails.logger.warn "filter"
+              search = InternalTransfer.ransack(ransack_params)
                                      .result
                                      .order('id desc')
+            end
 
             present paginate(search), with: API::V2::Entities::InternalTransfer, current_user: current_user
           end
