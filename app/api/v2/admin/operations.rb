@@ -61,7 +61,7 @@ module API
               present :currency, currency
             end
 
-            present paginate(search.result, false), with: API::V2::Admin::Entities::Operation
+            present :data, paginate(search.result, false), with: API::V2::Admin::Entities::Operation
           end
         end
 
