@@ -40,8 +40,6 @@ module API
                                                                              ]).build
 
             if params[:time_from].present? && params[:time_to].present?
-              Rails.logger.warn "-------------------"
-              Rails.logger.warn "filter"
               search = InternalTransfer.order(created_at: :desc)
                                     .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from].present? }
                                     .tap { |q| q.where!('created_at <= ?', Time.at(params[:time_to]+24*60*60)) if params[:time_to].present? }
@@ -49,8 +47,6 @@ module API
                                     .result
                                     .order('id desc')
             else
-              Rails.logger.warn "-------------------"
-              Rails.logger.warn "filter"
               search = InternalTransfer.ransack(ransack_params)
                                      .result
                                      .order('id desc')

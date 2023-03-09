@@ -64,12 +64,12 @@ module API
           end
 
           if params[:wallet_type].present?
-            present paginate(search.result
+            present :data, paginate(search.result
                             .where(currency: Currency.joins(:wallets)
                             .where(wallets: { id: Wallet.where(gateway: params[:wallet_type]) }))),
                     with: API::V2::Admin::Entities::Withdraw
           else
-            present paginate(search.result), with: API::V2::Admin::Entities::Withdraw
+            present :data, paginate(search.result), with: API::V2::Admin::Entities::Withdraw
           end
         end
 
