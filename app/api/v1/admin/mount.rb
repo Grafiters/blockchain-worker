@@ -4,17 +4,16 @@ module API
     module V1
       module Admin
         class Mount < Grape::API
-          PREFIX = '/admin'
-  
+
           before { authenticate! unless request.path == '/api/v1/admin/swagger' }
-  
-          formatter :csv, CSVFormatter
-  
+
           mount API::V1::Admin::Fiat
+          mount API::V1::Admin::Order
+          mount API::V1::Admin::Offer
           mount API::V1::Admin::Trade
           mount API::V1::Admin::Payment
   
-          add_swagger_documentation base_path: File.join(API::Mount::PREFIX, API::V1::Mount::API_VERSION, PREFIX, 'exchange'),
+          add_swagger_documentation base_path: File.join(API::Mount::PREFIX, 'v2', 'p2p', 'admin'),
                                     add_base_path: true,
                                     mount_path:  '/swagger',
                                     api_version: API::V1::Mount::API_VERSION,

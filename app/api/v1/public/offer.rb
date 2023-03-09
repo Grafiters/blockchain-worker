@@ -57,7 +57,7 @@ module API
                         end
 
                         # present params
-                        present paginate(data), with: API::V1::Public::Entities::Offer
+                        present paginate(data), with: API::V1::Admin::Entities::Offer
                     end
 
                     desc 'Get Detail of Offer Trade Number'

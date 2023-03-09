@@ -12,6 +12,10 @@ class P2pOrder < ApplicationRecord
 
     validates :side, :amount, presence: true
 
+    extend Enumerize
+    STATE_ISSUE = { true: 1, false: 0 }
+    enumerize :is_issue, in: STATE_ISSUE, scope: true
+
     after_commit on: :create do
         lock_amount_offer
         locked_fund_account(amount)
@@ -20,7 +24,7 @@ class P2pOrder < ApplicationRecord
     after_commit on: :update do
         if state == 'canceled'
             unlock_funds
-            unlock_fund_success(amount)
+            unlock_fund_cancel(amount)
         end
 
         if state == 'accepted'
