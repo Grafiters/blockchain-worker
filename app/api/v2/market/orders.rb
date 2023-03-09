@@ -125,7 +125,7 @@ module API
             balance = account.balance
             amount = params[:side] == 'buy' ? params[:volume] * params[:price] : params[:volume]
             sum_locked = account.locked.to_d + sum_orders.to_d + amount.to_d
-            if (balance < 0 || amount >= balance)
+            if (balance < 0 || amount > balance)
               error!({ errors: ['market.account.insufficient_balance'] }, 422)
             end
             # if (sum_locked > balance)
