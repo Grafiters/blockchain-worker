@@ -34,7 +34,7 @@ module API
                         otype = offer[:side] == 'sell' ? 'buy' : 'sell'
 
                         orders = ::P2pOrder.create(p2p_order_params(offer, otype))
-                        error!(orders.errors.details, 422) unless orders.save
+                        # error!(orders.errors.details, 422) unless orders.save
                         
                         chat = ::P2pChat.create(chat_params(orders, orders[:taker_uid]))
                         
@@ -97,7 +97,6 @@ module API
                     get '/:order_number' do
                         order = ::P2pOrder.select("p2p_orders.*","p2p_orders.p2p_payment_user_id as payment").find_by(order_number: params[:order_number])
 
-                        Rails.logger.warn order.inspect
                         if order[:p2p_payment_user_id].present?
                             order[:payment] = order_payments(order)
                         end

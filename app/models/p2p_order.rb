@@ -15,7 +15,6 @@ class P2pOrder < ApplicationRecord
     after_commit on: :create do
         lock_amount_offer
         locked_fund_account(amount)
-        state_order
     end
 
     after_commit on: :update do
@@ -130,13 +129,15 @@ class P2pOrder < ApplicationRecord
     def side_order(user)
         offer = ::P2pOffer.find_by(id: p2p_offer_id)
 
+        Rails.logger.warn "-------------------------"
         Rails.logger.warn offer.inspect
+        Rails.logger.warn "-------------------------"
 
-        if side == 'sell'
+        if side == 'buy'
             sides = p2p_user_id == user ? "sell" : "buy"
             return sides
-        elsif side == 'buy'
-            sides = p2p_user_id == user ? "buy" : "sell"
+        elsif side == 'sell'
+            sides = p2p_user_id == user ? "sell" : "buy"
             return sides
         end
     end

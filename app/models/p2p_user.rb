@@ -33,7 +33,7 @@ class P2pUser < ApplicationRecord
       trade = ::P2pOrder.joins(:p2p_offer)
               .where('(p2p_orders.p2p_user_id = ? AND p2p_orders.side = "buy")
                           OR
-                      (p2p_orders.p2p_user_id = ? AND p2p_orders.side = "sell")', id, id)
+                      (p2p_offers.p2p_user_id = ? AND p2p_orders.side = "sell")', id, id)
       
       trade_stats(trade)
     end
