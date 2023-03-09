@@ -11,6 +11,8 @@ module API
           formatter :csv, CSVFormatter
   
           mount API::V1::Admin::Fiat
+          mount API::V1::Admin::Order
+          mount API::V1::Admin::Offer
           mount API::V1::Admin::Trade
           mount API::V1::Admin::Payment
   

@@ -47,7 +47,7 @@ module API
                     end
                     post '/information_chat/:order_number' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
-                        error!(order.errors.details, 422) unless order.save
+                        error!(order.errors.details, 422) unless order.blank?
 
                         if params[:message].blank?
                             error!({ errors: ['p2p_order.information_chat.message_can_not_blank'] }, 422)
