@@ -34,7 +34,6 @@ module API
       include ExceptionHandlers
 
       mount API::V1::Public::Mount       => :public
-      mount API::V1::Admin::Mount        => :admin
       mount API::V1::Market::Mount       => :market
       mount API::V1::Account::Mount      => :account
 
@@ -64,7 +63,7 @@ module API
       # Mount Management API after swagger. To separate swagger Management API doc.
       # TODO: Find better solution for separating swagger Management API.
       # mount Management::Mount => :management
-      # mount API::V1::Admin::Mount      => :admin
+      mount API::V1::Admin::Mount      => :admin
     end
   end
 end

@@ -11,8 +11,8 @@ module API
                     params_mapping = {
                         p2p_order_id: order[:id],
                         user_uid: current_user[:uid],
-                        chat: image_check : 'Mohon Kirim Bukti tranfer',
-                        upload: image_exists : nil
+                        chat: image_check,
+                        upload: image_exists
                     }
                 end
 
