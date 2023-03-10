@@ -137,11 +137,11 @@ class P2pOrder < ApplicationRecord
 
         Rails.logger.warn offer.inspect
 
-        if side == 'sell'
-            sides = p2p_user_id == user ? "sell" : "buy"
-            return sides
-        elsif side == 'buy'
+        if side == 'buy'
             sides = p2p_user_id == user ? "buy" : "sell"
+            return sides
+        elsif side == 'sell'
+            sides = p2p_user_id == user ? "sell" : "buy"
             return sides
         end
     end
