@@ -6,6 +6,8 @@ module API
       module Admin
         module Entities
             class Offer < Grape::Entity
+                format_with(:iso8601) {|t| t.to_time.in_time_zone(Rails.configuration.time_zone).iso8601 if t }
+
                 expose(
                     :offer_number,
                     as: :offer_number,
@@ -32,6 +34,14 @@ module API
                         type: String
                     }
                 )
+
+                expose(
+                    :fiat,
+                    documentation: {
+                        desc: 'Filter Fiat.',
+                        type: String
+                    }
+                ) { |p2p_offer| p2p_offer.fiat_currency[:fiat] }
     
                 expose(
                     :currency,
@@ -112,6 +122,18 @@ module API
                         } do |p2p_offer|
                             p2p_offer.payment
                         end
+
+                expose :p2p_orders, using: API::V1::Admin::Entities::OfferOrder
+
+                expose(
+                    :created_at,
+                    :updated_at,
+                    format_with: :iso8601,
+                    documentation: {
+                        type: String,
+                        desc: 'The datetimes for the p2p order.'
+                    }
+                )
             end
         end
     end

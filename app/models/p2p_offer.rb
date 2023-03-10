@@ -6,6 +6,8 @@ class P2pOffer < ApplicationRecord
     belongs_to :p2p_pair, dependent: :destroy
     belongs_to :p2p_user, dependent: :destroy
 
+    has_many :p2p_orders, dependent: :destroy
+
     before_validation :assign_uuid
     
     after_commit on: :create do
@@ -48,6 +50,10 @@ class P2pOffer < ApplicationRecord
 
     def currency_logo
         ::Currency.select("id as name", "icon_url").find_by(id: currency)
+    end
+
+    def fiat_currency
+      P2pPair.find_by_id(p2p_pair_id)
     end
 
     private
