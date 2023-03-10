@@ -138,7 +138,7 @@ class P2pOrder < ApplicationRecord
         Rails.logger.warn "-------------------------"
 
         if side == 'buy'
-            sides = p2p_user_id == user ? "sell" : "buy"
+            sides = p2p_user_id == user ? "buy" : "sell"
             return sides
         elsif side == 'sell'
             sides = p2p_user_id == user ? "sell" : "buy"
