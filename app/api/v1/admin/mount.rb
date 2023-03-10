@@ -12,6 +12,7 @@ module API
           mount API::V1::Admin::Offer
           mount API::V1::Admin::Trade
           mount API::V1::Admin::Payment
+          mount API::V1::Admin::Members
   
           add_swagger_documentation base_path: File.join(API::Mount::PREFIX, 'v2', 'p2p', 'admin'),
                                     add_base_path: true,

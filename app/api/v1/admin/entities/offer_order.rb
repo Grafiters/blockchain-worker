@@ -5,7 +5,7 @@ module API
     module V1
       module Admin
         module Entities
-            class Order < Grape::Entity
+            class OfferOrder < Grape::Entity
                 format_with(:iso8601) {|t| t.to_time.in_time_zone(Rails.configuration.time_zone).iso8601 if t }
 
                 expose(
@@ -38,68 +38,8 @@ module API
                 )
 
                 expose(
-                    :offer_number,
-                    as: :offer_number,
-                    documentation: {
-                        desc: 'Offer Number.',
-                        type: String
-                    }
-                )
-
-                expose :fiat,
-                    documentation: {
-                        desc: 'Order Fiat.',
-                        type: String
-                    } do |p2p_order|
-                        p2p_order.fiat_logo
-                    end
-
-                expose :currency,
-                    documentation: {
-                        desc: 'Order Currency.',
-                        type: String
-                    } do |p2p_order|
-                        p2p_order.currency_logo
-                    end
-
-                expose :fiat_amount,
-                    documentation: {
-                        desc: 'Filter Fiat.',
-                        type: String
-                    } do |p2p_order|
-                        p2p_order.fiat_amounts
-                    end
-    
-                expose(
                     :amount,
                     as: :amount,
-                    documentation: {
-                        desc: 'Filter Fiat.',
-                        type: String
-                    }
-                )
-
-                expose(
-                    :price,
-                    as: :price,
-                    documentation: {
-                        desc: 'Filter Fiat.',
-                        type: String
-                    }
-                )
-
-                expose(
-                    :available_amount,
-                    as: :available_amount,
-                    documentation: {
-                        desc: 'Filter Fiat.',
-                        type: String
-                    }
-                )
-
-                expose(
-                    :origin_amount,
-                    as: :origin_amount,
                     documentation: {
                         desc: 'Filter Fiat.',
                         type: String
@@ -131,8 +71,6 @@ module API
                         type: String
                     }
                 )
-
-                expose :p2p_report, using: API::V1::Entities::Report
                     
                 expose(
                     :created_at,

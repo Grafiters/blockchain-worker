@@ -10,6 +10,12 @@ module API
                 namespace :orders do
                     desc 'Get available orders1'
                     params do
+                        optional :order_number,
+                                type: String,
+                                desc: -> { V1::Entities::Order.documentation[:order_number] }
+                        optional :offer_number,
+                                type: String,
+                                desc: -> { V1::Entities::Offer.documentation[:offer_number] }
                         optional :fiat,
                                 type: String
                         optional :side,
@@ -22,14 +28,16 @@ module API
                     end
                     get "/" do
                         ransack_params = API::V1::Admin::Helpers::RansackBuilder.new(params)
-                                        .eq(:side, :state, :fiat)
+                                        .eq(:side, :state, :fiat, :order_number)
                                         .with_daterange
                                         .build
 
                         order = ::P2pOrder.joins(p2p_offer: :p2p_pair)
                             .select("p2p_orders.*", "p2p_offers.offer_number", "p2p_offers.available_amount", "p2p_pairs.fiat","p2p_pairs.currency","p2p_offers.origin_amount",
                                     "p2p_offers.price", "p2p_offers.price as fiat_amount")
-                            .ransack(ransack_params)
+
+                        order = order.where(p2p_offers: {offer_number: params[:offer_number]}) unless params[:offer_number].blank?
+                        order = order.ransack(ransack_params)
                         
                         order.sorts = "id DESC"
 
@@ -74,6 +82,10 @@ module API
                     end
                     post '/room_chat/:order_number' do
                         order = ::P2pOrder.find_by_order_number(params[:order_number])
+
+                        if order[:state] != 'rejected'
+                            error!({ errors: ['admin.p2p_order.can_not_send_message'] }, 422)
+                        end
 
                         if order[:state] == 'canceled' || order[:state] == 'success'
                             error!({ errors: ['admin.p2p_order.can_not_send_message_order_is_done'] }, 422)
