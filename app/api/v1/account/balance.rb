@@ -30,6 +30,10 @@ module API
                             error!({ errors: ['balance.account.invalid_target_wallet'] }, 422)
                         end
 
+                        unless Vault::TOTP.validate?(current_user.uid, params[:otp_code])
+                            error!({ errors: ['p2p_user.payment.invalid_otp'] }, 422)
+                        end
+
                         balance = ::Account.find_by(member_id: current_user[:id], currency_id: params[:currency])
 
                         return error!({ errors: ['balance.account.balance_not_found'] }, 422) unless balance.present?
