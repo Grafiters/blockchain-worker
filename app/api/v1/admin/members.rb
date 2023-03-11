@@ -30,7 +30,7 @@ module API
 
           desc 'Desc Detail Of User Member p2p'
           get '/:uid' do
-            present P2pUser.joins(:member).find_by(uid: params[:uid]), with: API::V1::Entities::UserP2p
+            present P2pUser.joins(:member).find_by(members: {uid: params[:uid]}), with: API::V1::Entities::UserP2p
           end
 
           desc 'banned user p2p'
