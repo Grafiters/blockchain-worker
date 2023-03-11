@@ -15,7 +15,7 @@ module API
               optional :email,
                       desc: -> { API::V2::Entities::Member.documentation[:email][:desc] }
               optional :username,
-                      desc: -> { API::V2::Entities::Member.documentation[:username][:desc] }
+                      desc: 'Username of member'
               optional :p2p_name,
                       desc: -> { API::V1::Entities::UserP2p.documentation[:username][:desc] }
               use :uid
