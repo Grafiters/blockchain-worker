@@ -33,7 +33,7 @@ module Workers
 
                 from_block = @blockchain.height || 0
                 latest_block = bc_service.latest_block_number
-                p_block = [latest_block, from_block + 1].min
+                p_block = [latest_block, from_block + 5].min
 
                 if(@blockchain.client === 'tron')
                     if(latest_block - from_block > 3)
@@ -46,6 +46,7 @@ module Workers
                   (from_block..bc_service.latest_block_number).each do |block_id|
                     Rails.logger.info { "Started processing #{@blockchain.key} block number #{block_id}." }
                     block_json = bc_service.process_block(block_id)
+		    Rails.logger.info block_json.inspect
                     Rails.logger.info { "Fetch #{block_json.transactions.count} transactions in block number #{block_id}." }
                     bc_service.update_height(block_id)
                     Rails.logger.info { "Finished processing #{@blockchain.key} block number #{block_id}." }
