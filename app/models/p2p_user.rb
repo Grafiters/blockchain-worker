@@ -6,6 +6,10 @@ class P2pUser < ApplicationRecord
 
     belongs_to :member, class_name: "Member", foreign_key: :member_id, primary_key: :id
 
+    extend Enumerize
+    BANNED_STATES = { true: 1, false: 1 }
+    enumerize :banned_state, in: BANNED_STATES, scope: true
+
     class << self
         def from_payload(p)
             params = filter_payload(p)

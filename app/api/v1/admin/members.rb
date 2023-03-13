@@ -20,13 +20,13 @@ module API
                       desc: -> { API::V1::Entities::UserP2p.documentation[:username][:desc] }
               use :uid
             end
-            get '/members' do  
-              search = P2pUser.joins(:member).order(id: :desc)
+            get '/' do  
+              P2pUser.joins(:member).order(id: :desc)
                         .tap { |q| q.where!(members: {uid: params[:uid]}) if params[:uid].present? }
                         .tap { |q| q.where!(members: {email: params[:email]}) if params[:email].present? }
                         .tap { |q| q.where!(members: {username: params[:username]}) if params[:username].present? }
                         .tap { |q| q.where!(p2p_users: {username: params[:p2p_name]}) if params[:p2p_name].present? }
-                        .tap { |q| present paginate(search), with: API::V1::Entities::UserP2p }
+                        .tap { |q| present paginate(q), with: API::V1::Entities::UserP2p }
             end
 
             desc 'Desc Detail Of User Member p2p'
@@ -36,6 +36,8 @@ module API
 
             desc 'banned user p2p'
             params do
+              requires :banned_state,
+                    values: { value: %w(true false), message: 'p2p_account.order.non_integer_limit' }
               requires :banned_time,
                     type: { value: Time, message: 'admin.filter.range_from_invalid' },
                     desc: 'An integer represents the seconds elapsed since Unix epoch.'\
@@ -44,7 +46,7 @@ module API
             post '/:uid/banned' do
               member = P2pUser.joins(:member).find_by(members: { uid: params[:uid]})
 
-              P2pOrder.where('maker_uid = ? OR taker_uid = ?', params[:uid], params[:uid]).each do |order|
+              P2pOrder.where(state: %w(rejected prepare waiting)).where('maker_uid = ? OR taker_uid = ?', params[:uid], params[:uid]).each do |order|
                 order.update!(state: 'canceled')
                 return error!({ errors: ['admin.p2p_order.can_not_send_message_order_is_done'] }, 422) unless order?
               end
@@ -54,7 +56,7 @@ module API
                 return error!({ errors: ['admin.p2p_order.can_not_send_message_order_is_done'] }, 422) unless offer?
               end
 
-              member.update(banned_time: Time.at(params[:banned_time]))
+              member.update(banned_state: true, banned_time: Time.at(params[:banned_time]))
             end
           end
         end
