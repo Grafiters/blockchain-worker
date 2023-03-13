@@ -59,8 +59,15 @@ class P2pOrder < ApplicationRecord
 
     def taker_data
         member = ::Member.find_by(uid: taker_uid)
-        account = Account.find_by({member_id: member[:id], currency: currency})
-        return account
+        wallet = Account.find_by({member_id: member[:id], currency: currency})
+
+        account = Account.new({
+            member_id: member[:id],
+            currency_id: currency,
+            p2p_locked: amount,
+        }) unless wallet.present?
+
+        return wallet.present? ? wallet : account
     end
 
     def maker_data

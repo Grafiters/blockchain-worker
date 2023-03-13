@@ -57,7 +57,7 @@ module API
                     end
                     post '/actions' do
                         order = ::P2pOrder.find_by(order_number: params[:order_number])
-                        error!({ errors: ['admin.p2p_order.can_not_send_message_order_is_done'] }, 422) unless order[:state] == 'accepted' || order[:state] == 'canceled'
+                        error!({ errors: ['admin.p2p_order.can_not_send_message_order_is_done'] }, 422) unless order[:state] == 'rejected'
 
                         order.update(state: params[:state], is_issue: true)
 
