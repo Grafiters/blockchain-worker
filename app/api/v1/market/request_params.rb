@@ -69,9 +69,17 @@ module API
                         amount: params[:amount],
                         side: side,
                         p2p_payment_user_id: side == 'sell' ? payment(offer)[:id] : nil,
-                        state: 'prepare'
+                        state: 'prepare',
+                        taker_fee: fiat(offer)[:taker_fee],
+                        maker_fee: fiat(offer)[:maker_fee]
                     }
                 end
+
+                def fiat(offer)
+                    pair = P2pPair.find_by(id: offer[:p2p_offer_id])
+                    Fiat.find_by(name: pair[:fiat])
+                end
+          
 
                 def chat_params(order, target_user)
                     params_mapping = {

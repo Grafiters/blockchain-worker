@@ -17,6 +17,7 @@ class P2pOrder < ApplicationRecord
     STATE_ISSUE = { true: 1, false: 0 }
     enumerize :is_issue, in: STATE_ISSUE, scope: true
 
+
     after_commit on: :create do
         lock_amount_offer
         locked_fund_account(amount)
@@ -111,7 +112,8 @@ class P2pOrder < ApplicationRecord
     end
 
     def move_assets(amount)
-        maker_balance = maker_data[:p2p_balance] + amount
+        fee_maker = maker_fee != nil ? amount - maker_fee : amount
+        maker_balance = maker_data[:p2p_balance] + fee_maker
 
         account_member = Account.find_or_create_by(member_id: maker_data[:member_id], currency_id: currency)
         account_member.update({
