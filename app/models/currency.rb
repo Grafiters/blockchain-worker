@@ -116,7 +116,7 @@ class Currency < ApplicationRecord
   def update_price(pair)
     market = Market.find_by(base_unit: id, quote_unit: pair[:id])
     ticker = Trade.market_ticker_from_influx(market.symbol) if market.present?
-    currency_price = ticker.present? ? ticker[:vwap].to_d : self.price
+    currency_price = ticker.present? ? ticker[:last].to_d : self.price
     update_attribute(:price, currency_price)
   end
 

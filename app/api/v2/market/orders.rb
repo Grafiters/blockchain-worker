@@ -49,6 +49,11 @@ module API
                    type: String,
                    values: { value: Order::TYPES, message: 'market.order.invalid_ord_type' },
                    desc: 'Filter order by ord_type.'
+          optional :group,
+                   type: String,
+                   default: 'open',
+                   values: { value: %w(open close), message: 'market.order.group' },
+                   desc: 'Filter order by type.'
           optional :type,
                    type: String,
                    values: { value: %w(buy sell), message: 'market.order.invalid_type' },
@@ -67,15 +72,14 @@ module API
         get '/orders' do
           user_authorize! :read, ::Order
 
-          state = params[:state] == 'open' ? %w(pending wait) : %w(done cancel reject)
+          state = params[:group] == 'open' ? %w(pending wait trigger_wait) : %w(done cancel reject) unless params[:group].blank?
 
           current_user.orders.order(updated_at: params[:order_by])
-                      .tap { |q| q.where!(state: state) }
                       .tap { |q| q.where!(market_type: params[:market_type]) }
                       .tap { |q| q.where!(market: params[:market]) if params[:market] }
                       .tap { |q| q.where!(ask: params[:base_unit]) if params[:base_unit] }
                       .tap { |q| q.where!(bid: params[:quote_unit]) if params[:quote_unit] }
-                      .tap { |q| q.where!(state: params[:state]) if params[:state] }
+                      .tap { |q| q.where!(state: params[:state].present? ? params[:state] : state) if params[:group] || params[:state] }
                       .tap { |q| q.where!(ord_type: params[:ord_type]) if params[:ord_type] }
                       .tap { |q| q.where!(type: (params[:type] == 'buy' ? 'OrderBid' : 'OrderAsk')) if params[:type] }
                       .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from] }
@@ -121,7 +125,7 @@ module API
             balance = account.balance
             amount = params[:side] == 'buy' ? params[:volume] * params[:price] : params[:volume]
             sum_locked = account.locked.to_d + sum_orders.to_d + amount.to_d
-            if (balance < 0 || amount >= balance)
+            if (balance < 0 || amount > balance)
               error!({ errors: ['market.account.insufficient_balance'] }, 422)
             end
             # if (sum_locked > balance)

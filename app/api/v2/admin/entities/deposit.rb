@@ -84,6 +84,15 @@ module API
           )
 
           expose(
+            :error,
+            documentation: {
+              type: String,
+              desc: 'Withdraw error.'
+            },
+            unless: ->(d) { d.collected? }
+          )
+
+          expose(
             :updated_at,
             format_with: :iso8601,
             documentation: {

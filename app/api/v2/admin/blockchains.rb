@@ -20,6 +20,9 @@ module API
             warning: {
               desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:warning][:desc] }
             },
+            blockchain_group: {
+              desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:warning][:desc] }
+            },
             description: {
               desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:description][:desc] }
             },
@@ -164,6 +167,8 @@ module API
                      desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:height][:desc] }
             requires :protocol,
                      desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:protocol][:desc] }
+            optional :blockchain_group,
+                     desc: -> { 'Blockchain Group' }
           end
           post '/new' do
             admin_authorize! :create, ::Blockchain
@@ -206,6 +211,8 @@ module API
                      type: { value: Integer, message: 'admin.blockchain.non_integer_height' },
                      values: { value: -> (p){ p.try(:positive?) }, message: 'admin.blockchain.non_positive_height' },
                      desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:height][:desc] }
+            optional :blockchain_group,
+                     desc: -> { 'Blockchain Group' }
           end
           post '/update' do
             admin_authorize! :update, ::Blockchain, params.except(:id)

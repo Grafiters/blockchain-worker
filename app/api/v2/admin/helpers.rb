@@ -33,10 +33,16 @@ module API
           end
 
           def with_daterange_created
-            days = 24*60*60
-            to = @params[:to] + days
-            @build.merge!("#created_at_gteq" => @params[:from])
-            @build.merge!("#created_at_lteq" => to)
+            @build.merge!("#created_at_gteq" => @params[:time_from])
+
+            if @params[:time_to].present?
+              days = 24*60*60
+              to = Time.at(@params[:time_to]) + days
+              Rails.logger.warn to
+              @build.merge!("#created_at_lteq" => to)
+            else
+              @build.merge!("#created_at_lteq" => @params[:time_to])
+            end
             self
           end
 

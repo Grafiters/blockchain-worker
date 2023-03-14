@@ -61,7 +61,7 @@ module API
               present :currency, currency
             end
 
-            present paginate(search.result, false), with: API::V2::Admin::Entities::Operation
+            present :data, paginate(search.result, false), with: API::V2::Admin::Entities::Operation
           end
         end
 
@@ -86,7 +86,19 @@ module API
             search = klass.ransack(ransack_params.merge(member_id_eq: member&.id))
             search.sorts = "#{params[:order_by]} #{params[:ordering]}"
 
-            present paginate(search.result, false), with: API::V2::Admin::Entities::Operation
+            if params[:filter].present? && params[:filter] == 'true'
+              currency = Currency.select("id as name", "type","price as total").all
+              currency.each do |data|
+                data[:credit] = search.result.where('currency_id = ?', data[:name]).sum(:credit)
+                data[:debit] = search.result.where('currency_id = ?', data[:name]).sum(:debit)
+              end
+  
+              present :from, params[:from].present? ? params[:from] : search.result.minimum('created_at')
+              present :to, params[:to].present? ? params[:to] : search.result.maximum('created_at')
+              present :currency, currency
+            end
+
+            present :data, paginate(search.result, false), with: API::V2::Admin::Entities::Operation
           end
         end
       end

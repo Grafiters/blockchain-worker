@@ -31,7 +31,7 @@ module API
                   "All available markets can be found at /api/v2/markets."
           }
         )do |transaction|
-          transaction.currency[:icon_url]
+          ::Currency.find_by(id: transaction[:currency_id])[:icon_url]
         end
 
         expose(
@@ -43,7 +43,7 @@ module API
                   "All available markets can be found at /api/v2/markets."
           }
         )do |transaction|
-          transaction.currency[:name]
+          ::Currency.find_by(id: transaction[:currency_id])[:name]
         end
 
         expose(
