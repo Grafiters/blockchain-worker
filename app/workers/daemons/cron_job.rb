@@ -6,7 +6,7 @@
 module Workers
   module Daemons
     class CronJob < Base
-      JOBS = [Jobs::Cron::P2pJobs].freeze
+      JOBS = [Jobs::Cron::CurrencyPrice].freeze
 
       def run
         JOBS.map { |j| Thread.new { process(j) } }.map(&:join)

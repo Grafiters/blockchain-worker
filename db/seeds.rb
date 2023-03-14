@@ -3,7 +3,7 @@
 
 # NOTE: The order of task matters because Currency belongs_to Blockchain.
 # Rake::Task['seed:accounts'].invoke
-# Rake::Task['seed:blockchains'].invoke
+Rake::Task['seed:blockchains'].invoke
 # Rake::Task['seed:currencies'].invoke
 # Rake::Task['seed:engines'].invoke
 # Rake::Task['seed:markets'].invoke
@@ -13,4 +13,4 @@
 # Rake::Task['seed:p2p_user'].invoke
 # Rake::Task['seed:p2p_offer'].invoke
 # Rake::Task['seed:p2p_offer'].invoke
-Rake::Task['seed:p2p_payment'].invoke
+# Rake::Task['seed:p2p_payment'].invoke
