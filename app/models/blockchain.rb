@@ -80,6 +80,7 @@ end
 #  min_deposit_amount   :decimal(32, 16)  default(0.0), not null
 #  withdraw_fee         :decimal(32, 16)  default(0.0), not null
 #  min_withdraw_amount  :decimal(32, 16)  default(0.0), not null
+#  blockchain_group     :integer          default(1)
 #  status               :string(255)      not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null

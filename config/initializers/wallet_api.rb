@@ -7,3 +7,4 @@ Peatio::Wallet.registry[:"ow-hdwallet-bsc"] = OWHDWallet::WalletBSC
 Peatio::Wallet.registry[:"ow-hdwallet-heco"] = OWHDWallet::WalletHECO
 Peatio::Wallet.registry[:ether] = Ether::Wallet
 Peatio::Wallet.registry[:trond] = Tron::Wallet
+Peatio::Wallet.registry[:xrpd] = Ripple::Wallet

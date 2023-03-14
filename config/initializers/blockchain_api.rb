@@ -5,3 +5,4 @@ Peatio::Blockchain.registry[:"geth-bsc"] = Ethereum::Bsc::Blockchain
 Peatio::Blockchain.registry[:"geth-heco"] = Ethereum::Heco::Blockchain
 Peatio::Blockchain.registry[:ether] = Ether::Blockchain
 Peatio::Blockchain.registry[:tron] = Tron::Blockchain
+Peatio::Blockchain.registry[:xrp] = Ripple::Blockchain

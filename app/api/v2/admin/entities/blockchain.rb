@@ -77,6 +77,13 @@ module API
           )
 
           expose(
+            :blockchain_group,
+            documentation: {
+              desc: 'Blockchain Group',
+            }
+          )
+
+          expose(
             :min_withdraw_amount,
             documentation: {
               desc: 'Minimal withdraw amount in platform currency',
@@ -134,6 +141,14 @@ module API
             documentation:{
               type: String,
               desc: 'Blockchain status (active/disabled).'
+            }
+          )
+
+          expose(
+            :blockchain_group,
+            documentation:{
+              type: Integer,
+              desc: 'Minimum number of confirmations.'
             }
           )
 
