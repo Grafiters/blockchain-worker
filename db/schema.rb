@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_03_012320) do
+ActiveRecord::Schema.define(version: 2023_03_09_195021) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -198,6 +198,7 @@ ActiveRecord::Schema.define(version: 2023_03_03_012320) do
     t.decimal "maker_fee", precision: 32, scale: 16
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["code"], name: "fiats_code_IDX", unique: true
   end
 
   create_table "internal_transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -395,6 +396,7 @@ ActiveRecord::Schema.define(version: 2023_03_03_012320) do
     t.decimal "maker_fee", precision: 17, scale: 16
     t.decimal "taker_fee", precision: 17, scale: 16
     t.integer "p2p_user_id", null: false
+    t.integer "is_issue", default: 0, null: false
     t.index ["p2p_offer_id"], name: "index_p2p_orders_on_p2p_offer_id"
     t.index ["p2p_payment_user_id"], name: "index_p2p_orders_on_p2p_payment_user_id"
     t.index ["p2p_user_id"], name: "index_p2p_orders_on_p2p_user_id"

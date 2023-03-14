@@ -19,10 +19,6 @@ module API
                             ::P2pPayment.ransack(search_params).result.load.to_a
                          }), with: API::V1::Entities::Payment
                     end
-
-                    post do
-                        
-                    end
                 end
             end
         end

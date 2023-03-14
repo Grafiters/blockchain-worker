@@ -24,10 +24,18 @@ module API
                         requires :amount,
                                 allow_blank: false,
                                 type: {value: BigDecimal, message: 'balance.account.non_decimal_amount'}
+                        requires :otp_code,
+                                type: { value: Integer, message: 'p2p_user.payment.non_integer_otp' },
+                                allow_blank: true,
+                                desc: 'OTP to perform action'
                     end
                     post '/' do
                         if params[:base_wallet] == params[:target_wallet]
                             error!({ errors: ['balance.account.invalid_target_wallet'] }, 422)
+                        end
+
+                        unless Vault::TOTP.validate?(current_user.uid, params[:otp_code])
+                            error!({ errors: ['p2p_user.payment.invalid_otp'] }, 422)
                         end
 
                         balance = ::Account.find_by(member_id: current_user[:id], currency_id: params[:currency])

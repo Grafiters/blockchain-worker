@@ -2,6 +2,7 @@ class P2pOrder < ApplicationRecord
     has_many :p2p_offer_payment, dependent: :destroy
     has_many :p2p_order_feedback, class_name: 'P2pOrderFeedback', foreign_key: :order_number, primary_key: :order_number
     has_many :p2p_chat, dependent: :destroy
+    has_many :p2p_report, class_name: 'P2pUserReport', foreign_key: :order_number, primary_key: :order_number
 
     belongs_to :p2p_offer, foreign_key: :p2p_offer_id, primary_key: :id
 
@@ -12,16 +13,20 @@ class P2pOrder < ApplicationRecord
 
     validates :side, :amount, presence: true
 
+    extend Enumerize
+    STATE_ISSUE = { true: 1, false: 0 }
+    enumerize :is_issue, in: STATE_ISSUE, scope: true
+
+
     after_commit on: :create do
         lock_amount_offer
         locked_fund_account(amount)
-        state_order
     end
 
     after_commit on: :update do
         if state == 'canceled'
             unlock_funds
-            unlock_fund_success(amount)
+            unlock_fund_cancel(amount)
         end
 
         if state == 'accepted'
@@ -55,8 +60,15 @@ class P2pOrder < ApplicationRecord
 
     def taker_data
         member = ::Member.find_by(uid: taker_uid)
-        account = Account.find_by({member_id: member[:id], currency: currency})
-        return account
+        wallet = Account.find_by({member_id: member[:id], currency: currency})
+
+        account = Account.new({
+            member_id: member[:id],
+            currency_id: currency,
+            p2p_locked: amount,
+        }) unless wallet.present?
+
+        return wallet.present? ? wallet : account
     end
 
     def maker_data
@@ -100,7 +112,8 @@ class P2pOrder < ApplicationRecord
     end
 
     def move_assets(amount)
-        maker_balance = maker_data[:p2p_balance] + amount
+        fee_maker = maker_fee != nil ? amount - maker_fee : amount
+        maker_balance = maker_data[:p2p_balance] + fee_maker
 
         account_member = Account.find_or_create_by(member_id: maker_data[:member_id], currency_id: currency)
         account_member.update({
@@ -130,13 +143,15 @@ class P2pOrder < ApplicationRecord
     def side_order(user)
         offer = ::P2pOffer.find_by(id: p2p_offer_id)
 
+        Rails.logger.warn "-------------------------"
         Rails.logger.warn offer.inspect
+        Rails.logger.warn "-------------------------"
 
-        if side == 'sell'
-            sides = p2p_user_id == user ? "sell" : "buy"
-            return sides
-        elsif side == 'buy'
+        if side == 'buy'
             sides = p2p_user_id == user ? "buy" : "sell"
+            return sides
+        elsif side == 'sell'
+            sides = p2p_user_id == user ? "sell" : "buy"
             return sides
         end
     end

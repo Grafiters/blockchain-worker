@@ -11,9 +11,12 @@ module API
                 maker_uid: offer[:maker_uid],
                 taker_uid: offer[:taker_uid],
                 amount: offer[:amount],
-                side: offer[:side]
+                side: offer[:side],
+                taker_fee: fiat(offer)[:taker_fee],
+                maker_fee: fiat(offer)[:maker_fee],
         end
 
+        
         def create_order(offer)
           order = build_order(offer)
           order.submit_order

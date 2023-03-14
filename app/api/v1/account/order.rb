@@ -32,6 +32,7 @@ module API
                                         .with_daterange
                                         .build
 
+                        Rails.logger.warn "Current User------------------"
                         order = ::P2pOrder.joins(p2p_offer: :p2p_pair)
                             .select("p2p_orders.*", "p2p_offers.offer_number", "p2p_offers.available_amount", "p2p_pairs.fiat","p2p_pairs.currency","p2p_offers.origin_amount",
                                     "p2p_offers.price", "p2p_offers.price as fiat_amount")

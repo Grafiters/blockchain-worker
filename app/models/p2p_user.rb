@@ -6,6 +6,10 @@ class P2pUser < ApplicationRecord
 
     belongs_to :member, class_name: "Member", foreign_key: :member_id, primary_key: :id
 
+    extend Enumerize
+    BANNED_STATES = { true: 1, false: 1 }
+    enumerize :banned_state, in: BANNED_STATES, scope: true
+
     class << self
         def from_payload(p)
             params = filter_payload(p)
@@ -33,7 +37,7 @@ class P2pUser < ApplicationRecord
       trade = ::P2pOrder.joins(:p2p_offer)
               .where('(p2p_orders.p2p_user_id = ? AND p2p_orders.side = "buy")
                           OR
-                      (p2p_orders.p2p_user_id = ? AND p2p_orders.side = "sell")', id, id)
+                      (p2p_offers.p2p_user_id = ? AND p2p_orders.side = "sell")', id, id)
       
       trade_stats(trade)
     end
@@ -50,10 +54,11 @@ class P2pUser < ApplicationRecord
         pay_time: pay_time(data, data.count)
       }
     end
-    
+
+
     def pay_time(data, total)
       time = data.where("p2p_orders.state IN (?)", %w(success accepted)).where("p2p_orders.created_at >= ? AND p2p_orders.created_at <= ?", last_month, Time.now)
-      return "00:00:00" unless time.present?
+      return "000000" unless time.present?
       sum_time = 0
       time.each do |t|
         sum_time += t[:first_approve_expire_at] - t[:created_at]
@@ -64,29 +69,7 @@ class P2pUser < ApplicationRecord
 
     def release_time(data, total)
       time = data.where("p2p_orders.state IN (?)", %w(success accepted)).where("p2p_orders.created_at >= ? AND p2p_orders.created_at <= ?", last_month, Time.now)
-      return "00:00:00" unless time.present?
-      sum_time = 0
-      time.each do |t|
-        sum_time += t[:second_approve_expire_at] - t[:first_approve_expire_at]
-      end
-
-      return sum_time
-    end
-
-    def pay_time(data, total)
-      time = data.where("p2p_orders.state IN (?)", %w(success accepted)).where("p2p_orders.created_at >= ? AND p2p_orders.created_at <= ?", last_month, Time.now)
-      return "00:00:00" unless time.present?
-      sum_time = 0
-      time.each do |t|
-        sum_time += t[:first_approve_expire_at] - t[:created_at]
-      end
-
-      return sum_time
-    end
-
-    def release_time(data, total)
-      time = data.where("p2p_orders.state IN (?)", %w(success accepted)).where("p2p_orders.created_at >= ? AND p2p_orders.created_at <= ?", last_month, Time.now)
-      return "00:00:00" unless time.present?
+      return "000000" unless time.present?
       sum_time = 0
       time.each do |t|
         sum_time += t[:second_approve_expire_at] - t[:first_approve_expire_at]

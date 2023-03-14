@@ -17,6 +17,12 @@ module API
                             ), with: API::V1::Account::Entities::Payment
                     end
 
+                    get "/:payment_user" do
+                        payment_user = ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payment_users.id","p2p_payment_users.payment_user_uid","p2p_payment_users.name as account_name", "p2p_payment_users.account_number","p2p_payment_users.qrcode", "p2p_payments.symbol", "p2p_payments.logo_url","p2p_payments.base_color","p2p_payments.state","p2p_payments.name","p2p_payments.tipe").where(p2p_payment_users: {payment_user_uid: params[:payment_user]})
+
+                        present payment_user, with: API::V1::Account::Entities::Payment
+                    end
+
                     desc 'Create new payment method for user p2p'
                     params do
                         requires :payment_method,

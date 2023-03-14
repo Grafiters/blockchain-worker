@@ -16,9 +16,7 @@ module API
           end
 
           def check_payment_user
-            Rails.logger.warn params
             params[:payment].each do |payment|
-              Rails.logger.warn payment
               check_payment(payment)
             end
           end
