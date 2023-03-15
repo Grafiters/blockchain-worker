@@ -16,7 +16,7 @@ module Ripple
     end
 
     def fetch_block!(ledger_index)
-      ledger = client.rest_api(:post,'/ledger',{method: 'ledger',params: [{ledger_index: ledger_index || 'validated',transactions: true,expand: true}]}).dig('result').dig('ledger')
+      ledger = client.rest_api(:post,'/fetch-block',{height: ledger_index}).dig('ledger')
       return if ledger.blank?
       ledger.fetch('transactions').each_with_object([]) do |tx, txs_array|
         next unless valid_transaction?(tx)
@@ -31,7 +31,7 @@ module Ripple
     end
 
     def latest_block_number
-      client.rest_api(:post,'/ledger',{"method": "ledger","params": [{"ledger_index": "validated"}]}).fetch('result').fetch('ledger_index')
+      client.rest_api(:get, '/get-height').fetch('ledger_index')
     rescue Ripple::Client::Error => e
       raise Peatio::Blockchain::ClientError, e
     end
@@ -40,8 +40,7 @@ module Ripple
       currency = settings[:currencies].find { |c| c[:id] == currency_id.to_s }
       raise UndefinedCurrencyError unless currency
 
-      client.rest_api(:post,'/account_info',
-                      {account: normalize_address(address), ledger_index: 'validated', strict: true})
+      client.rest_api(:post,'/get-balance',{address: normalize_address(address)})
                       .fetch('account_data')
                       .fetch('Balance')
                       .to_d

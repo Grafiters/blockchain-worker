@@ -31,35 +31,10 @@ module Ripple
       }
     end
 
-    def create_raw_address(options = {})
-      secret = options.fetch(:secret) { PasswordGenerator.generate(64) }
-      result = client.rest_api(:post,'/wallet_propose', { passphrase: secret })
-
-      result.slice('key_type', 'master_seed', 'master_seed_hex',
-                    'master_key', 'public_key', 'public_key_hex')
-            .merge(address: normalize_address(result.fetch('account_id')), secret: secret)
-            .symbolize_keys
-    end
-
     def create_transaction!(transaction, options = {})
-      tx_blob = sign_transaction(transaction, options)
-      client.rest_api(:post,'/submit', tx_blob).yield_self do |result|
-        error_message = {
-          message: result.fetch('engine_result_message'),
-          status: result.fetch('engine_result')
-        }
-
-        # TODO: It returns provision results. Transaction may fail or success
-        # than change status to opposite one before ledger is final.
-        # Need to set special status and recheck this transaction status
-        if result['engine_result'].to_s == 'tesSUCCESS' && result['status'].to_s == 'success'
-          transaction.currency_id = 'xrp' if transaction.currency_id.blank?
-          transaction.hash = result.fetch('tx_json').fetch('hash')
-        else
-          raise Error, "XRP withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed. Message: #{error_message}."
-        end
-        transaction
-      end
+      tx = sign_transaction(transaction, options)
+      transaction.hash = tx.fetch('hash')
+      transaction
     end
 
     def sign_transaction(transaction, options = {})
@@ -67,56 +42,39 @@ module Ripple
       destination_address = normalize_address(transaction.to_address)
       destination_tag = destination_tag_from(transaction.to_address)
       fee = calculate_current_fee
-
-      account = client.rest_api(:post, '/account_info',{method: "account_info", params: [{account: account_address, ledger_index: 'validated', strict: true}]}).dig('result')
-      sequence = account.fetch('account_data').fetch('Sequence')
       amount = convert_to_base_unit(transaction.amount)
 
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= fee if options.dig(:subtract_fee)
       transaction.amount = convert_from_base_unit(amount) unless transaction.amount == amount
 
-        params = {
-        secret: @wallet.fetch(:secret),
-        tx_json: {
-          Account:            account_address,
-          Amount:             amount.to_s,
-          Fee:                fee.to_s,
-          Destination:        destination_address,
-          DestinationTag:     destination_tag,
-          TransactionType:    'Payment',
-          LastLedgerSequence: latest_block_number + 4,
-          Sequence: sequence
-          }
-        }
+      Rails.logger.warn @wallet.inspect
 
-        Rails.logger.warn params
-
-      client.rest_api(:post,'/sign', {method: 'sign', params: [params]}).dig('result').yield_self do |result|
-        if result['status'].to_s == 'success'
-          { tx_blob: result['tx_blob'] }
-        else
-          raise Error, "XRP sign transaction from #{account_address} to #{destination_address} failed: #{result}."
-        end
+      params = {
+        privKey: @wallet.fetch(:secret),
+        to: destination_address,
+        amount: transaction.amount
+      }
+      client.rest_api(:post,'/send-transaction', params).yield_self do |result|
+        result
       end
     end
 
     # Returns fee in drops that is enough to process transaction in current ledger
     def calculate_current_fee
-      client.rest_api(:post,'/fee', {method: "fee"}).dig('result').yield_self do |result|
+      client.rest_api(:get,'/get-fee').yield_self do |result|
         result.dig('drops', 'open_ledger_fee').to_i
       end
     end
 
     def latest_block_number
-      client.rest_api(:post,'/ledger', { method:'ledger', params: [{ledger_index: 'validated'}] }).dig('result').fetch('ledger_index')
+      client.rest_api(:get, '/get-height').fetch('ledger_index')
     rescue Ripple::Client::Error => e
       raise Peatio::Blockchain::ClientError, e
     end
 
     def load_balance!
-      client.rest_api(:post, '/account_info',
-                      {account: normalize_address(@wallet.fetch(:address)), ledger_index: 'validated', strict: true})
+      client.rest_api(:post, '/get-balance',{address: normalize_address(@wallet.fetch(:address))})
                       .fetch('account_data')
                       .fetch('Balance')
                       .to_d
