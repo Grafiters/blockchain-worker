@@ -14,7 +14,7 @@ module API
                                 desc: 'If set, returned values will be sorted in specific order, defaults to \'asc\'.'
                     end
                     get "/filter" do
-                        currency = ::P2pPair.where(fiat: params[:fiat])
+                        currency = ::P2pPair.active.where(fiat: params[:fiat])
                         paymen = ::P2pPayment.joins(:fiat).where(fiats: {name: params[:fiat]})
 
                         present :fiat, params[:fiat]

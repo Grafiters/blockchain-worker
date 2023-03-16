@@ -1,7 +1,7 @@
 module API
     module V1
         module Admin
-            class configs < Grape::API
+            class Config < Grape::API
                 helpers ::API::V1::Account::ParamHelpers
 
                 namespace :configs do
@@ -10,10 +10,8 @@ module API
                         requires :name,
                                 type: String,
                                 desc: 'Filter by name.'
-                        requires :valuem
+                        requires :value,
                                 type: String
-                        use :pagination
-                        use :ordering
                     end
                     get do
                         config = ::P2pSetting.order(id: :desc)

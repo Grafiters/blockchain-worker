@@ -97,6 +97,7 @@ module API
                     params do
                         requires :state,
                                 values: { value: %w(enabled disabled), message: 'admin.pair.invalid_actions_params' }
+                    end
                     put 'currency/:id' do
                         pair = ::P2pPair.find_by_id(params[:id])
                         pair.update(state: params[:state])
