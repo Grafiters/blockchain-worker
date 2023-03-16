@@ -7,10 +7,10 @@ module API
                 namespace :configs do
                     desc 'Returns all configs.'
                     params do
-                        requires :name,
+                        optional :name,
                                 type: String,
                                 desc: 'Filter by name.'
-                        requires :value,
+                        optional :value,
                                 type: String
                     end
                     get do
