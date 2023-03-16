@@ -81,12 +81,14 @@ module API
                         validate_pair
                         fiat = ::Fiat.find_by(params[:fiat])
 
-                        pair = ::P2pPair.create(
-                            fiat: params[:fiat],
-                            currency: params[:currency],
-                            taker_fee: params[:taker_fee].present? ? params[:taker_fee] : fiat[:taker_fee],
-                            maker_fee: params[:maker_fee].present? ? params[:maker_fee] : fiat[:maker_fee]
-                        )
+                        params[:currency].each do |c|
+                            pair = ::P2pPair.create(
+                                fiat: params[:fiat],
+                                currency: c,
+                                taker_fee: params[:taker_fee].present? ? params[:taker_fee] : fiat[:taker_fee],
+                                maker_fee: params[:maker_fee].present? ? params[:maker_fee] : fiat[:maker_fee]
+                            )
+                        end
 
                         present pair
                     end

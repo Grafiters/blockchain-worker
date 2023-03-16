@@ -33,8 +33,10 @@ module API
 
                 def validate_pair
                     if params[:fiat].present? && params[:currency].present?
-                        pair = ::P2pPair.find_by(fiat: params[:fiat], currency: params[:currency])
-                        error!({ errors: ['admin.fiat.invalid_data_pair'] }, 422) unless pair.blank?
+                        params[:currency].each do |c|
+                            pair = ::P2pPair.find_by(fiat: params[:fiat], currency: c)
+                            error!({ errors: ['admin.fiat.invalid_data_pair'] }, 422) unless pair.blank?
+                        end
                     end
                 end
             end

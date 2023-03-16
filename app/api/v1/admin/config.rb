@@ -7,9 +7,11 @@ module API
                 namespace :configs do
                     desc 'Returns all configs.'
                     params do
-                        optional :name,
+                        requires :name,
                                 type: String,
                                 desc: 'Filter by name.'
+                        requires :valuem
+                                type: String
                         use :pagination
                         use :ordering
                     end
