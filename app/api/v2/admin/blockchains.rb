@@ -109,9 +109,13 @@ module API
                                .eq(:key, :client, :status, :name)
                                .build
 
+            group = ::Blockchain.select("blockchain_group").group(:blockchain_group).pluck(:blockchain_group)
+
             search = ::Blockchain.ransack(ransack_params)
             search.sorts = "#{params[:order_by]} #{params[:ordering]}"
-            present paginate(search.result), with: API::V2::Admin::Entities::Blockchain
+            
+            present :group, group
+            present :data, paginate(search.result), with: API::V2::Admin::Entities::Blockchain
           end
 
           desc 'Get available blockchain clients.',

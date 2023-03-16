@@ -13,7 +13,7 @@ module API
                 amount: offer[:amount],
                 side: offer[:side],
                 taker_fee: fiat(offer)[:taker_fee],
-                maker_fee: fiat(offer)[:maker_fee],
+                maker_fee: fiat(offer)[:maker_fee]
         end
 
         
