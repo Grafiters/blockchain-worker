@@ -68,7 +68,6 @@ module API
 
                     params do
                         requires :currency,
-                                type: String,
                                 desc: 'currency code'
                         optional :taker_fee,
                                 type: BigDecimal,
