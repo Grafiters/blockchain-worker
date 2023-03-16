@@ -67,7 +67,7 @@ module API
                     get '/:offer_number' do
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                 .lt_any
-                                                .with_range_amount
+                                                .with_range_price
                                                 .build
                         
                         offer = ::P2pOffer.joins(:p2p_pair, p2p_offer_payment: :p2p_payment_user)
