@@ -16,13 +16,15 @@ module API
                     end
                     get do
                         ransack_params = Helpers::RansackBuilder.new(params)
+                                            .eq(:name, :symbol, :currency)
+                                            .build
                         
-                        query = ::Fiat.joins(:p2p_pairs)
+                        query = ::Fiat.joins(:p2p_pair)
                         query = query.where(p2p_pairs: {currency: params[:currency]}) unless params[:currency].blank?
 
                         search = query.ransack(ransack_params)
 
-                        present paginate(search.results)
+                        present paginate(search.result)
                     end
 
                     desc 'create a new config fiat admin'

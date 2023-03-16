@@ -264,7 +264,7 @@ class P2pOrder < ApplicationRecord
     end
 
     def first_expired_time
-        self.first_approve_expire_at = Time.now + 15*60
+        self.first_approve_expire_at = Time.now + time_first_approve.present? ? time_first_approve[:value] : 15*60
     end
 
     def InterIDGenerate(prefix)
