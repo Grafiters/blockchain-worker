@@ -9,7 +9,7 @@ module API
                              .eq(:code)
                              .build
 
-                        search = ::Fiat.ransack(ransack_params)
+                        search = ::Fiat.active.ransack(ransack_params)
 
                         search.sorts = ["name asc"]
 

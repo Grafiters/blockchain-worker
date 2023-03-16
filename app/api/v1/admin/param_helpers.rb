@@ -27,7 +27,14 @@ module API
                 def validate_fiat
                     if params[:name].present? && params[:code].present?
                         fiat = ::Fiat.find_by(name: params[:name], code: params[:code])
-                        error!({ errors: ['account.users.username_limit_change'] }, 422) unless fiat.blank?
+                        error!({ errors: ['admin.fiat.invalid_data_fiat'] }, 422) unless fiat.blank?
+                    end
+                end
+
+                def validate_pair
+                    if params[:fiat].present? && params[:currency].present?
+                        pair = ::P2pPair.find_by(fiat: params[:fiat], currency: params[:currency])
+                        error!({ errors: ['admin.fiat.invalid_data_pair'] }, 422) unless pair.blank?
                     end
                 end
             end

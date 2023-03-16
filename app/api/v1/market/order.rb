@@ -189,7 +189,7 @@ module API
                         order.update({
                             p2p_payment_user_id: order[:side] == 'buy' ? payment[:id] : order[:p2p_payment_user_id],
                             first_approve_expire_at: Time.now,
-                            second_approve_expire_at: Time.now + (24 * 60 * 60),
+                            second_approve_expire_at: Time.now + time_second_approve[:value].to_i,
                             state: 'waiting'
                         })
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_09_195021) do
+ActiveRecord::Schema.define(version: 2023_03_16_025658) do
 
   create_table "accounts", primary_key: ["currency_id", "member_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "member_id", null: false
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 2023_03_09_195021) do
     t.decimal "withdraw_fee", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "min_withdraw_amount", precision: 32, scale: 16, default: "0.0", null: false
     t.string "status", null: false
+    t.integer "blockchain_group", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_blockchains_on_key", unique: true
@@ -407,6 +408,7 @@ ActiveRecord::Schema.define(version: 2023_03_09_195021) do
     t.string "currency", limit: 50, null: false
     t.decimal "taker_fee", precision: 32, scale: 16
     t.decimal "maker_fee", precision: 32, scale: 16
+    t.string "state", default: "enabled", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["currency"], name: "index_p2p_pairs_on_currency"

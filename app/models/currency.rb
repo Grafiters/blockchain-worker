@@ -28,6 +28,7 @@ class Currency < ApplicationRecord
 
   has_and_belongs_to_many :wallets
   has_many :blockchain_currencies
+  has_many :pair, class_name: "P2pPiar", foreign_key: :currency, primary_key: :id
 
   # == Validations ==========================================================
 

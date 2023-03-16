@@ -58,6 +58,49 @@ module API
 
                         present fiat, with: API::V1::Entities::Fiat
                     end
+
+                    desc 'Fiat Currency'
+                    get 'currency/:fiat' do
+                        currency = ::Currency.pair.where(fiat: params[:fiat])
+
+                        present fiat, with: API::V1::Entities::Currency
+                    end
+
+                    params do
+                        requires :currency,
+                                type: String,
+                                desc: 'currency code'
+                        optional :taker_fee,
+                                type: BigDecimal,
+                                desc: 'fee of taker fiat'
+                        optional :maker_fee,
+                                type: BigDecimal,
+                                desc: 'fee of maker fiat'
+                    end
+                    post 'currency/:fiat' do 
+                        validate_pair
+                        fiat = ::Fiat.find_by(params[:fiat])
+
+                        pair = ::P2pPair.create(
+                            fiat: params[:fiat],
+                            currency: params[:currency],
+                            taker_fee: params[:taker_fee].present? ? params[:taker_fee] : fiat[:taker_fee],
+                            maker_fee: params[:maker_fee].present? ? params[:maker_fee] : fiat[:maker_fee]
+                        )
+
+                        present pair
+                    end
+
+                    desc 'Change state of fiat pair enabled or disabled'
+                    params do
+                        requires :state,
+                                values: { value: %w(enabled disabled), message: 'admin.pair.invalid_actions_params' }
+                    put 'currency/:id' do
+                        pair = ::P2pPair.find_by_id(params[:id])
+                        pair.update(state: params[:state])
+
+                        present pair
+                    end
                 end
             end
         end

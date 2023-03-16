@@ -249,6 +249,10 @@ class P2pOrder < ApplicationRecord
 
     private
 
+    def time_first_approve
+        ::P2pSetting.find_by(name: 'first_time_approve')
+    end
+
     def assign_order_number
         assign_order_number unless order_number.blank?
 
@@ -260,7 +264,7 @@ class P2pOrder < ApplicationRecord
     end
 
     def first_expired_time
-        self.first_approve_expire_at = Time.now + 15*60
+        self.first_approve_expire_at = Time.now + time_first_approve[:value].to_i
     end
 
     def InterIDGenerate(prefix)
