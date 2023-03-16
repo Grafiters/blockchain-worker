@@ -16,10 +16,11 @@ module API
                     end
                     get do
                         ransack_params = Helpers::RansackBuilder.new(params)
-                                            .eq(:name, :symbol, :currency)
+                                            .eq(:name, :symbol)
                                             .build
                         
-                        query = ::Fiat.joins(:p2p_pair)
+                        query = ::Fiat.order(id: :asc)
+                        query = query.joins(:p2p_pair) unless params[:currency].blank?
                         query = query.where(p2p_pairs: {currency: params[:currency]}) unless params[:currency].blank?
 
                         search = query.ransack(ransack_params)
@@ -63,9 +64,9 @@ module API
 
                     desc 'Fiat Currency'
                     get 'currency/:fiat' do
-                        currency = ::Currency.pair.where(fiat: params[:fiat])
+                        currency = ::P2pPair.where(fiat: params[:fiat])
 
-                        present fiat, with: API::V1::Entities::Currency
+                        present currency, with: API::V1::Entities::Currency
                     end
 
                     params do
