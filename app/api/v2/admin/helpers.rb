@@ -76,7 +76,7 @@ module API
             self
           end
 
-          def with_range_amount
+          def with_range_price
             @build.merge!("price_gteq" => @params[:min_price])
             @build.merge!("price_lteq" => @params[:max_price])
             self

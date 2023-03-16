@@ -33,7 +33,7 @@ module API
                     get "/" do
                         search_params = API::V2::Admin::Helpers::RansackBuilder.new(params)
                                                 .lt_any
-                                                .with_range_amount
+                                                .with_range_price
                                                 .build
 
                         side = params[:side] == 'buy' ? 'sell' : 'buy'
@@ -43,10 +43,11 @@ module API
                         
                         offer = ::P2pOffer.joins(:p2p_pair).select("p2p_offers.*","p2p_offers.offer_number as sum_order","p2p_offers.offer_number as persentage", "p2p_offers.p2p_user_id as member", "p2p_offers.p2p_pair_id as currency")
                         offer = offer.where(p2p_pairs: {fiat: params[:fiat]})
-                                            .where('p2p_offers.available_amount > 0')
                                             .where(p2p_pairs: {currency: params[:currency]})
                                             .where(p2p_offers: {side: side})
                                             .where.not(p2p_offers: {state: 'canceled'})
+
+                        offer = params[:amount].blank? ? offer.where('p2p_offers.available_amount > 0') : offer.where('p2p_offers.available_amount > ?', params[:amount])
                         offer = offer.where.not(p2p_user_id: blocked_merchant)         
                         offer = offer.with_payment(payment_filter) unless params[:payment].blank?
                         search = offer.ransack(search_params)
