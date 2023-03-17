@@ -13,7 +13,7 @@ class BlockchainCurrency < ApplicationRecord
 
   # == Attributes ===========================================================
 
-  attr_readonly :base_factor
+  # attr_readonly :base_factor
 
   # == Extensions ===========================================================
 
