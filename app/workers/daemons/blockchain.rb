@@ -44,12 +44,11 @@ module Workers
                     end
                 else
                   (from_block..bc_service.latest_block_number).each do |block_id|
-                    Rails.logger.info { "Started processing #{@blockchain.key} block number #{block_id}." }
+                    Rails.logger.warn { "Started processing #{@blockchain.key} block number #{block_id}." }
                     block_json = bc_service.process_block(block_id)
-		    Rails.logger.info block_json.inspect
                     Rails.logger.info { "Fetch #{block_json.transactions.count} transactions in block number #{block_id}." }
                     bc_service.update_height(block_id)
-                    Rails.logger.info { "Finished processing #{@blockchain.key} block number #{block_id}." }
+                    Rails.logger.warn { "Finished processing #{@blockchain.key} block number #{block_id}." }
                   end
                 end
 
@@ -68,7 +67,7 @@ module Workers
       end
 
       def run
-        @runner_pool = ::Blockchain.active.each_with_object({}) do |b, pool|
+        @runner_pool = ::Blockchain.where(blockchain_group: ENV.fetch('GROUP_ID')).active.each_with_object({}) do |b, pool|
           max_ts = [b.blockchain_currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
 
           logger.warn { "Creating the runner for #{b.key}" }
@@ -78,14 +77,14 @@ module Workers
         while running
           begin
             # Stop disabled blockchains runners first.
-            (@runner_pool.keys - ::Blockchain.active.pluck(:key)).each do |b_key|
+            (@runner_pool.keys - ::Blockchain.where(blockchain_group: ENV.fetch('GROUP_ID')).active.pluck(:key)).each do |b_key|
               logger.warn { "Stopping the runner for #{b_key} (blockchain is not active anymore)" }
               @runner_pool.delete(b_key).stop
             end
 
             # Recreate active blockchain runners by comparing runner &
             # maximum blockchain & blockchain currencies updated_at timestamp.
-            ::Blockchain.active.each do |b|
+            ::Blockchain.where(blockchain_group: ENV.fetch('GROUP_ID')).active.each do |b|
               max_ts = [b.blockchain_currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
 
               if @runner_pool[b.key].blank?
@@ -105,8 +104,8 @@ module Workers
               @runner_pool.transform_values(&:ts)
             end
 
-            # Check for blockchain config changes in 30 seconds.
-            sleep 30
+            # Check for blockchain config changes in 10 seconds.
+            sleep 10
 
           rescue StandardError => e
             raise e if is_db_connection_error?(e)

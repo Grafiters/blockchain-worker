@@ -138,6 +138,14 @@ module API
           )
 
           expose(
+            :blockchain_group,
+            documentation: {
+              type: String,
+              desc: 'Blockchain group worker.'
+            }
+          )
+
+          expose(
             :created_at,
             format_with: :iso8601,
             documentation: {
