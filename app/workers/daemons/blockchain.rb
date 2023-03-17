@@ -33,7 +33,7 @@ module Workers
 
                 from_block = @blockchain.height || 0
                 latest_block = bc_service.latest_block_number
-                p_block = [latest_block, from_block + 5].min
+                p_block = [latest_block, from_block + 10].min
 
                 if(@blockchain.client === 'tron')
                     if(latest_block - from_block > 3)
@@ -69,7 +69,6 @@ module Workers
       def run
         @runner_pool = ::Blockchain.where(blockchain_group: ENV.fetch('GROUP_ID')).active.each_with_object({}) do |b, pool|
           max_ts = [b.blockchain_currencies.maximum(:updated_at), b.updated_at].compact.max.to_i
-
           logger.warn { "Creating the runner for #{b.key}" }
           pool[b.key] = Runner.new(b, max_ts).tap(&:start)
         end
@@ -112,7 +111,7 @@ module Workers
 
             report_exception(e)
             Rails.logger.warn { "Error: #{e}. Sleeping for 10 seconds" }
-            sleep(10)
+            sleep(5)
           end
         end
       end

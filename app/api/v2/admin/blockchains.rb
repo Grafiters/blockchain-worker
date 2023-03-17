@@ -20,6 +20,9 @@ module API
             warning: {
               desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:warning][:desc] }
             },
+            blockchain_group: {
+              desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:warning][:desc] }
+            },
             description: {
               desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:description][:desc] }
             },
@@ -106,9 +109,13 @@ module API
                                .eq(:key, :client, :status, :name)
                                .build
 
+            group = ::Blockchain.select("blockchain_group").group(:blockchain_group).pluck(:blockchain_group)
+
             search = ::Blockchain.ransack(ransack_params)
             search.sorts = "#{params[:order_by]} #{params[:ordering]}"
-            present paginate(search.result), with: API::V2::Admin::Entities::Blockchain
+            
+            present :group, group
+            present :data, paginate(search.result), with: API::V2::Admin::Entities::Blockchain
           end
 
           desc 'Get available blockchain clients.',
@@ -164,6 +171,8 @@ module API
                      desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:height][:desc] }
             requires :protocol,
                      desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:protocol][:desc] }
+            optional :blockchain_group,
+                     desc: -> { 'Blockchain Group' }
           end
           post '/new' do
             admin_authorize! :create, ::Blockchain
@@ -206,6 +215,8 @@ module API
                      type: { value: Integer, message: 'admin.blockchain.non_integer_height' },
                      values: { value: -> (p){ p.try(:positive?) }, message: 'admin.blockchain.non_positive_height' },
                      desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:height][:desc] }
+            optional :blockchain_group,
+                     desc: -> { 'Blockchain Group' }
           end
           post '/update' do
             admin_authorize! :update, ::Blockchain, params.except(:id)

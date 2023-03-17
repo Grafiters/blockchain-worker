@@ -77,6 +77,13 @@ module API
           )
 
           expose(
+            :blockchain_group,
+            documentation: {
+              desc: 'Blockchain Group',
+            }
+          )
+
+          expose(
             :min_withdraw_amount,
             documentation: {
               desc: 'Minimal withdraw amount in platform currency',
