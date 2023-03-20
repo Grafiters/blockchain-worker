@@ -16,6 +16,11 @@ class P2pPaymentUser < ApplicationRecord
         "/api/v2/p2p/confirmation_chat/#{id}"
     end
     
+    def payment_method
+        payment = ::P2pPayment.find_by(id: p2p_payment.id)
+        return payment
+    end
+
     private
     def assign_uuid
         return unless payment_user_uid.blank?

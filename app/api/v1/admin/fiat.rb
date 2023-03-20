@@ -2,7 +2,7 @@ module API
     module V1
         module Admin
             class Fiat < Grape::API
-                helpers ::API::V1::Account::ParamHelpers
+                helpers ::API::V1::Admin::ParamHelpers
 
                 namespace :fiats do
                     desc 'desc all fiat config admin'
@@ -38,7 +38,7 @@ module API
                                 desc: 'fiat code'
                         requires :icon_url,
                                 desc: 'fiat icon_url'
-                        optional :scale,
+                        requires :scale,
                                 desc: 'scale amount fiat'
                         optional :taker_fee,
                                 desc: 'fee of taker fiat'
@@ -66,7 +66,7 @@ module API
                     get 'currency/:fiat' do
                         currency = ::P2pPair.where(fiat: params[:fiat])
 
-                        present currency, with: API::V1::Entities::Currency
+                        present currency
                     end
 
                     params do
@@ -81,7 +81,7 @@ module API
                     end
                     post 'currency/:fiat' do 
                         validate_pair
-                        fiat = ::Fiat.find_by(params[:fiat])
+                        fiat = ::Fiat.find_by(name: params[:fiat])
 
                         params[:currency].each do |c|
                             pair = ::P2pPair.create(
@@ -91,8 +91,6 @@ module API
                                 maker_fee: params[:maker_fee].present? ? params[:maker_fee] : fiat[:maker_fee]
                             )
                         end
-
-                        present pair
                     end
 
                     desc 'Change state of fiat pair enabled or disabled'

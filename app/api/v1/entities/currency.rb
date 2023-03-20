@@ -23,6 +23,15 @@ module API
             }
           )
 
+          expose(
+            :state,
+            as: :state,
+            documentation: {
+              desc: 'Filter Currency.',
+              type: String
+            }
+          )
+
         end
       end
     end

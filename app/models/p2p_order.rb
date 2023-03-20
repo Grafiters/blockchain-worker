@@ -4,6 +4,8 @@ class P2pOrder < ApplicationRecord
     has_many :p2p_chat, dependent: :destroy
     has_many :p2p_report, class_name: 'P2pUserReport', foreign_key: :order_number, primary_key: :order_number
 
+    P2pOrderError = Class.new(StandardError)
+
     belongs_to :p2p_offer, foreign_key: :p2p_offer_id, primary_key: :id
 
     belongs_to :maker, class_name: "Member", foreign_key: :maker_uid, primary_key: :uid
@@ -143,15 +145,11 @@ class P2pOrder < ApplicationRecord
     def side_order(user)
         offer = ::P2pOffer.find_by(id: p2p_offer_id)
 
-        Rails.logger.warn "-------------------------"
-        Rails.logger.warn offer.inspect
-        Rails.logger.warn "-------------------------"
-
-        if side == 'buy'
-            sides = p2p_user_id == user ? "buy" : "sell"
+        if p2p_user_id == user
+            sides = side
             return sides
-        elsif side == 'sell'
-            sides = p2p_user_id == user ? "sell" : "buy"
+        else
+            sides = offer[:side]
             return sides
         end
     end
@@ -250,7 +248,8 @@ class P2pOrder < ApplicationRecord
     private
 
     def time_first_approve
-        ::P2pSetting.find_by(name: 'first_time_approve')
+	    data = ::P2pSetting.select("id, name, value, comment").find_by(name: 'first_time_approve')
+	    return data
     end
 
     def assign_order_number
@@ -264,7 +263,9 @@ class P2pOrder < ApplicationRecord
     end
 
     def first_expired_time
-        self.first_approve_expire_at = Time.now + time_first_approve.present? ? time_first_approve[:value] : 15*60
+	    time = ::P2pSetting.select("id, name, value, comment").find_by(name: 'first_time_appriove')
+	    count = time.present? ? time[:value].to_i : 15*60
+	    self.first_approve_expire_at = Time.now + count
     end
 
     def InterIDGenerate(prefix)

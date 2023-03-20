@@ -47,7 +47,7 @@ module API
                                             .where(p2p_offers: {side: side})
                                             .where.not(p2p_offers: {state: 'canceled'})
 
-                        offer = params[:amount].blank? ? offer.where('p2p_offers.available_amount > 0') : offer.where('p2p_offers.available_amount > ?', params[:amount])
+                        offer = params[:amount].blank? ? offer.where('p2p_offers.available_amount > 0') : offer.where('p2p_offers.available_amount >= ?', params[:amount])
                         offer = offer.where.not(p2p_user_id: blocked_merchant)         
                         offer = offer.with_payment(payment_filter) unless params[:payment].blank?
                         search = offer.ransack(search_params)

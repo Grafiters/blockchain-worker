@@ -111,7 +111,7 @@ module API
                 }
             )
 
-            expose :payment, using: API::V1::Entities::Payment
+            expose :payment, using: API::V1::Entities::PaymentUser
 
             expose(
                 :created_at,

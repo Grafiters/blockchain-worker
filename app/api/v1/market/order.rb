@@ -113,7 +113,7 @@ module API
                                             .find_by(p2p_order_feedbacks: {order_number: order[:order_number]})
 
                         if offer[:side] == 'sell'
-                            payment_merchant = ::P2pOfferPayment.joins(p2p_payment_user: :p2p_payment).select("p2p_offer_payments.id","p2p_payment_users.payment_user_uid","p2p_payments.name as bank","p2p_payment_users.name as account_name","p2p_payment_users.name","p2p_payments.logo_url","p2p_payments.base_color","p2p_payment_users.account_number","p2p_payments.state").where(p2p_offer_payments: {p2p_offer_id: offer[:id]})
+                            payment_merchant = ::P2pPaymentUser.joins(:p2p_payment, :p2p_offer_payment).where(p2p_offer_payments: {p2p_offer_id: offer[:id]})
                         end
 
                         present :order, order, with: API::V1::Entities::Order
@@ -122,6 +122,11 @@ module API
                             present :payment_user, payment_merchant, with: API::V1::Entities::PaymentUser
                         end
                         present :feedback, feedback.present? ? feedback : [], with: API::V1::Market::Entities::Feedback
+                        
+                    rescue StandardError => e
+                        Rails.logger.warn e.inspect
+                        message = params[:order_number].present? ? e.inspect : 'p2p_order.order.order_not_found'
+                        error!({ errors: [message] }, 422)
                     end
 
                     desc 'Confirmation Target Payment final step'
@@ -186,10 +191,14 @@ module API
                             end
                         end
 
+                        time = ::P2pSetting.select("id, name, value").find_by(name: 'second_time_approve')
+
+                        count = time.present? ? time[:value].to_i : (24*60*60)
+
                         order.update({
-                            p2p_payment_user_id: order[:side] == 'buy' ? payment[:id] : order[:p2p_payment_user_id],
+                            p2p_payment_user_id: order[:side] == 'buy' ? payment[:p2p_payment_user_id] : order[:p2p_payment_user_id],
                             first_approve_expire_at: Time.now,
-                            second_approve_expire_at: Time.now + time_second_approve.present? ? time_second_approve[:value] : (24*60*60),
+			                second_approve_expire_at: Time.now + count,
                             state: 'waiting'
                         })
 

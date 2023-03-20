@@ -53,6 +53,16 @@ module API
                 }
             )
 
+            expose :qrcode,
+               documentation: {
+                    type: 'String',
+                    desc: 'File url and type'
+               } do |p2p_payment_user|
+                {
+                    image: p2p_payment_user
+                }
+            end
+
             expose(
                 :base_color,
                 as: :base_color,

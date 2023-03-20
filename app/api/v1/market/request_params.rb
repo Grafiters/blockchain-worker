@@ -76,8 +76,9 @@ module API
                 end
 
                 def fiat(offer)
-                    pair = P2pPair.find_by(id: offer[:p2p_offer_id])
-                    Fiat.find_by(name: pair[:fiat])
+		    Rails.logger.warn "--------"
+		    pair = ::P2pPair.find_by(id: offer[:p2p_pair_id])
+		    ::Fiat.select("id, name, taker_fee, maker_fee").find_by(name: pair[:fiat])
                 end
           
 

@@ -131,10 +131,6 @@ module API
                         Member.joins(:p2p_user).select("p2p_users.username","members.email").find_by(members: {uid: taker_uid})
                     end
                 end
-
-                def side_status(order, current_user)
-                    order.p2p_user_id != current_user ? 'sell' : 'buy'
-                end
             end
           end
         end
