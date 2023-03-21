@@ -79,7 +79,7 @@ module API
                       .tap { |q| q.where!(market: params[:market]) if params[:market] }
                       .tap { |q| q.where!(ask: params[:base_unit]) if params[:base_unit] }
                       .tap { |q| q.where!(bid: params[:quote_unit]) if params[:quote_unit] }
-                      .tap { |q| q.where!(state: params[:state].present? ? params[:state] : state) if params[:group] || params[:state] }
+                      .tap { |q| q.where!(state: params[:state].present? ? params[:state] : state) if params[:group].present? || params[:state].present? }
                       .tap { |q| q.where!(ord_type: params[:ord_type]) if params[:ord_type] }
                       .tap { |q| q.where!(type: (params[:type] == 'buy' ? 'OrderBid' : 'OrderAsk')) if params[:type] }
                       .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from] }
