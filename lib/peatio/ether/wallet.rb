@@ -34,14 +34,11 @@ module Ether
     end
 
     def create_transaction!(transaction, options = {})
-	    Rails.logger.warn "-------------"
-	    Rails.logger.warn @currency.dig(:options, :erc20_contract_address).inspect
-	    Rails.logger.warn transaction.inspect
       if @currency.dig(:options, :erc20_contract_address).present?
         create_erc20_transaction!(transaction)
       else
         # create_erc20_transaction!(transaction, options)
-	create_eth_transaction!(transaction, options)
+	       create_eth_transaction!(transaction, options)
       end
     rescue Ether::Client::Error => e
       raise Peatio::Wallet::ClientError, e
@@ -89,6 +86,8 @@ module Ether
       currency_options = @currency.fetch(:options).slice(:gas_limit, :gas_price)
       options.merge!(DEFAULT_ETH_FEE, currency_options)
       amount = convert_to_base_unit(transaction.amount)
+      Rails.logger.warn "-------------"
+	    Rails.logger.warn options.inspect
       if transaction.options.present?
         options[:gas_price] = transaction.options[:gas_price].present? ? transaction.options[:gas_price] : options[:gas_price]
       end
@@ -138,9 +137,9 @@ module Ether
         contractAddress:options.fetch(:erc20_contract_address),
         to: transaction.to_address,
         amount: convert_to_base_unit(transaction.amount),
-        data:     data,
+        data:data,
         privKey: @wallet.fetch(:secret),
-        gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
+        gasLimit: '0x' + options.fetch(:gas_limit).to_i.to_s(16),
         gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
       }
 
