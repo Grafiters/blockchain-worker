@@ -103,8 +103,8 @@ module Workers
               @runner_pool.transform_values(&:ts)
             end
 
-            # Check for blockchain config changes in 30 seconds.
-            sleep 30
+            # Check for blockchain config changes in 10 seconds.
+            sleep 10
 
           rescue StandardError => e
             raise e if is_db_connection_error?(e)
