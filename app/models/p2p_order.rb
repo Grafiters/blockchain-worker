@@ -5,6 +5,8 @@ class P2pOrder < ApplicationRecord
     has_many :p2p_report, class_name: 'P2pUserReport', foreign_key: :order_number, primary_key: :order_number
     has_many :p2p_payment_user, dependent: :destroy
 
+    P2pOrderError = Class.new(StandardError)
+
     belongs_to :p2p_offer, foreign_key: :p2p_offer_id, primary_key: :id
 
     belongs_to :maker, class_name: "Member", foreign_key: :maker_uid, primary_key: :uid
@@ -144,15 +146,11 @@ class P2pOrder < ApplicationRecord
     def side_order(user)
         offer = ::P2pOffer.find_by(id: p2p_offer_id)
 
-        Rails.logger.warn "-------------------------"
-        Rails.logger.warn offer.inspect
-        Rails.logger.warn "-------------------------"
-
-        if side == 'buy'
-            sides = p2p_user_id == user ? "buy" : "sell"
+        if p2p_user_id == user
+            sides = side
             return sides
-        elsif side == 'sell'
-            sides = p2p_user_id == user ? "sell" : "buy"
+        else
+            sides = offer[:side]
             return sides
         end
     end

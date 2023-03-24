@@ -71,6 +71,7 @@ module API
                     desc 'Get Detail Merchant Trade'
                     get "/merchant/:merchant" do
                         member = ::P2pUser.joins(:member).find_by(members: {uid: params[:merchant]})
+                        error!({ errors: ['p2p_trade.merchant.merchant_doesn_not_exists'] }, 422) unless member.present?
 
                         feedback = ::P2pOrderFeedback.joins(p2p_order: :p2p_offer)
                                             .select("p2p_order_feedbacks.*", "p2p_orders.p2p_payment_user_id as payment", "p2p_orders.p2p_user_id as member",

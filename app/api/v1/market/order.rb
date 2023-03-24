@@ -122,6 +122,11 @@ module API
                             present :payment_user, payment_merchant, with: API::V1::Entities::PaymentUser
                         end
                         present :feedback, feedback.present? ? feedback : [], with: API::V1::Market::Entities::Feedback
+                        
+                    rescue StandardError => e
+                        Rails.logger.warn e.inspect
+                        message = params[:order_number].present? ? e.inspect : 'p2p_order.order.order_not_found'
+                        error!({ errors: [message] }, 422)
                     end
 
                     desc 'Confirmation Target Payment final step'
@@ -186,14 +191,14 @@ module API
                             end
                         end
 
-			time = ::P2pSetting.select("id, name, value").find_by(name: 'second_time_approve')
+                        time = ::P2pSetting.select("id, name, value").find_by(name: 'second_time_approve')
 
-			count = time.present? ? time[:value].to_i : (24*60*60)
+                        count = time.present? ? time[:value].to_i : (24*60*60)
 
                         order.update({
-                            p2p_payment_user_id: order[:side] == 'buy' ? payment[:id] : order[:p2p_payment_user_id],
+                            p2p_payment_user_id: order[:side] == 'buy' ? payment[:p2p_payment_user_id] : order[:p2p_payment_user_id],
                             first_approve_expire_at: Time.now,
-			    second_approve_expire_at: Time.now + count,
+			                second_approve_expire_at: Time.now + count,
                             state: 'waiting'
                         })
 

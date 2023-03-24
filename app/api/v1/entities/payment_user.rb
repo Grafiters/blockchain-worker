@@ -57,10 +57,12 @@ module API
             end
 
             expose :qrcode,
-            documentation: {
-                 type: 'String',
-                 desc: 'File url and type'
-            }
+                documentation: {
+                    type: 'String',
+                    desc: 'File url and type'
+            } do |p2p_payment_user|
+                p2p_payment_user.qrcode
+            end
 
             expose(
                 :state,

@@ -28,7 +28,7 @@ module API
         end
 
         def order_payments(order)
-            payment = ::P2pPaymentUser.joins(:p2p_payment).select("p2p_payments.*","p2p_payment_users.name as account_name","p2p_payment_users.account_number", "p2p_payment_users.payment_user_uid").find_by(p2p_payment_users: {id: order[:p2p_payment_user_id]})
+            payment = ::P2pPaymentUser.joins(:p2p_payment).find_by(p2p_payment_users: {id: order[:p2p_payment_user_id]})
         end
 
         def validation_request
