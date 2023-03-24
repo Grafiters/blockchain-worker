@@ -3,6 +3,7 @@ class P2pOrder < ApplicationRecord
     has_many :p2p_order_feedback, class_name: 'P2pOrderFeedback', foreign_key: :order_number, primary_key: :order_number
     has_many :p2p_chat, dependent: :destroy
     has_many :p2p_report, class_name: 'P2pUserReport', foreign_key: :order_number, primary_key: :order_number
+    has_many :p2p_payment_user, dependent: :destroy
 
     belongs_to :p2p_offer, foreign_key: :p2p_offer_id, primary_key: :id
 
@@ -250,7 +251,8 @@ class P2pOrder < ApplicationRecord
     private
 
     def time_first_approve
-        ::P2pSetting.find_by(name: 'first_time_approve')
+	    data = ::P2pSetting.select("id, name, value, comment").find_by(name: 'first_time_approve')
+	    return data
     end
 
     def assign_order_number
@@ -264,7 +266,9 @@ class P2pOrder < ApplicationRecord
     end
 
     def first_expired_time
-        self.first_approve_expire_at = Time.now + time_first_approve.present? ? time_first_approve[:value] : 15*60
+	    time = ::P2pSetting.select("id, name, value, comment").find_by(name: 'first_time_appriove')
+	    count = time.present? ? time[:value].to_i : 15*60
+	    self.first_approve_expire_at = Time.now + count
     end
 
     def InterIDGenerate(prefix)

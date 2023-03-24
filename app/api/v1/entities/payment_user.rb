@@ -14,14 +14,13 @@ module API
                 }
             )
 
-            expose(
-                :bank,
-                as: :bank,
+            expose :bank,
                 documentation: {
                     desc: 'Filter Fiat.',
                     type: String
-                }
-            )
+                } do |p2p_payment_user|
+                    p2p_payment_user.payment_method[:name]
+                end
 
             expose(
                 :name,
@@ -41,23 +40,27 @@ module API
                 }
             )
 
-            expose(
-                :logo_url,
-                as: :logo,
+            expose :logo,
                 documentation: {
                     desc: 'Filter Fiat.',
                     type: String
-                }
-            )
+                } do |p2p_payment_user|
+                    p2p_payment_user.payment_method[:logo_url]
+                end
 
-            expose(
-                :base_color,
-                as: :base_color,
+            expose :base_color,
                 documentation: {
                     desc: 'Filter Fiat.',
                     type: String
-                }
-            )
+                } do |p2p_payment_user|
+                p2p_payment_user.payment_method[:base_color]
+            end
+
+            expose :qrcode,
+            documentation: {
+                 type: 'String',
+                 desc: 'File url and type'
+            }
 
             expose(
                 :state,

@@ -180,7 +180,7 @@ class Order < ApplicationRecord
                                          compute_locked
                                        end
 
-    raise ::Account::AccountError unless member_balance >= 0
+    raise ::Account::AccountError unless member_balance > 0
 
     return trigger_third_party_creation unless market.engine.peatio_engine?
 

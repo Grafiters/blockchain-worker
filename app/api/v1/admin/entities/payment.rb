@@ -3,21 +3,19 @@
 
     module API
         module V1
-        module Public
+        module Admin
             module Entities
-                class Offer < Grape::Entity
+                class Payment < Grape::Entity
                     expose(
-                        :offer_number,
-                        as: :offer_number,
+                        :id,
                         documentation: {
-                            desc: 'Offer Number Trade.',
+                            desc: 'Filter Fiat.',
                             type: String
                         }
                     )
-        
                     expose(
-                        :available_amount,
-                        as: :available_amount,
+                        :name,
+                        as: :bank_name,
                         documentation: {
                             desc: 'Filter Fiat.',
                             type: String
@@ -25,8 +23,8 @@
                     )
         
                     expose(
-                        :price,
-                        as: :price,
+                        :symbol,
+                        as: :symbol,
                         documentation: {
                             desc: 'Filter Fiat.',
                             type: String
@@ -34,8 +32,8 @@
                     )
         
                     expose(
-                        :currency,
-                        as: :currency,
+                        :logo_url,
+                        as: :logo,
                         documentation: {
                             desc: 'Filter Fiat.',
                             type: String
@@ -43,8 +41,8 @@
                     )
         
                     expose(
-                        :side,
-                        as: :side,
+                        :base_color,
+                        as: :base_color,
                         documentation: {
                             desc: 'Filter Fiat.',
                             type: String
@@ -52,66 +50,13 @@
                     )
         
                     expose(
-                        :min_order_amount,
-                        as: :min_order,
+                        :state,
+                        as: :state,
                         documentation: {
                             desc: 'Filter Fiat.',
                             type: String
                         }
                     )
-        
-                    expose(
-                        :max_order_amount,
-                        as: :max_order,
-                        documentation: {
-                            desc: 'Filter Fiat.',
-                            type: String
-                        }
-                    )
-        
-                    expose(
-                        :paymen_limit_time,
-                        as: :payment_time,
-                        documentation: {
-                            desc: 'Filter Fiat.',
-                            type: String
-                        }
-                    )
-        
-                    expose(
-                        :term_of_condition,
-                        as: :term_of_condition,
-                        documentation: {
-                            desc: 'Filter Fiat.',
-                            type: String
-                        }
-                    )
-        
-                    expose(
-                        :sum_order,
-                        as: :sum_order,
-                        documentation: {
-                            desc: 'All Order From Post Offer',
-                            type: Integer
-                        }
-                    )
-        
-                    expose(
-                        :persentage,
-                        as: :persentage,
-                        documentation: {
-                            desc: 'All Order From Post Offer',
-                            type: String
-                        }
-                    )
-        
-                    expose :member, as: :trader, using: API::V1::Entities::Trader
-                    expose :payment,
-                            documentation: {
-                                desc: 'All Payment Offer',
-                            } do |p2p_offer|
-                                p2p_offer.payment
-                            end
                 end
             end
         end

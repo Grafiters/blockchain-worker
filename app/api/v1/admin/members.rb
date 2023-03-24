@@ -26,12 +26,12 @@ module API
                         .tap { |q| q.where!(members: {email: params[:email]}) if params[:email].present? }
                         .tap { |q| q.where!(members: {username: params[:username]}) if params[:username].present? }
                         .tap { |q| q.where!(p2p_users: {username: params[:p2p_name]}) if params[:p2p_name].present? }
-                        .tap { |q| present paginate(q), with: API::V1::Entities::UserP2p }
+                        .tap { |q| present paginate(q), with: API::V1::Entities::UserWithMember }
             end
 
             desc 'Desc Detail Of User Member p2p'
             get '/:uid' do
-              present P2pUser.joins(:member).find_by(members: {uid: params[:uid]}), with: API::V1::Entities::UserP2p
+              present P2pUser.joins(:member).find_by(members: {uid: params[:uid]}), with: API::V1::Entities::UserWithMember
             end
 
             desc 'banned user p2p'

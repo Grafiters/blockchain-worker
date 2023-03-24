@@ -24,7 +24,7 @@ module API
         end
 
         def time_second_approve
-          ::P2pSetting.find_by(name: 'second_time_approve')
+		      ::P2pSetting.select("id, name, value").find_by(name: 'second_time_approve')
         end
 
         def order_payments(order)

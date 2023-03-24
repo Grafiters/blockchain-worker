@@ -185,6 +185,7 @@ module API
             admin_authorize! :update, ::BlockchainCurrency, params.except(:id)
 
             blockchain_currency = ::BlockchainCurrency.find(params[:id])
+            return present declared(params)
             if blockchain_currency.update(declared(params, include_missing: false))
               present blockchain_currency, with: API::V2::Admin::Entities::BlockchainCurrency
             else

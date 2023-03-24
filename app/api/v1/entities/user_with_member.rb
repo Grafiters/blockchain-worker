@@ -51,6 +51,12 @@ module API
                     type: String
                 }
             )
+
+            expose :p2p_payment_user,
+                as: :payment, using: API::V1::Admin::Entities::PaymentUser,
+                documentation: {
+                    desc: 'Members is payment method for p2p trade'
+                }
         end
       end
     end

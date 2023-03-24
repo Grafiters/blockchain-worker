@@ -7,13 +7,20 @@ class P2pPaymentUser < ApplicationRecord
     STATES = { active: 0, inactive: -100, deleted: -200 }
     enumerize :state, in: STATES, scope: true
 
+    scope :active, -> { where(state: 'active') }
+
     belongs_to :p2p_users
-    belongs_to :p2p_payment
+    belongs_to :p2p_payment, class_name: "P2pPayment", foreign_key: :p2p_payment_id, primary_key: :id
 
     before_create :assign_uuid
 
     def verification_url
         "/api/v2/p2p/confirmation_chat/#{id}"
+    end
+
+    def payment_method
+        payment = ::P2pPayment.find_by(id: p2p_payment.id)
+        return payment
     end
     
     private

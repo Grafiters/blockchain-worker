@@ -125,9 +125,9 @@ module API
             balance = account.balance
             amount = params[:side] == 'buy' ? params[:volume] * params[:price] : params[:volume]
             sum_locked = account.locked.to_d + sum_orders.to_d + amount.to_d
-            if (balance < 0 || amount > balance)
-              error!({ errors: ['market.account.insufficient_balance'] }, 422)
-            end
+          # if (balance < 0 || amount > balance)
+          #   error!({ errors: ['market.account.insufficient_balance'] }, 422)
+          # end
             # if (sum_locked > balance)
             #   error!({ errors: ['market.account.insufficient_balance'] }, 422)
             # end
@@ -139,6 +139,7 @@ module API
             error!({ errors: ['market.order.market_order_price'] }, 422)
           end
           order = create_order(params)
+          error!({ errors: order }, 422) unless order.save
           present order, with: API::V2::Entities::Order
         end
 

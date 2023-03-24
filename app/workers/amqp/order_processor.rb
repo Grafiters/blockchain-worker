@@ -6,6 +6,8 @@ module Workers
     class OrderProcessor < Base
       def initialize
         Order.spot.where(state: ::Order::PENDING).find_each do |order|
+          Rails.logger.warn "--------------------------------------"
+          Rails.logger.warn order.inspect
           Order.submit(order.id)
         rescue StandardError => e
           AMQP::Queue.enqueue(:trade_error, e.message)

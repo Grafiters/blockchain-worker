@@ -62,6 +62,33 @@ module API
                         present fiat, with: API::V1::Entities::Fiat
                     end
 
+                    desc 'Update state or data of fiat'
+                    params do
+                        optional :name,
+                                desc: 'fiat name'
+                        optional :symbol,
+                                desc: 'fiat symbol'
+                        optional :code,
+                                desc: 'fiat code'
+                        optional :icon_url,
+                                desc: 'fiat icon_url'
+                        optional :scale,
+                                desc: 'scale amount fiat'
+                        optional :taker_fee,
+                                desc: 'fee of taker fiat'
+                        optional :maker_fee,
+                                desc: 'fee of maker fiat'
+                        optional :state,
+                                values: { value: %w(true false), message: 'admin.fiat.invalid_actions_params' },
+                                desc: 'state of fiat'
+                    end
+                    put '/:id/update' do
+                        fiat = ::Fiat.find_by(id: params[:id])
+
+                        declared_params = declared(params, include_missing: false)
+                        fiat.update(declared_params)
+                    end
+
                     desc 'Fiat Currency'
                     get 'currency/:fiat' do
                         currency = ::P2pPair.where(fiat: params[:fiat])
