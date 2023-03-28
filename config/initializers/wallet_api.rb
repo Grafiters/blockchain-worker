@@ -1,4 +1,5 @@
 Peatio::Wallet.registry[:bitcoind] = Bitcoin::Wallet
+Peatio::Wallet.registry[:dogecoind] = Dogecoin::Wallet
 Peatio::Wallet.registry[:geth] = Ethereum::Eth::Wallet
 Peatio::Wallet.registry[:parity] = Ethereum::Eth::Wallet
 Peatio::Wallet.registry[:gnosis] = Gnosis::Wallet
@@ -8,3 +9,5 @@ Peatio::Wallet.registry[:"ow-hdwallet-heco"] = OWHDWallet::WalletHECO
 Peatio::Wallet.registry[:ether] = Ether::Wallet
 Peatio::Wallet.registry[:trond] = Tron::Wallet
 Peatio::Wallet.registry[:xrpd] = Ripple::Wallet
+Peatio::Wallet.registry[:stellard] = Stellar::Wallet
+Peatio::Wallet.registry[:zilliqad] = Zilliqa::Wallet

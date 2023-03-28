@@ -92,6 +92,8 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_lock_funds!(amount)
+    Rails.logger.warn "-------------------"
+    Rails.logger.warn balance
     if amount <= ZERO || amount > balance
       raise AccountError, "Cannot lock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance}, locked: #{locked})."
     end

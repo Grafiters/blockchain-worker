@@ -146,9 +146,9 @@ module API
 
           expose(
             :blockchain_group,
-            documentation:{
-              type: Integer,
-              desc: 'Minimum number of confirmations.'
+            documentation: {
+              type: String,
+              desc: 'Blockchain group worker.'
             }
           )
 
