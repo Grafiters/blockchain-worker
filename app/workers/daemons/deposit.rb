@@ -7,8 +7,6 @@ module Workers
 
       def process
         # Process deposits with `processing` state each minute
-        Rails.logger.err "====== ERROR ======"
-        Rails.logger.err ::Deposit.processing.inspect
         ::Deposit.processing.each do |deposit|
           Rails.logger.info { "Starting processing coin deposit with id: #{deposit.id}." }
 
