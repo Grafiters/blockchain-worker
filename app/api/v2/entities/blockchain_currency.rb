@@ -88,7 +88,7 @@ module API
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
         ) do |bc|
-          bc.blockchain.present? ? bs.explorer_transaction : nil
+          bc.blockchain.present? ? bc.explorer_transaction : nil
         end
 
         expose(
@@ -99,7 +99,7 @@ module API
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
         ) do |bc|
-          bc.blockchain.present? ? bs.explorer_address : nil
+          bc.blockchain.present? ? bc.explorer_address : nil
         end
 
         expose(
@@ -108,8 +108,8 @@ module API
             desc: 'Blockchain description',
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
-        ) do |bs|
-          bc.blockchain.present? ? bs.description : nil
+        ) do |bc|
+          bc.blockchain.present? ? bc.description : nil
         end
 
         expose(
@@ -118,8 +118,8 @@ module API
             desc: 'Blockchain warning',
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
-        ) do |bs|
-          bc.blockchain.present? ? bs.warning : nil
+        ) do |bc|
+          bc.blockchain.present? ? bc.warning : nil
         end
 
         expose(
@@ -128,8 +128,8 @@ module API
             desc: 'Blockchain protocol',
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
-        ) do |bs|
-          bc.blockchain.present? ? bs.protocol : nil
+        ) do |bc|
+          bc.blockchain.present? ? bc.protocol : nil
         end
 
 
