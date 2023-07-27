@@ -42,6 +42,8 @@ module Stellar
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= fee if options.dig(:subtract_fee)
       transaction.amount = convert_from_base_unit(amount) unless transaction.amount == amount
+
+      return transaction if amount <= 0
       params = {
         privKey: @wallet.fetch(:secret),
         to: destination_address,

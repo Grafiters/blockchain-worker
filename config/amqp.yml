@@ -26,6 +26,9 @@ exchange:
   opendax:
     name: finex.orderapi
     type: direct
+  payer:
+    name: peatio.payer
+    type: direct
 
 queue:
   matching:
@@ -81,6 +84,8 @@ queue:
   # order submit consuming.
   events_processor:
     name: peatio.events.processor
+  payer_fee:
+    name: peatio.payer.fee
 
 binding:
   matching:
@@ -109,9 +114,14 @@ binding:
   events_processor:
     queue: events_processor
     exchange: events
+  payer_fee:
+    queue: payer_fee
+    exchange: payer
 
 channel:
   trade_executor:
     prefetch: 5
   order_processor:
+    prefetch: 5
+  payer_fee:
     prefetch: 5

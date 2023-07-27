@@ -77,7 +77,8 @@ module Zilliqa
       end
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
-
+      
+      return transaction if amount <= 0
       params = {
         to: normalize_address(transaction.to_address),
         amount: amount,
