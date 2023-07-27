@@ -22,14 +22,6 @@ module API
             optional :blockchain_key,
                      type: { value: String, message: 'admin.beneficiary.invalid_blockchain_key' },
                      desc: 'Blockchain key of the requested beneficiary'
-            optional :data,
-                     type: { value: JSON, message: 'admin.beneficiary.non_json_data' },
-                     allow_blank: false,
-                     desc: 'Beneficiary data in JSON format'
-            optional :data,
-                     type: { value: JSON, message: 'admin.beneficiary.non_json_data' },
-                     allow_blank: false,
-                     desc: 'Beneficiary data in JSON format'
             optional :state,
                      type: Array[Integer],
                      values: { value: ->(v) { (Array.wrap(v) - ::Beneficiary::STATES_MAPPING.values).blank? }, message: 'admin.beneficiary.invalid_state' },
@@ -41,8 +33,6 @@ module API
 
           get do
             admin_authorize! :read, ::Beneficiary
-
-            address = params[:data][:address]
 
             ransack_params = Helpers::RansackBuilder.new(params)
                                                     .eq(:id, :blockchain_key)
