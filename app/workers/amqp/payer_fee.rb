@@ -49,9 +49,7 @@ module Workers
         end
 
         def deposit_wallet(blockchain_key)
-            deposit = Deposit.where(blockchain_key: blockchain_key).group(:address).pluck(:address)
-
-            deposit
+            Deposit.collected.where(blockchain_key: blockchain_key).group(:address).pluck(:address)
         end
       end
     end

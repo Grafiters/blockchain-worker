@@ -37,6 +37,7 @@ class Deposit < ApplicationRecord
             }, on: :create
 
   scope :recent, -> { order(id: :desc) }
+  scope :collected, -> { where(aasm_state: 'collected') }
 
   before_validation { self.completed_at ||= Time.current if completed? }
   before_validation { self.transfer_type ||= currency.coin? ? 'crypto' : 'fiat' }
