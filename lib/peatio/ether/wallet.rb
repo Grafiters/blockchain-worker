@@ -86,10 +86,10 @@ module Ether
       currency_options = @currency.fetch(:options).slice(:gas_limit, :gas_price)
       options.merge!(DEFAULT_ETH_FEE, currency_options)
       amount = convert_to_base_unit(transaction.amount)
-      Rails.logger.warn "-------------"
-	    Rails.logger.warn options.inspect
       if transaction.options.present?
-        options[:gas_price] = transaction.options[:gas_price].present? ? transaction.options[:gas_price] : options[:gas_price]
+          options[:gas_price] = transaction.options[:gas_price].present? ? calculate_gas_price(options) : options[:gas_price]
+      else
+          options[:gas_price] = calculate_gas_price(options)
       end
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
