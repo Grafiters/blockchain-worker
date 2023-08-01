@@ -80,6 +80,17 @@ class Wallet < ApplicationRecord
     self.address = CashAddr::Converter.to_cash_address(address)
   end
 
+  def collect_payer_fee_status?
+    Rails.cache.read("process_collect_#{id}")
+  end
+
+  def process_collect_payer_fee
+    AMQP::Queue.enqueue(:payer_fee,
+                        { action: 'collect', order: id },
+                        { persistent: false })
+  end
+
+
   class << self
     def gateways
       Peatio::Wallet.registry.adapters.keys

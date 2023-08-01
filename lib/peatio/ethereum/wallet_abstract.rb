@@ -125,7 +125,9 @@ module Ethereum
 
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
-
+      
+      return transaction if amount <= 0
+      
       txid = client.json_rpc(:personal_sendTransaction,
                   [{
                       from:     normalize_address(@wallet.fetch(:address)),

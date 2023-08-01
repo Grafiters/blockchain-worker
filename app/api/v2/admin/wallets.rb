@@ -259,6 +259,46 @@ module API
 
           present wallet, with: API::V2::Admin::Entities::Wallet
         end
+
+        desc 'Process collect payer fee from user deposit address'
+        params do
+          requires :id,
+                  type: Integer,
+                  desc: "Unique Identifier of wallet payer fee on wallet"
+        end
+        post 'wallets/:id/process_collect' do
+          wallet = Wallet.fee.find_by(id: params[:id])
+
+          error!({ errors: ['admin.wallet.is_not_payer_fee_wallet'] }, 422) unless wallet.present?
+
+          Rails.logger.warn Rails.cache.read("process_collect_#{wallet.id}")
+          error!({ errors: ['admin.wallet.process_collect_payer_fee_is_running'] }, 422) if Rails.cache.read("process_collect_#{wallet.id}") == 'true'
+
+          Rails.cache.write("process_collect_#{wallet.id}", 'true')
+
+          wallet.process_collect_payer_fee
+
+          201
+        end
+        
+        desc 'Process collect payer fee from user deposit address'
+        params do
+          requires :id,
+                  type: Integer,
+                  desc: "Unique Identifier of wallet payer fee on wallet"
+        end
+        get '/wallets/:id/address' do
+          wallet = Wallet.fee.find_by(id: params[:id])
+
+          error!({ errors: ['admin.wallet.is_not_payer_fee_wallet'] }, 422) unless wallet.present?
+
+          deposit = Deposit.where(blockchain_key: wallet.blockchain_key).group(:address).pluck(:address)
+          address = PaymentAddress.where(blockchain_key: wallet.blockchain_key, address: deposit)
+
+          balance = WalletService.new(wallet).load_balance_user!(address)
+
+          present balance
+        end
       end
     end
   end

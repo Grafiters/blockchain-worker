@@ -87,7 +87,9 @@ module API
             example: 'https://testnet.blockchain.info/tx/'
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
-        )
+        ) do |bc|
+          bc.blockchain.present? ? bc.explorer_transaction : nil
+        end
 
         expose(
           :explorer_address,
@@ -96,7 +98,9 @@ module API
             example: 'https://testnet.blockchain.info/address/'
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
-        )
+        ) do |bc|
+          bc.blockchain.present? ? bc.explorer_address : nil
+        end
 
         expose(
           :description,
@@ -104,7 +108,9 @@ module API
             desc: 'Blockchain description',
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
-        )
+        ) do |bc|
+          bc.blockchain.present? ? bc.description : nil
+        end
 
         expose(
           :warning,
@@ -112,7 +118,9 @@ module API
             desc: 'Blockchain warning',
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
-        )
+        ) do |bc|
+          bc.blockchain.present? ? bc.warning : nil
+        end
 
         expose(
           :protocol,
@@ -120,7 +128,10 @@ module API
             desc: 'Blockchain protocol',
           },
           if: -> (blockchain_currency){ blockchain_currency.currency.coin? }
-        )
+        ) do |bc|
+          bc.blockchain.present? ? bc.protocol : nil
+        end
+
 
         expose(
           :min_confirmations,
@@ -128,7 +139,7 @@ module API
           documentation: {
             desc: 'Number of confirmations required for confirming deposit or withdrawal'
           }
-        ) { |blockchain_currency| blockchain_currency.blockchain.min_confirmations }
+        ) { |blockchain_currency| blockchain_currency.blockchain.present? ? blockchain_currency.blockchain.min_confirmations : nil }
       end
     end
   end

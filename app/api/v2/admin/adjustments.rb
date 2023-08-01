@@ -126,7 +126,7 @@ module API
                     values: { value: -> { Adjustment.aasm.events.map(&:name).map(&:to_s) }, message: 'admin.adjustment.invalid_action' },
                     desc: "Adjustment action all available actions: #{Adjustment.aasm.events.map(&:name)}"
           end
-          post '/action' do
+          post '/actions' do
             admin_authorize! :update, ::Adjustment
             adjustment = Adjustment.find(params[:id])
 
