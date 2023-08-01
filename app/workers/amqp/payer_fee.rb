@@ -49,7 +49,19 @@ module Workers
         end
 
         def deposit_wallet(blockchain_key)
-            Deposit.collected.where(blockchain_key: blockchain_key).group(:address).pluck(:address)
+            deposit = Deposit.where(blockchain_key: blockchain_key).group(:address).pluck(:address)
+
+            push_collected = Array.new
+            deposit.each do |address|
+              if check_status_address_deposit(address).nil?
+                push_collected.push(address)
+              end
+            end
+            push_collected
+        end
+
+        def check_status_address_deposit(address)
+          Deposit.where('aasm_status != ?', 'collected').where(address: address)
         end
       end
     end

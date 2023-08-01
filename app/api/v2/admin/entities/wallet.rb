@@ -88,6 +88,14 @@ module API
             }
           )
 
+          expose :collect_status,
+                documentation: {
+                  type: String,
+                  desc: 'Collect status is referance from collect payer user address status'
+                } do |wallet|
+                  wallet.collect_payer_fee_status?
+                end
+                
           expose(
             :status,
             documentation: {
