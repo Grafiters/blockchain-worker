@@ -260,6 +260,7 @@ class WalletService
   # Record blockchain transactions in DB
   def save_transaction(transaction, reference)
     transaction['txid'] = transaction.delete('hash')
+    Rails.logger.warn "================================== Save Transaction"
     Rails.logger.warn transaction.as_json
     Transaction.create!(transaction.merge(reference: reference))
   end

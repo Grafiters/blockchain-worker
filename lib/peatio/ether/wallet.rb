@@ -94,7 +94,7 @@ module Ether
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
       
-      return transaction if amount <= 0
+      return transaction if amount < 0
       params = {
         to: normalize_address(transaction.to_address),
         amount: amount,
@@ -112,7 +112,7 @@ module Ether
       end
       # Make sure that we return currency_id
       transaction.currency_id = 'eth' if transaction.currency_id.blank?
-      transaction.amount = amount
+      transaction.amount = amount.to_s.length >= @currency.fetch(:base_factor).to_s.length ? convert_from_base_unit(amount) : amount
       transaction.hash = hash
       transaction.options = options
       transaction
