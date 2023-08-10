@@ -7,6 +7,10 @@ module API
                         type: Integer,
                         desc: 'The identifier of setting configuration'             
 
+                    expose :deleted,
+                        type: String,
+                        desc: 'The identifier of setting configuration is can deleted or not'
+
                     expose(
                         :created_at,
                         format_with: :iso8601,
