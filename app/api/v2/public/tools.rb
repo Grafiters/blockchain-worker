@@ -13,7 +13,8 @@ module API
         desc 'Get configuration setting details',
           success: Entities::Setting
         get "/setting" do
-          present ::Setting.all.order(id: :desc), with: Entities::Setting
+          ::Setting.order(id: :desc)
+              .tap { |q| present q, with: Entities::Setting}
         end
 
         desc 'Get running Peatio version and build details.'
