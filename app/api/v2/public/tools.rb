@@ -11,7 +11,7 @@ module API
         end
 
         desc 'Get configuration setting details'
-        get "setting" do
+        get "/setting" do
           present ::Setting.all.order(id: :desc), with: Entities::Setting
         end
 
