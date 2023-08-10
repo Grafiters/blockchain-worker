@@ -10,7 +10,7 @@ class AddColumnStateOnFiat < ActiveRecord::Migration[5.2]
       t.datetime  "updated_at"
     end
 
-    Setting.new({
+    Setting.create({
       name: 'android_version',
       value: '1.0.0',
       description: 'init version of android',
