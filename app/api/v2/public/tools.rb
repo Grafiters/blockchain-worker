@@ -10,7 +10,8 @@ module API
           ::Time.now.iso8601
         end
 
-        desc 'Get configuration setting details'
+        desc 'Get configuration setting details',
+          success: Entities::Setting
         get "/setting" do
           present ::Setting.all.order(id: :desc), with: Entities::Setting
         end
