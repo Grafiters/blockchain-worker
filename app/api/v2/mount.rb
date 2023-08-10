@@ -41,20 +41,18 @@ module API
 
       # The documentation is accessible at http://localhost:3000/swagger?url=/api/v2/swagger
       # Add swagger documentation for Peatio User API
-      add_swagger_documentation base_path:   File.join(API::Mount::PREFIX, API_VERSION, 'peatio'),
-                                add_base_path: true,
+      add_swagger_documentation base_path:   File.join(API::Mount::PREFIX, API_VERSION, 'exchange'),
+                                add_base_path: false,
                                 mount_path:  '/swagger',
                                 api_version: API_VERSION,
                                 doc_version: Peatio::Application::VERSION,
                                 info: {
-                                  title:         "Peatio User API #{API_VERSION}",
-                                  description:   'API for Peatio application.',
-                                  contact_name:  'openware.com',
-                                  contact_email: 'hello@openware.com',
-                                  contact_url:   'https://www.openware.com',
-                                  licence:       'MIT',
-                                  license_url:   'https://github.com/openware/peatio/blob/master/LICENSE.md'
-                                },
+                                    title:          "Exchange API #{API::V2::Mount::API_VERSION}",
+                                    description:    'Exchange API high privileged API with RBAC.',
+                                    contact_name:   'heavenexchange.com',
+                                    contact_email:  'hello@hevenexchange.com',
+                                    contact_url:    'https://www.hevenexchange.com'
+                                  },
                                 models: [
                                   API::V2::Entities::Currency,
                                   API::V2::Entities::BlockchainCurrency,

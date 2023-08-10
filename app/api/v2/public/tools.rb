@@ -10,6 +10,11 @@ module API
           ::Time.now.iso8601
         end
 
+        desc 'Get configuration setting details'
+        get "setting" do
+          present ::Setting.all.order(id: :desc), with: Entities::Setting
+        end
+
         desc 'Get running Peatio version and build details.'
         get "/version" do
           {
@@ -33,6 +38,8 @@ module API
             status Services::HealthChecker.ready? ? 200 : 503
           end
         end
+
+        
       end
     end
   end

@@ -31,22 +31,21 @@ module API
         mount Admin::WhitelistedSmartContracts
         mount Admin::BlockchainCurrencies
         mount Admin::ImportConfigs
+        mount Admin::Settings
 
         # The documentation is accessible at http://localhost:3000/swagger?url=/api/v2/admin/swagger
         # Add swagger documentation for Peatio Admin API
-        add_swagger_documentation base_path: File.join(API::Mount::PREFIX, API::V2::Mount::API_VERSION, PREFIX, 'peatio'),
-                                  add_base_path: true,
+        add_swagger_documentation base_path: File.join(API::Mount::PREFIX, API::V2::Mount::API_VERSION, 'exchange', PREFIX),
+                                  add_base_path: false,
                                   mount_path:  '/swagger',
                                   api_version: API::V2::Mount::API_VERSION,
                                   doc_version: Peatio::Application::VERSION,
                                   info: {
-                                    title:          "Peatio Admin API #{API::V2::Mount::API_VERSION}",
+                                    title:          "Exchange Admin API #{API::V2::Mount::API_VERSION}",
                                     description:    'Admin API high privileged API with RBAC.',
-                                    contact_name:   'openware.com',
-                                    contact_email:  'hello@openware.com',
-                                    contact_url:    'https://www.openware.com',
-                                    licence:        'MIT',
-                                    license_url:    'https://github.com/openware/peatio/blob/master/LICENSE.md'
+                                    contact_name:   'heavenexchange.com',
+                                    contact_email:  'hello@hevenexchange.com',
+                                    contact_url:    'https://www.hevenexchange.com'
                                   },
                                   models: [
                                     API::V2::Admin::Entities::Blockchain,
