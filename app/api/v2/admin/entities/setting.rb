@@ -4,12 +4,16 @@ module API
             module Entities
                 class Setting < API::V2::Entities::Setting
                     expose :id,
-                        type: Integer,
-                        desc: 'The identifier of setting configuration'             
+                        documentation: {
+                            type: Integer,
+                            desc: 'The identifier of setting configuration'   
+                        }          
 
                     expose :deleted,
-                        type: String,
-                        desc: 'The identifier of setting configuration is can deleted or not'
+                        documentation: {
+                            type: String,
+                            desc: 'The identifier of setting configuration is can deleted or not'
+                        }
 
                     expose(
                         :created_at,

@@ -3,12 +3,16 @@ module API
         module Entities
             class Setting < Base
                 expose :name,
-                    type: String,
-                    desc: 'The name of setting configuration'
+                    documentation: {
+                        type: String,
+                        desc: 'The name of setting configuration'
+                    }
 
                 expose :value,
-                    type: String,
-                    desc: 'The value of setting configuration'
+                    documentation: {
+                        type: String,
+                        desc: 'The value of setting configuration'
+                    }
                     
             end
         end
