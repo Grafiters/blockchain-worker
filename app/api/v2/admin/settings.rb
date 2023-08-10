@@ -21,6 +21,10 @@ module API
                         requires :description,
                             type: String,
                             desc: 'Description of the setting configuration'
+                        requires :deleted,
+                            type: String,
+                            values: { value: %w(true false), message: 'admin.setting.invalid_status' },
+                            desc: 'Field for the data is will deleted or not'
                     end
                     post do
                         error!(errors: ['admin.setting.invalid_format']) unless Setting.contains_space(params[:name])
@@ -49,11 +53,17 @@ module API
                         requires :description,
                             type: String,
                             desc: 'Description of the setting configuration'
+                        requires :deleted,
+                            type: String,
+                            values: { value: %w(true false), message: 'admin.setting.invalid_status' },
+                            desc: 'Field for the data is will deleted or not'
                     end
                     put 'update/:id' do
                         setting = Setting.find_by(id: params[:id])
                         error!({errors: ['admin.setting.not_found']}, 422) unless setting.present?
                         declared_params = declared(params.except(:id), include_missing: false)
+                        
+                        error!({errors: ['admin.setting.data_can\'t_deleted']}, 422) unless setting.deleted?
 
                         if setting.update(declared_params)
                             present setting, with: API::V2::Admin::Entities::Setting
