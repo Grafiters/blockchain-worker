@@ -6,7 +6,8 @@ module API
                     desc 'Get all settings options',
                         success: API::V2::Admin::Entities::Setting
                     get do
-                        Setting.all.order(id: :desc), with: API::V2::Admin::Entities::Setting
+                        Setting.order(id: :desc)
+                            .tap{ |q| present q, with: API::V2::Admin::Entities::Setting }
                     end
 
                     desc 'Create new setting configuration',
