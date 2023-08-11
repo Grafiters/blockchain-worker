@@ -28,7 +28,7 @@ module API
                             desc: 'Field for the data is will deleted or not'
                     end
                     post do
-                        error!(errors: ['admin.setting.invalid_format']) unless Setting.contains_space(params[:name])
+                        error!(errors: ['admin.setting.invalid_format']) unless Setting.contains_space?(params[:name])
 
                         declared_params = declared(params, include_missing: false)
                         setting = Setting.new(declared_params)
@@ -61,7 +61,7 @@ module API
                     end
                     put 'update/:id' do
                         setting = Setting.find_by(id: params[:id])
-                        error!(errors: ['admin.setting.invalid_format']) unless Setting.contains_space(params[:name])
+                        error!(errors: ['admin.setting.invalid_format']) unless Setting.contains_space?(params[:name])
                         error!({errors: ['admin.setting.not_found']}, 422) unless setting.present?
                         declared_params = declared(params.except(:id), include_missing: false)
                         
