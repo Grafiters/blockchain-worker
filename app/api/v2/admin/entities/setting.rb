@@ -9,6 +9,11 @@ module API
                             desc: 'The identifier of setting configuration'   
                         }          
 
+                    expose :description,
+                        documentation: {
+                            type: String,
+                            desc: 'The description of the setting'
+                        }
                     expose :deleted,
                         documentation: {
                             type: String,
