@@ -64,8 +64,6 @@ module API
                         error!(errors: ['admin.setting.invalid_format']) unless Setting.contains_space?(params[:name])
                         error!({errors: ['admin.setting.not_found']}, 422) unless setting.present?
                         declared_params = declared(params.except(:id), include_missing: false)
-                        
-                        error!({errors: ['admin.setting.data_can\'t_deleted']}, 422) unless setting.deleted?
 
                         if setting.update(declared_params)
                             present setting, with: API::V2::Admin::Entities::Setting
@@ -84,6 +82,7 @@ module API
                     delete 'delete/:id' do
                         setting = Setting.find_by(id: params[:id])
                         error!({errors: ['admin.setting.not_found']}, 422) unless setting.present?
+                        error!({errors: ['admin.setting.data_can\'t_deleted']}, 422) unless setting.deleted?
 
                         setting.destroy
                         200
