@@ -27,19 +27,18 @@ module Workers
             record = Array.new
 
             balance.each do |process|
+              Rails.logger.warn "=============== Process collect #{process.inspect} ================="}
               record.push(WalletService.new(wallet).collect_payer_fee!(process))
             end
 
             Rails.logger.warn {"============= Payer Fee Status Before =============="}
             Rails.logger.warn Rails.cache.read("process_collect_#{wallet.id}")
 
-            wallet.disable_status_payer_fee
-
             Rails.logger.warn {"============= Payer Fee Status After =============="}
             Rails.cache.write("process_collect_#{wallet.id}", 'false')
             Rails.logger.warn Rails.cache.read("process_collect_#{wallet.id}")
 
-            Rails.logger.warn record.as_json
+            record.as_json
         end
 
         def check_all_balance(wallet, address)
