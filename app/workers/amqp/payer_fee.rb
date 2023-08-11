@@ -27,7 +27,7 @@ module Workers
             record = Array.new
 
             balance.each do |process|
-              Rails.logger.warn "=============== Process collect #{process.inspect} ================="}
+              Rails.logger.warn {"=============== Process collect #{process.inspect} ================="}
               record.push(WalletService.new(wallet).collect_payer_fee!(process))
             end
 
