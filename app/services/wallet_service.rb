@@ -122,6 +122,43 @@ class WalletService
   end
 
   # TODO: We don't need deposit_spread anymore.
+  def collect_payer_fee!(payment_address)
+    blockchain_currency = BlockchainCurrency.where('parent_id IS NULL').find_by(blockchain_key: @wallet.blockchain_key)
+
+    config = {
+      wallet:   @wallet.to_wallet_api_settings,
+      currency: blockchain_currency.to_blockchain_api_settings
+    }
+
+    @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
+                       currency: blockchain_currency.to_blockchain_api)
+    
+    pa = PaymentAddress.find_by(address: payment_address[:address])
+
+    fee_wallet = Wallet.active.fee.find_by(blockchain_key: pa.blockchain_key)
+  #   # NOTE: Deposit wallet configuration is tricky because wallet URI
+  #   #       is saved on Wallet model but wallet address and secret
+  #   #       are saved in PaymentAddress.
+    @adapter.configure(
+      wallet: @wallet.to_wallet_api_settings
+                     .merge(pa.details.symbolize_keys)
+                     .merge(address: pa.address)
+                     .tap { |s| s.merge!(secret: pa.secret) if pa.secret.present? }
+                     .compact
+    )
+
+    collect_fee = Peatio::Transaction.new(to_address: fee_wallet.address,
+                                          amount: payment_address[:balance])
+
+    if payment_address[:balance] >= 0
+      transaction = @adapter.create_transaction!(collect_fee, subtract_fee: true)
+      return transaction
+    end
+    transaction
+  end
+
+
+  # TODO: We don't need deposit_spread anymore.
   def deposit_collection_fees!(deposit, deposit_spread)
     blockchain_currency = BlockchainCurrency.find_by(currency: deposit.currency,
                                                      blockchain_key: @wallet.blockchain_key)
