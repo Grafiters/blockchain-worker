@@ -19,6 +19,12 @@ module Workers
           return
         end
 
+        use_balance = ::Account.find_by(member_id: withdraw.member_id, currency_id: withdraw.currency_id)
+        if user_balance.present? && user_balance.amount < withdraw.amount
+          withdraw.skip!
+          return
+        end
+
         withdraw.with_lock do
           unless withdraw.processing?
             @logger.warn id: withdraw.id,

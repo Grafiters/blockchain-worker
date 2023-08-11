@@ -66,7 +66,7 @@ class Withdraw < ApplicationRecord
   scope :last_1_month, -> { where('created_at > ?', 1.month.ago) }
 
   aasm whiny_transitions: false do
-    state : , initial: true
+    state :prepared, initial: true
     state :canceled
     state :accepted
     state :skipped
