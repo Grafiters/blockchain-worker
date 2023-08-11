@@ -123,6 +123,15 @@ class BlockchainCurrency < ApplicationRecord
                                   options:               opt)
   end
 
+  def to_blockchain_api(withdrawal_gas_speed=true)
+    opt = options.compact.deep_symbolize_keys
+    gas_speed = withdrawal_gas_speed ? blockchain.withdrawal_gas_speed : blockchain.collection_gas_speed
+    opt.deep_symbolize_keys.merge(id:                    currency.id,
+                                  base_factor:           base_factor,
+                                  min_collection_amount: min_collection_amount,
+                                  options: opt)
+  end
+
   def link_wallets
     if parent_id.present?
       # Iterate through active deposit/withdraw wallets
