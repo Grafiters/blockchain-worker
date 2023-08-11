@@ -60,7 +60,7 @@ module Workers
         end
 
         def check_status_address_deposit(address)
-          Deposit.where('aasm_status != ?', 'collected').where(address: address)
+          Deposit.where('aasm_state != ?', 'collected').where(address: address)
         end
       end
     end

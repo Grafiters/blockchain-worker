@@ -37,6 +37,15 @@ class PaymentAddress < ApplicationRecord
     BlockchainService.new(blockchain)
   end
 
+  def to_wallet_api_settings
+    {
+      address: address,
+      secret: secret,
+      details: details,
+      uri: wallet.settings['uri']
+    }
+  end
+
   def enqueue_address_generation
     AMQP::Queue.enqueue(:deposit_coin_address, { member_id: member.id, wallet_id: wallet.id }, { persistent: true })
   end
