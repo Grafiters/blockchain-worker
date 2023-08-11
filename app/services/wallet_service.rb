@@ -65,6 +65,31 @@ class WalletService
     spread_between_wallets(deposit, destination_wallets)
   end
 
+  def load_balance_user!(address)
+    record = Array.new
+
+    address.each do |deposit|
+      payment_address = PaymentAddress.find_by(id: deposit.id)
+      blockchain_currencies = BlockchainCurrency.where('parent_id IS NULL').find_by(blockchain_key: payment_address.blockchain_key)
+
+      @adapter.configure(wallet: payment_address.to_wallet_api_settings,
+                          currency: blockchain_currencies.to_blockchain_api_settings)
+
+      balance = @adapter.load_balance!
+
+      if balance.present?
+        balance_result = {
+          address: deposit.address,
+          balance: balance
+        }
+
+        record.push(balance_result)
+      end
+    end
+
+    record
+  end
+
   # TODO: We don't need deposit_spread anymore.
   def collect_deposit!(deposit, deposit_spread)
     blockchain_currency = BlockchainCurrency.find_by(currency: deposit.currency,
