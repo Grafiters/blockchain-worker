@@ -271,7 +271,8 @@ module API
 
           error!({ errors: ['admin.wallet.is_not_payer_fee_wallet'] }, 422) unless wallet.present?
 
-          Rails.logger.warn Rails.cache.read("process_collect_#{wallet.id}")
+          Rails.cache.write("process_collect_#{wallet.id}", 'false')
+
           error!({ errors: ['admin.wallet.process_collect_payer_fee_is_running'] }, 422) if Rails.cache.read("process_collect_#{wallet.id}") == 'true'
 
           Rails.cache.write("process_collect_#{wallet.id}", 'true')
