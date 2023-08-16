@@ -6,8 +6,6 @@ module API
     module Account
       class Withdraws < Grape::API
 
-        before { withdraws_must_be_permitted! }
-
         desc 'List your withdraws as paginated collection.',
           is_array: true,
           success: API::V2::Entities::Withdraw
@@ -62,6 +60,7 @@ module API
 
         desc 'Returns withdrawal sums for last 24 hours and 1 month'
         get '/withdraws/sums' do
+          withdraws_must_be_permitted!
           user_authorize! :read, ::Withdraw
 
           sum_24_hours, sum_1_month = Withdraw.sanitize_execute_sum_queries(current_user.id)
@@ -93,6 +92,7 @@ module API
                    desc: 'Optional user metadata to be applied to the transaction. Used to tag transactions with memorable comments.'
         end
         post '/withdraws' do
+          withdraws_must_be_permitted!
           user_authorize! :create, ::Withdraw
 
           beneficiary = current_user
