@@ -138,8 +138,8 @@ class Trade < ApplicationRecord
   end
 
   def trigger_event
-    ::AMQP::Queue.enqueue_event("private", maker.uid, "trade", for_notify(maker))
-    ::AMQP::Queue.enqueue_event("private", taker.uid, "trade", for_notify(taker))
+    ::AMQP::Queue.enqueue_event("private", maker.uid, "trades", for_notify(maker))
+    ::AMQP::Queue.enqueue_event("private", taker.uid, "trades", for_notify(taker))
     ::AMQP::Queue.enqueue_event("public", market.symbol, "trades", {trades: [for_global]})
   end
 
