@@ -138,8 +138,8 @@ class Trade < ApplicationRecord
   end
 
   def trigger_event
-    ::AMQP::Queue.enqueue_event("private", maker.uid, "trades", for_notify(maker))
-    ::AMQP::Queue.enqueue_event("private", taker.uid, "trades", for_notify(taker))
+    ::AMQP::Queue.enqueue_event("private", maker.uid, "trade", for_notify(maker))
+    ::AMQP::Queue.enqueue_event("private", taker.uid, "trade", for_notify(taker))
     ::AMQP::Queue.enqueue_event("public", market.symbol, "trades", {trades: [for_global]})
   end
 
@@ -149,6 +149,7 @@ class Trade < ApplicationRecord
       amount:         amount.to_s || ZERO,
       total:          total.to_s || ZERO,
       market:         market.symbol,
+      logo_url:       market.base[:icon_url] || nil,
       side:           side(member),
       taker_type:     taker_type,
       created_at:     created_at.to_i,
@@ -157,6 +158,7 @@ class Trade < ApplicationRecord
 
   def for_global
     { tid:        id,
+      logo_url:       market.base[:icon_url] || nil,
       taker_type: taker_type,
       date:       created_at.to_i,
       price:      price.to_s || ZERO,
