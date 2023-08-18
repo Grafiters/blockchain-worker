@@ -4,12 +4,13 @@ module Jobs
       def self.process
         @tickers = {}
         @cache_tickers = {}
-        Market.spot.active.each do |market|
+        ::Market.spot.active.each do |market|
           service = TickersService[market]
           ticker = service.ticker
           @tickers[market.symbol] = ticker
           @cache_tickers[market.symbol] = format_ticker ticker
         end
+        Rails.logger.warn { "====== Tickers =======" }
         Rails.logger.info { "Publish tickers: #{@tickers}" }
         Rails.cache.write(:markets_tickers, @cache_tickers)
         ::AMQP::Queue.enqueue_event('public', 'global', 'tickers', @tickers)
