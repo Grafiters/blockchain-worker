@@ -149,6 +149,8 @@ class Trade < ApplicationRecord
       amount:         amount.to_s || ZERO,
       total:          total.to_s || ZERO,
       market:         market.symbol,
+      market_type:    market_type,
+      logo_url:       market.base[:icon_url] || nil,
       side:           side(member),
       taker_type:     taker_type,
       created_at:     created_at.to_i,
@@ -157,7 +159,9 @@ class Trade < ApplicationRecord
 
   def for_global
     { tid:        id,
-      taker_type: taker_type,
+      logo_url:       market.base[:icon_url] || nil,
+      taker_type:     taker_type,
+      market_type:    market_type,
       date:       created_at.to_i,
       price:      price.to_s || ZERO,
       amount:     amount.to_s || ZERO }
