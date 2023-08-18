@@ -177,11 +177,9 @@ module API
 
           desc 'Get ticker of all markets (For response doc see /:market/tickers/ response).'
           get "/tickers" do
-            Rails.cache.fetch(:markets_tickers, expires_in: 60) do
-              ::Market.spot.active.ordered.inject({}) do |h, m|
-                h[m.symbol] = format_ticker TickersService[m].ticker
-                h
-              end
+            ::Market.spot.active.ordered.inject({}) do |h, m|
+              h[m.symbol] = format_ticker TickersService[m].ticker
+              h
             end
           end
 
