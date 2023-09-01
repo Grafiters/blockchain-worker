@@ -10,9 +10,9 @@ module Workers
             process_collect(payload['order'])
           end
 
-        rescue StandardError => e
-          Rails.logger.warn {"================== Warning Error Collected Payer Fee ===================="}
-          Rails.logger.warn e.inspect
+        # rescue StandardError => e
+        #   Rails.logger.warn {"================== Warning Error Collected Payer Fee ===================="}
+        #   Rails.logger.warn e.inspect
         end
 
         def process_collect(id)
@@ -24,6 +24,8 @@ module Workers
 
             balance = check_all_balance(wallet, address)
 
+            Rails.logger.info {"================= Balance All Address ===================="}
+            Rails.logger.info balance.as_json
             record = Array.new
 
             balance.each do |process|
@@ -52,15 +54,17 @@ module Workers
 
             push_collected = Array.new
             deposit.each do |address|
-              if check_status_address_deposit(address).nil?
+              if check_status_address_deposit(address).blank?
                 push_collected.push(address)
               end
             end
+            Rails.logger.warn "============================"
+            Rails.logger.warn push_collected.inspect
             push_collected
         end
 
         def check_status_address_deposit(address)
-          Deposit.where('aasm_state != ?', 'collected').where(address: address)
+            Deposit.where('aasm_state != ?', 'collected').where(address: address)
         end
       end
     end
