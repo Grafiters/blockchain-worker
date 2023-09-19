@@ -172,11 +172,12 @@ class WalletService
     end
 
     @adapter.configure(configs)
+    amount = deposit.aasm_state == 'fee_processing' && blockchain_currency.dig(:options, :erc20_contract_address) ? deposit.amount - 0.01 : deposit.amount
     deposit_transaction = Peatio::Transaction.new(hash:         deposit.txid,
                                                   txout:        deposit.txout,
                                                   to_address:   deposit.address,
                                                   block_number: deposit.block_number,
-                                                  amount:       deposit.amount)
+                                                  amount:       amount)
 
     transactions = @adapter.prepare_deposit_collection!(deposit_transaction,
                                                         # In #spread_deposit valid transactions saved with pending state
