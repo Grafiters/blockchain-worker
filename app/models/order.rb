@@ -118,6 +118,8 @@ class Order < ApplicationRecord
 
   class << self
     def submit(id)
+      attempts = 0
+      max_attempts = 2
       ActiveRecord::Base.transaction do
         order = lock.find_by_id!(id)
         return unless order.state == ::Order::PENDING
@@ -128,6 +130,14 @@ class Order < ApplicationRecord
 
         AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
       end
+    rescue ActiveRecord::Deadlocked => e
+      attempts += 1
+      retry if attempts < max_attempts
+
+      order = find_by_id!(id)
+      order.unlock if order
+      
+      raise e
     rescue => e
       order = find_by_id!(id)
       order.update!(state: ::Order::REJECT) if order
@@ -148,6 +158,10 @@ class Order < ApplicationRecord
 
         order.update!(state: ::Order::CANCEL)
       end
+    end
+
+    def unlock
+      update!(locked: false)
     end
 
     def trigger_bulk_cancel_third_party(engine_driver, filters = {})
