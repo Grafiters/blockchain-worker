@@ -1,7 +1,7 @@
 module Workers
     module AMQP
-        class OrderProcessor < Base
-            FEE_REFFERAL = Setting.find_by(name: 'fee_refferal')
+        class RewardMember < Base
+            FEE_REFFERAL = Setting.find_by(name: 'fee_referral')
 
             def initialize
                 raise 'Setting data fee_referral is not exists' if FEE_REFFERAL.blank?
@@ -48,11 +48,10 @@ module Workers
 
                 return unless refferal
 
-                amount_fee = fee_tramsction * (trade.order.type == 'OrderBid' ? trade.amount : trade.total)
                 order_fee = trade.maker_order_id == trade.order_id ? trade.order.maker_fee : trade.order.taker_fee
 
                 return if amount_fee <= 0
-                refferal_reward = order_fee * amount_fee
+                refferal_reward = order_fee.to_d * FEE_REFFERAL[:value].to_d
 
                 reward = Reward.new({
                     refferal_member_id: refferal.id,
