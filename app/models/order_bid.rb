@@ -18,7 +18,8 @@ class OrderBid < Order
   # @deprecated
   def hold_account
     member.get_account(bid)
-  ends
+  end
+
   # @deprecated
   def hold_account!
     Account.lock.find_by!(member_id: member_id, currency_id: bid)

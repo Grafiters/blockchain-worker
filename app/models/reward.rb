@@ -4,7 +4,7 @@ class Reward < ApplicationRecord
     extend Enumerize
     STATES = { default: 0, refferal: 100 }.freeze
 
-    enumerize :state, in: type, scope: true
+    enumerize :type, in: STATES, scope: true
 
     after_commit on: :update do
         publish_event

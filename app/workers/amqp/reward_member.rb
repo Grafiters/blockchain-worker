@@ -13,9 +13,9 @@ module Workers
 
             def process(payload)
                 case payload['action']
-                when 'submit':
+                when 'submit'
                     process_to_reward_from_trade(payload['order'])
-                when 'process':
+                when 'process'
                     Reward.send_reward(payload['order'])
                 end
             end
