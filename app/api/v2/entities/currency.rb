@@ -85,6 +85,43 @@ module API
         )
 
         expose(
+          :detail_currencies,
+          documentation: {
+            desc: "detail_currencies for defining currencies"
+          }
+        )
+
+        expose(
+          :market_cap,
+          documentation: {
+            desc: "market_cap for defining currencies"
+          }
+        )
+
+        expose(
+          :total_supply,
+          documentation: {
+            desc: "total_supply for defining currencies"
+          }
+        )
+
+        expose(
+          :circulation_supply,
+          documentation: {
+            desc: "circulation_supply for defining currencies"
+          }
+        )
+
+
+        expose(
+          :options,
+          documentation: {
+            desc: 'Position used for defining currencies order'
+          },
+          if: -> (currency) { !currency.options.nil? }
+        )
+
+        expose(
           :icon_url,
           documentation: {
             desc: 'Currency icon',

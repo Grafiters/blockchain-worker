@@ -18,6 +18,10 @@ class Account < ApplicationRecord
   scope :visible, -> { joins(:currency).merge(Currency.visible) }
   scope :ordered, -> { joins(:currency).order(position: :asc) }
 
+  after_commit on: :update do 
+    trigger_event
+  end
+
   def as_json_for_event_api
     {
       member_id: member_id,
@@ -37,6 +41,7 @@ class Account < ApplicationRecord
 
   def plus_funds(amount)
     with_lock { plus_funds!(amount) }
+    trigger_event
     self
   end
 
@@ -54,6 +59,7 @@ class Account < ApplicationRecord
 
   def plus_locked_funds(amount)
     with_lock { plus_locked_funds!(amount) }
+    trigger_event
     self
   end
 
@@ -67,6 +73,7 @@ class Account < ApplicationRecord
 
   def sub_funds!(amount)
     update_columns(attributes_after_sub_funds!(amount))
+    trigger_event
   end
 
   def sub_funds(amount)
@@ -84,6 +91,7 @@ class Account < ApplicationRecord
 
   def lock_funds!(amount)
     update_columns(attributes_after_lock_funds!(amount))
+    trigger_event
   end
 
   def lock_funds(amount)
@@ -92,8 +100,6 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_lock_funds!(amount)
-    Rails.logger.warn "-------------------"
-    Rails.logger.warn balance
     if amount <= ZERO || amount > balance
       raise AccountError, "Cannot lock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance}, locked: #{locked})."
     end
@@ -103,6 +109,7 @@ class Account < ApplicationRecord
 
   def unlock_funds!(amount)
     update_columns(attributes_after_unlock_funds!(amount))
+    trigger_event
   end
 
   def unlock_funds(amount)
@@ -137,6 +144,11 @@ class Account < ApplicationRecord
 
   def amount
     balance + locked
+  end
+
+  def trigger_event
+    ::AMQP::Queue.enqueue_event('private', member&.uid, 'balances', as_json_for_event_api)
+    ::AMQP::Queue.enqueue_event('private', member&.uid, 'balance', as_json_for_event_api)
   end
 end
 

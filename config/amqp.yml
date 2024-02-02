@@ -29,6 +29,9 @@ exchange:
   payer:
     name: peatio.payer
     type: direct
+  reward:
+    name: peatio.reward
+    type: direct
 
 queue:
   matching:
@@ -86,6 +89,8 @@ queue:
     name: peatio.events.processor
   payer_fee:
     name: peatio.payer.fee
+  reward_member:
+    name: peatio.reward.member
 
 binding:
   matching:
@@ -117,6 +122,9 @@ binding:
   payer_fee:
     queue: payer_fee
     exchange: payer
+  reward_member:
+    queue: reward_member
+    exchange: reward
 
 channel:
   trade_executor:
@@ -124,4 +132,6 @@ channel:
   order_processor:
     prefetch: 5
   payer_fee:
+    prefetch: 5
+  reward_member:
     prefetch: 5

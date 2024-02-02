@@ -1,5 +1,5 @@
 class CreateNewTableSettings < ActiveRecord::Migration[5.2]
-  def up
+  def change
     create_table :settings do |t|
       t.string :name, limit: 50, null: false
       t.string :value, limit: 50, null: false

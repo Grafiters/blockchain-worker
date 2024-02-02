@@ -64,7 +64,7 @@ class Deposit < ApplicationRecord
         if currency.coin? && (Peatio::App.config.deposit_funds_locked ||
                               Peatio::AML.adapter.present? ||
                               Peatio::App.config.manual_deposit_approval)
-          Rails.logger.warn currency
+                              
           account.plus_locked_funds(amount)
         else
           account.plus_funds(amount)

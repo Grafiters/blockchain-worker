@@ -30,6 +30,7 @@ class Trade < ApplicationRecord
   scope :with_market, ->(market) { where(market_id: market) }
   scope :spot, -> { where(market_type: 'spot') }
   scope :qe, -> { where(market_type: 'qe') }
+  scope :pending_reff, -> { where(reff_process: false) }
 
   # == Callbacks ============================================================
 

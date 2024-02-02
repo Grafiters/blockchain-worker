@@ -177,6 +177,7 @@ class Member < ApplicationRecord
         m.role = params[:role]
         m.state = params[:state]
         m.level = params[:level]
+        m.reff_uid = params[:reff]
       end
       member.assign_attributes(params)
       member.save! if member.changed?

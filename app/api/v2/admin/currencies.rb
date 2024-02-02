@@ -24,6 +24,27 @@ module API
               values: { value: -> { ::Currency::STATES }, message: 'admin.currency.invalid_status'},
               desc: -> { API::V2::Admin::Entities::Currency.documentation[:status][:desc] }
             },
+            options: {
+              type: { value: JSON, message: 'admin.currency.non_json_options' },
+              default: {},
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:options][:desc] }
+            },
+            detail_currencies: {
+              type: String,
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:detail_currencies][:desc] }
+            },
+            market_cap: {
+              type: { value: BigDecimal, message: 'admin.currency.non_market_cap' },
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:market_cap][:desc] }
+            },
+            total_supply: {
+              type: Integer,
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:total_supply][:desc] }
+            },
+            circulation_supply: {
+              type: Integer,
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:circulation_supply][:desc] }
+            },
             icon_url: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:icon_url][:desc] } },
             description: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:description][:desc] } },
             homepage: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:homepage][:desc] } },
