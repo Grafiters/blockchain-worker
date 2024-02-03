@@ -6,6 +6,7 @@ module API::V2
       before { set_ets_context! }
 
       mount Account::Balances
+      mount Account::Rewards
       mount Account::Deposits
       mount Account::Beneficiaries
       mount Account::Withdraws

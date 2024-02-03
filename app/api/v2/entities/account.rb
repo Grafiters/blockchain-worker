@@ -44,24 +44,6 @@ module API
         end
 
         expose(
-          :p2p_balance,
-          format_with: :decimal,
-          documentation: {
-            desc: 'Account P2p balance.',
-            type: BigDecimal
-          }
-        )
-
-        expose(
-          :p2p_locked,
-          format_with: :decimal,
-          documentation: {
-            desc: 'Account P2p balance.',
-            type: BigDecimal
-          }
-        )
-
-        expose(
           :logo_url,
           as: :logo_url,
           documentation: {
