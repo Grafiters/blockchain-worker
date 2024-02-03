@@ -62,7 +62,6 @@ class Reward < ApplicationRecord
             refferal_member_id: refferal_member_id,
             reffered_member_id: reffered_member_id,
             reference: reference,
-            reference_id: reference_id,
             amount: amount,
             currency: currency,
             type: type,
@@ -72,7 +71,7 @@ class Reward < ApplicationRecord
 
     def publish_event
         ::AMQP::Queue.enqueue_event("private", member_refferal.uid, "reward", as_json_for_event)
-        ::AMQP::Queue.enqueue_event("private", member_refferal.uid, "reward", as_json_for_event)
+        ::AMQP::Queue.enqueue_event("private", member_refferal.uid, "rewards", as_json_for_event)
     end
 
 end

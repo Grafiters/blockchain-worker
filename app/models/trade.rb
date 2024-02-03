@@ -40,6 +40,8 @@ class Trade < ApplicationRecord
   end
 
   after_commit on: :create do
+    AMQP::Queue.enqueue(:reward_member, {action: 'submit', order: id}, {persistent: false})
+
     EventAPI.notify ['market', market_id, 'trade_completed'].join('.'), \
       Serializers::EventAPI::TradeCompleted.call(self)
   end

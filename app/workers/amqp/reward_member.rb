@@ -42,7 +42,7 @@ module Workers
 
             def proses_trade_to_reward(member, trade)
                 account = Member.find_by(id: id)
-                return unless account.reff_uid && account.reff_uid != ''
+                return unless account && account.reff_uid && account.reff_uid != ''
 
                 refferal = Member.find_by(uid: account[:reff_uid])
 

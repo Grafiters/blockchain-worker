@@ -28,6 +28,12 @@ module API
                         reward.reffered
                     end
 
+                expose :reference,
+                    documentation: {
+                        type: String,
+                        desc: "currency for reward data"
+                    }
+
                 expose :amount,
                     documentation: {
                         type: String,
