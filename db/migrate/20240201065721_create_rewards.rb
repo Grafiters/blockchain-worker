@@ -23,4 +23,13 @@ class CreateRewards < ActiveRecord::Migration[5.2]
     end
   end
 
+  if !Setting.find_by(name: 'fee_referral')
+    Setting.create({
+      name: 'fee_referral',
+      value: '0.25',
+      description: 'fee referral when order execute to trade',
+      deleted: false
+    })
+  end
+
 end
