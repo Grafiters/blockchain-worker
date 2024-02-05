@@ -171,16 +171,15 @@ class Member < ApplicationRecord
     def from_payload(p)
       params = filter_payload(p)
       validate_payload(params)
+      Rails.logger.warn params
       member = Member.find_or_create_by(uid: p[:uid]) do |m|
         m.email = params[:email]
         m.username = params[:username]
         m.role = params[:role]
         m.state = params[:state]
         m.level = params[:level]
-        m.reff_uid = params[:refferal_uid]
+        m.reff_uid = params[:reff_uid]
       end
-
-      Rails.logger.warn member
       member.assign_attributes(params)
       member.save! if member.changed?
       member
@@ -189,7 +188,7 @@ class Member < ApplicationRecord
     # Filter and validate payload params
     def filter_payload(payload)
       Rails.logger.warn payload
-      payload.slice(:email, :username, :uid, :role, :state, :level, :refferal_uid)
+      payload.slice(:email, :username, :uid, :role, :state, :level, :reff_uid)
     end
 
     def validate_payload(p)
