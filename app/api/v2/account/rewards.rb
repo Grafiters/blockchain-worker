@@ -28,11 +28,12 @@ module API
             reward = reward.where(type: params[:type]) if params[:type]
             
             reward_currencies = Reward.where(reffered_member_id: current_user.id)
+            comission = reward.select(:refferal_member_id).uniq.count > 0 ? (reward.select(:refferal_member_id).uniq.count / Member.enabled.where(reff_uid: current_user.uid).count) * 100 : "0.0"
 
             summary = {
               total_referal: Member.enabled.where(reff_uid: current_user.uid).count,
-              comission: reward.where(reffered_member_id: current_user.id).uniq.count,
-              total_reward: reward_currencies.count > 0 ? reward_currencies.sum(:amount) : "0.0",
+              comission: comission,
+              total_reward: reward.count > 0 ? reward.sum(:amount) : "0.0",
               data: paginate(API::V2::Entities::Reward.represent(reward))
             }
 
