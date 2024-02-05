@@ -22,11 +22,21 @@ module API
             refferal_member = nil
             refferal_member = Member.find_by_uid(params[:member_uid]) if params[:member_uid]
 
-            current_user.rewards.order(id: :desc)
-              .tap { |q| q.where!(refferal_member_id: refferal_member.present? ? refferal_member[:id] : 0 ) if params[:member_uid] }
-              .tap { |q| q.where!(currency: params[:currency]) if params[:currency] }
-              .tap { |q| q.where!(type: params[:type]) if params[:type] }
-              .tap { |q| present paginate(q), with: API::V2::Entities::Reward }
+            reward = Reward.where(reffered_member_id: current_user.id).order(id: :desc)
+            reward = reward.where(refferal_member_id: refferal_member.present? ? refferal_member[:id] : 0 ) if params[:member_uid]
+            reward = reward.where(currency: params[:currency]) if params[:currency]
+            reward = reward.where(type: params[:type]) if params[:type]
+            
+            reward_currencies = Reward.where(reffered_member_id: current_user.id)
+
+            summary = {
+              total_referal: Member.enabled.where(reff_uid: current_user.uid).count,
+              comission: reward.where(reffered_member_id: current_user.id).uniq.count,
+              total_reward: reward_currencies.count > 0 ? reward_currencies.sum(:amount) : "0.0",
+              data: paginate(API::V2::Entities::Reward.represent(reward))
+            }
+
+            present summary
           end
         end
       end

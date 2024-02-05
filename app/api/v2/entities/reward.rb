@@ -34,6 +34,16 @@ module API
                         desc: "currency for reward data"
                     }
 
+                expose :market,
+                    if: -> (reward) { reward.reference == 'Trade' },
+                    using: API::V2::Entities::Market,
+                    documentation: {
+                        type: String,
+                        desc: "Market source to get reward"
+                    } do |reward|
+                        reward.get_market
+                    end
+
                 expose :amount,
                     documentation: {
                         type: String,
@@ -56,6 +66,11 @@ module API
                     documentation: {
                         type: String,
                         desc: "is_process for reward data"
+                    }
+                expose :created_at,
+                    documentation: {
+                        type: String,
+                        desc: "time earning reward referral"
                     }
             end
         end

@@ -28,6 +28,13 @@ class Reward < ApplicationRecord
         end
     end
 
+    def get_market
+        trade = Trade.find_by(id: reference_id)
+        market = Market.find_by(market_id: trade.market_id)
+
+        return market
+    end
+
     def refferal
         Member.find_by(id: refferal_member_id)
     end
