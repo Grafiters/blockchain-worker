@@ -16,7 +16,7 @@ module Workers
                 when 'submit'
                     process_to_reward_from_trade(payload['order'])
                 when 'process'
-                    Reward.send_reward(payload['order'])
+                    ::Reward.send_reward(payload['order'])
                 end
             end
 
@@ -26,14 +26,14 @@ module Workers
                 trade = Trade.find_by(id: trade_id)
                 return if trade.nil?
 
-                reward = get_reward_trade(trade[:id])
-                return process_reward_to_member(reward[:id]) if reward
-
+                Rails.logger.warn "Information for process trade to reward"
                 # proses maker
                 proses_trade_to_reward(trade.maker_id, trade)
 
                 # proses taker
                 proses_trade_to_reward(trade.taker_id, trade)
+
+                reward = get_reward_trade(trade[:id])
 
                 update_trade_reff_process(trade[:id])
             end
@@ -41,17 +41,20 @@ module Workers
             private
 
             def proses_trade_to_reward(member, trade)
-                account = Member.find_by(id: id)
+                account = Member.find_by(id: member)
                 return unless account && account.reff_uid && account.reff_uid != ''
 
                 refferal = Member.find_by(uid: account[:reff_uid])
 
                 return unless refferal
 
-                order_fee = trade.maker_order_id == trade.order_id ? trade.order.maker_fee : trade.order.taker_fee
+                order_fee = trade.maker_order_id == member ? trade.maker_order.maker_fee : trade.taker_order.taker_fee
+                currency = trade.maker_order_id == member ? trade.maker_order.income_currency : trade.taker_order.income_currency
 
-                return if amount_fee <= 0
+                return if order_fee <= 0
                 refferal_reward = order_fee.to_d * FEE_REFFERAL[:value].to_d
+
+                return if Reward.where(reference: 'Trade', reference_id: trade[:id]).count >= 2
 
                 reward = Reward.new({
                     refferal_member_id: refferal.id,
@@ -59,7 +62,7 @@ module Workers
                     reference: 'Trade',
                     reference_id: trade.id,
                     amount: refferal_reward,
-                    currency: trade.order.income_currency,
+                    currency: currency[:id],
                     type: 'refferal'
                 })
 
@@ -67,7 +70,7 @@ module Workers
             end
 
             def update_trade_reff_process(trade_id)
-                trade = Trade.find_by_ud(trade_id)
+                trade = Trade.find_by_id(trade_id)
                 
                 trade.update(reff_process: true)
             end

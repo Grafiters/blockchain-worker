@@ -177,8 +177,10 @@ class Member < ApplicationRecord
         m.role = params[:role]
         m.state = params[:state]
         m.level = params[:level]
-        m.reff_uid = params[:reff]
+        m.reff_uid = params[:refferal_uid]
       end
+
+      Rails.logger.warn member
       member.assign_attributes(params)
       member.save! if member.changed?
       member
@@ -186,7 +188,8 @@ class Member < ApplicationRecord
 
     # Filter and validate payload params
     def filter_payload(payload)
-      payload.slice(:email, :username, :uid, :role, :state, :level)
+      Rails.logger.warn payload
+      payload.slice(:email, :username, :uid, :role, :state, :level, :refferal_uid)
     end
 
     def validate_payload(p)

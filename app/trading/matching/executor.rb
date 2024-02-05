@@ -80,6 +80,8 @@ module Matching
         end
 
         # Check if accounts exists or create them.
+
+        Rails.logger.warn @maker_order.inspect
         @maker_order.member.get_account(@maker_order.income_currency)
         @taker_order.member.get_account(@taker_order.income_currency)
 

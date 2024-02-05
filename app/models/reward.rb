@@ -6,6 +6,8 @@ class Reward < ApplicationRecord
 
     enumerize :type, in: STATES, scope: true
 
+    before_validation :assign_interid
+
     after_commit on: :update do
         publish_event
     end
@@ -13,7 +15,8 @@ class Reward < ApplicationRecord
     class << self
         def send_reward(id)
             ActiveRecord::Base.transaction do
-                reward = find_by_id!(id)
+                Rails.logger.warn id
+                reward = ::Reward.find_by_id!(id)
 
                 return unless !reward.is_process
                 reward.account.plus_locked_funds(reward.amount)
@@ -54,7 +57,20 @@ class Reward < ApplicationRecord
         member = Member.find_by_id(refferal_member_id)
     end
 
+    def assign_interid
+        return unless uid.blank?
+    
+        self.uid = InterIDGenerate('RWRD')
+    end
+
     private
+
+    def InterIDGenerate(prefix = 'RWRD')
+        loop do
+          uid = "%s%s" % [prefix.upcase, SecureRandom.hex(5).upcase]
+          return uid if Reward.where(uid: uid).empty?
+        end
+    end
 
     def as_json_for_event
         {
