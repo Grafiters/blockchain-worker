@@ -5,5 +5,7 @@ class AddDetailOnCurrency < ActiveRecord::Migration[5.2]
     add_column :currencies, :total_supply, :integer, default: 0, after: :market_cap, null: true
     add_column :currencies, :circulation_supply, :integer, default: 0, after: :total_supply, null: true
     add_column :currencies, :options, :json, after: :circulation_supply, null: true
+
+    add_column :blockchains, :blockchain_group, :integer, default: 0
   end
 end
