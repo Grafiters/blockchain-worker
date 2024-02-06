@@ -22,17 +22,17 @@ module API
             refferal_member = nil
             refferal_member = Member.find_by_uid(params[:member_uid]) if params[:member_uid]
 
-            reward = Reward.where(reffered_member_id: current_user.id).order(id: :desc)
-            reward = reward.where(refferal_member_id: refferal_member.present? ? refferal_member[:id] : 0 ) if params[:member_uid]
+            reward = Reward.where(refferal_member_id: current_user.id).order(id: :desc)
+            reward = reward.where(reffered_member_id: refferal_member.present? ? refferal_member[:id] : 0 ) if params[:member_uid]
             reward = reward.where(currency: params[:currency]) if params[:currency]
             reward = reward.where(type: params[:type]) if params[:type]
             
             reward_currencies = Reward.where(reffered_member_id: current_user.id)
-            comission = reward.select(:refferal_member_id).uniq.count > 0 ? (reward.select(:refferal_member_id).uniq.count / Member.enabled.where(reff_uid: current_user.uid).count) * 100 : "0.0"
+            comission = Setting.find_by(name: 'fee_referral')
 
             summary = {
               total_referal: Member.enabled.where(reff_uid: current_user.uid).count,
-              comission: comission,
+              comission: comission[:value],
               total_reward: reward.count > 0 ? reward.sum(:amount) : "0.0",
               data: paginate(API::V2::Entities::Reward.represent(reward))
             }

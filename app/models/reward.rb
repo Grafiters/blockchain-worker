@@ -30,7 +30,7 @@ class Reward < ApplicationRecord
 
     def get_market
         trade = Trade.find_by(id: reference_id)
-        market = Market.find_by(market_id: trade.market_id)
+        market = Market.find_by(id: trade.market_id)
 
         return market
     end
