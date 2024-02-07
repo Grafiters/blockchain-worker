@@ -125,12 +125,13 @@ pipeline {
 }
 
 def deploy(String remoteUser, String serverAddress) {
+    def services = env.CONTAINER_TO_RESTARTS.split(',').collect { it.trim() }.join(' ')
     sshagent(credentials: ['ssh-dev']) {
         sh """
             ssh -o StrictHostKeyChecking=no ${remoteUser}@${serverAddress} '
                 docker rmi -f ${env.IMAGE_FULL_NAME}
                 cd ${env.DEPLOYMENT_PATH}
-                docker-compose up -Vd ${env.CONTAINER_TO_RESTARTS.replaceAll(",", "").replaceAll(" ", " -Vd ")}
+                docker-compose up -Vd ${services}
                 docker image prune -f
             '
         """
