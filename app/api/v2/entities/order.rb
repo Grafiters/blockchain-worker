@@ -90,6 +90,30 @@ module API
         end
 
         expose(
+          :base_unit,
+          as: :base_unit,
+          documentation: {
+            type: String,
+            desc: "The market in which the order is placed, e.g. 'btcusd'."\
+                  "All available markets can be found at /api/v2/markets."
+          }
+        )do |order|
+          order.market.base_unit
+        end
+
+        expose(
+          :quote_unit,
+          as: :quote_unit,
+          documentation: {
+            type: String,
+            desc: "The market in which the order is placed, e.g. 'btcusd'."\
+                  "All available markets can be found at /api/v2/markets."
+          }
+        )do |order|
+          order.market.quote_unit
+        end
+
+        expose(
           :market_id,
           as: :market,
           documentation: {
@@ -98,6 +122,8 @@ module API
                   "All available markets can be found at /api/v2/markets."
           }
         )
+
+        
 
         expose(
           :market_type,

@@ -84,7 +84,7 @@ module API
                       .tap { |q| q.where!(type: (params[:type] == 'buy' ? 'OrderBid' : 'OrderAsk')) if params[:type] }
                       .tap { |q| q.where!('created_at >= ?', Time.at(params[:time_from])) if params[:time_from] }
                       .tap { |q| q.where!('created_at < ?', Time.at(params[:time_to])) if params[:time_to] }
-                      .tap { |q| present paginate(q, false), with: API::V2::Entities::Order }
+                      .tap { |q| present paginate(q, true), with: API::V2::Entities::Order }
         end
 
         desc 'Get information of specified order.',
