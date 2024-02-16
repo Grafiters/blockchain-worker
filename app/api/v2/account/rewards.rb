@@ -2,10 +2,13 @@ module API
   module V2
     module Account
       class Rewards < Grape::API
+        helpers ::API::V2::ParamHelpers
+        
         resources :rewards do
           desc 'Get all reward data by refferal',
             success: API::V2::Entities::Reward, is_array: true
           params do
+            use :pagination
             optional :member_uid,
               type: String,
               desc: "member uid on list of refferal"
