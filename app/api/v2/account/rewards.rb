@@ -32,11 +32,21 @@ module API
             
             reward_currencies = Reward.where(reffered_member_id: current_user.id)
             comission = Setting.find_by(name: 'fee_referral')
+            reward_result = 0.0
+            if reward.count > 0
+              reward_json = {
+                source: reward.select(:reference_id),
+                reference: 'Trade',
+                reward: reward
+              }
+
+              reward_result = EstimationService.new(reward_json).reward_result
+            end
 
             summary = {
               total_referal: Member.enabled.where(reff_uid: current_user.uid).count,
               comission: comission[:value],
-              total_reward: reward.count > 0 ? reward.sum(:amount) : "0.0",
+              total_reward: reward_result,
               data: paginate(API::V2::Entities::Reward.represent(reward))
             }
 

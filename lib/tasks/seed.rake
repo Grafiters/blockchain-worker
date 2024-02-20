@@ -130,6 +130,14 @@ namespace :seed do
     end
   end
 
+  desc 'Add reward currency setting'
+  task reward_currencies: :environment do
+    Setting.transaction do
+      return if Setting.find_by(name: 'reward_currencies').present?
+      Setting.create(name: 'reward_currencies', value: 'usdt', description: 'reward currencies when have referral', deleted: false)
+    end
+  end
+
   # desc 'Adds missing user to database defined at config/seed/p2p_user.yml.'
   # task p2p_user: :environment do
   #   P2pUser.transaction do
