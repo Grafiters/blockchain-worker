@@ -27,14 +27,10 @@ module Workers
                 return if trade.nil?
 
                 Rails.logger.warn "Information for process trade to reward"
-                # proses maker
-                proses_trade_to_reward(trade.maker_id, trade)
-
-                # proses taker
-                proses_trade_to_reward(trade.taker_id, trade)
-
-                reward = get_reward_trade(trade[:id])
-
+                [trade.maker_id, trade.taker_id].each do |process|
+                    proses_trade_to_reward(process, trade)
+                end
+                
                 update_trade_reff_process(trade[:id])
             end
 
@@ -42,7 +38,7 @@ module Workers
 
             def proses_trade_to_reward(member, trade)
                 account = Member.find_by(id: member)
-                return update_trade_reff_process(trade[:id]) unless account && account.reff_uid && account.reff_uid != ''
+                return unless account && account.reff_uid && account.reff_uid != ''
 
                 refferal = Member.find_by(uid: account[:reff_uid])
 
