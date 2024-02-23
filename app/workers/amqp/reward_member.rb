@@ -30,7 +30,7 @@ module Workers
                 [trade.maker_id, trade.taker_id].each do |process|
                     proses_trade_to_reward(process, trade)
                 end
-                
+
                 update_trade_reff_process(trade[:id])
             end
 
@@ -45,7 +45,8 @@ module Workers
                 return unless refferal
 
                 order_fee = trade.maker_order_id == member ? trade.maker_order.maker_fee : trade.taker_order.taker_fee
-                amount_fee_transaction = order_fee * (trade.maker_order_id == member ? trade[:amount] : trade[:total])
+                amount = trade.maker_order_id == member ? trade[:amount] : trade[:total]
+                amount_fee_transaction = order_fee > 0 ? order_fee * amount : amount
                 currency = trade.maker_order_id == member ? trade.maker_order.income_currency : trade.taker_order.income_currency
 
                 return if amount_fee_transaction <= 0
