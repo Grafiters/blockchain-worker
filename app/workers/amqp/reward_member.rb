@@ -49,10 +49,11 @@ module Workers
                 return unless refferal
 
                 order_fee = trade.maker_order_id == member ? trade.maker_order.maker_fee : trade.taker_order.taker_fee
+                amount_fee_transaction = order_fee * (trade.maker_order_id == member ? trade[:amount] : trade[:total])
                 currency = trade.maker_order_id == member ? trade.maker_order.income_currency : trade.taker_order.income_currency
 
-                return if order_fee <= 0
-                refferal_reward = order_fee.to_d * FEE_REFFERAL[:value].to_d
+                return if amount_fee_transaction <= 0
+                refferal_reward = amount_fee_transaction.to_d * FEE_REFFERAL[:value].to_d
 
                 return if Reward.where(reference: 'Trade', reference_id: trade[:id]).count >= 2
 
