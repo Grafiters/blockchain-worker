@@ -4,11 +4,11 @@
 class Blockchain < ApplicationRecord
   GAS_SPEEDS = %w[standard safelow fast].freeze
 
-  include Vault::EncryptedModel
+  # include Vault::EncryptedModel
 
-  vault_lazy_decrypt!
+  # vault_lazy_decrypt!
 
-  vault_attribute :server
+  # vault_attribute :server
 
   has_many :wallets, foreign_key: :blockchain_key, primary_key: :key
   has_many :whitelisted_smart_contracts, foreign_key: :blockchain_key, primary_key: :key
